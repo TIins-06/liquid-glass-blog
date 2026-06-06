@@ -1,4 +1,4 @@
-﻿---
+---
 export const prerender = false;
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
@@ -156,6 +156,42 @@ const barColors = {
         </section>
       </div>
     </div>
+
+    {/* Right Sidebar - Music & Stats */}
+    <aside class="home-right-sidebar" id="right-sidebar">
+      {/* Music Card */}
+      <div class="glass-card p-4 animate-slide-up" style="animation-delay: 0.1s;">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-sm">🎵</span>
+          <span class="text-xs font-semibold" style="color: var(--text-primary);">音乐</span>
+        </div>
+        <div id="home-music-player" class="space-y-2">
+          <div class="text-[10px]" style="color: var(--text-muted);">加载中...</div>
+        </div>
+      </div>
+
+      {/* Stats Card */}
+      <div class="glass-card p-4 animate-slide-up" style="animation-delay: 0.2s;">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-sm">📊</span>
+          <span class="text-xs font-semibold" style="color: var(--text-primary);">站点统计</span>
+        </div>
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px]" style="color: var(--text-muted);">今日访问</span>
+            <span class="text-xs font-bold" id="stat-today" style="color: var(--accent-1-light);">--</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-[10px]" style="color: var(--text-muted);">总访问量</span>
+            <span class="text-xs font-bold" id="stat-total" style="color: var(--accent-2-light);">--</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-[10px]" style="color: var(--text-muted);">运行时间</span>
+            <span class="text-xs font-bold" id="stat-uptime" style="color: var(--accent-1-light);">--</span>
+          </div>
+        </div>
+      </div>
+    </aside>
   </div>
 
   <script is:inline>
@@ -195,6 +231,59 @@ const barColors = {
           else overlay.classList.add("active");
         }
       });
+    })();
+
+    // Right sidebar music player
+    (function() {
+      fetch('/api/music').then(function(r) { return r.json(); }).then(function(data) {
+        var tracks = Array.isArray(data) ? data.filter(function(t) { return t.src; }) : [];
+        var container = document.getElementById('home-music-player');
+        if (!container) return;
+        if (tracks.length === 0) {
+          container.innerHTML = '<div class="text-[10px]" style="color:var(--text-muted);">暂无音乐</div>';
+          return;
+        }
+        var html = '';
+        tracks.forEach(function(t, i) {
+          html += '<div class="home-music-item flex items-center gap-2 p-2 rounded-xl cursor-pointer transition-all" style="background:var(--glass-bg);border:1px solid var(--glass-border);" data-src="' + (t.src||'') + '" data-idx="' + i + '">';
+          html += '<span class="text-xs">🎵</span>';
+          html += '<div class="min-w-0 flex-1"><div class="text-[10px] font-medium truncate" style="color:var(--text-primary);">' + (t.title||'未知') + '</div>';
+          html += '<div class="text-[9px] truncate" style="color:var(--text-muted);">' + (t.artist||'') + '</div></div>';
+          html += '</div>';
+        });
+        container.innerHTML = html;
+        // Click to play in the main music player
+        container.querySelectorAll('.home-music-item').forEach(function(item) {
+          item.addEventListener('click', function() {
+            var src = item.getAttribute('data-src');
+            window.dispatchEvent(new CustomEvent('play-music', { detail: { src: src } }));
+          });
+        });
+      }).catch(function() {});
+    })();
+
+    // Stats
+    (function() {
+      var startDate = new Date('2026-06-01T00:00:00+08:00');
+      function updateUptime() {
+        var now = new Date();
+        var diff = now - startDate;
+        var days = Math.floor(diff / 86400000);
+        var hours = Math.floor((diff % 86400000) / 3600000);
+        var mins = Math.floor((diff % 3600000) / 60000);
+        var el = document.getElementById('stat-uptime');
+        if (el) el.textContent = days + '天 ' + hours + '时 ' + mins + '分';
+      }
+      updateUptime();
+      setInterval(updateUptime, 60000);
+
+      // Visit counter (KV-based)
+      fetch('/api/visit').then(function(r) { return r.json(); }).then(function(d) {
+        var todayEl = document.getElementById('stat-today');
+        var totalEl = document.getElementById('stat-total');
+        if (todayEl) todayEl.textContent = d.today || '0';
+        if (totalEl) totalEl.textContent = d.total || '0';
+      }).catch(function() {});
     })();
   </script>
 </Base>
