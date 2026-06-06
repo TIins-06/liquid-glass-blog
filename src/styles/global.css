@@ -661,6 +661,19 @@ body {
   background: rgba(255,255,255,0.3);
   color: white;
 }
+.music-mini-card .mmc-progress {
+  height: 2px;
+  background: rgba(255,255,255,0.15);
+  margin: 0 0.75rem;
+  border-radius: 100px;
+  overflow: hidden;
+}
+.music-mini-card .mmc-progress-bar {
+  height: 100%;
+  background: linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0.4));
+  border-radius: 100px;
+  transition: width 0.15s linear;
+}
 
 /* ===== Music Capsule (bottom player) ===== *//* ===== Music Capsule (bottom player) ===== */
 .music-capsule {
