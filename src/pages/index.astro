@@ -120,7 +120,7 @@ const barColors = {
             <div class="space-y-3">
               {posts.map((post, i) => (
                 <a href={"/blog/" + post.id} class="block group animate-slide-up" style={"animation-delay: " + (i * 0.05) + "s;"}>
-                  <div class="lg p-5 flex items-start gap-4 transition-all" style="border-radius: 0.75rem;">
+                  <div class="lg p-5 flex items-start gap-4 transition-all">
                     <div class="flex-1 min-w-0">
                       <div class="flex items-center gap-2 mb-1.5 flex-wrap">
                         <h3 class="text-sm font-bold group-hover:opacity-80 transition-opacity" style="color: var(--text-primary);">{post.data.title}</h3>
