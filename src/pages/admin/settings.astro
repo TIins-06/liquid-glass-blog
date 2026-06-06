@@ -1,4 +1,4 @@
----
+﻿---
 export const prerender = false;
 import Admin from '../../layouts/Admin.astro';
 ---
@@ -47,6 +47,92 @@ import Admin from '../../layouts/Admin.astro';
         </div>
       </div>
 
+      {/* ===== 控件样式 ===== */}
+      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.16s;">
+        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🖌️ 控件样式</h2>
+        <p class="text-sm mb-4" style="color: var(--text-muted);">选择全局控件（导航栏、按钮、卡片等）的外观预设</p>
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <button onclick="setStylePreset('default')" id="style-default" class="style-preset-btn px-3 py-3 rounded-xl text-xs font-medium transition-all text-center">
+            <div class="mb-1">🔷</div><div>默认</div>
+          </button>
+          <button onclick="setStylePreset('frosted')" id="style-frosted" class="style-preset-btn px-3 py-3 rounded-xl text-xs font-medium transition-all text-center">
+            <div class="mb-1">🌫️</div><div>磨砂</div>
+          </button>
+          <button onclick="setStylePreset('crystal')" id="style-crystal" class="style-preset-btn px-3 py-3 rounded-xl text-xs font-medium transition-all text-center">
+            <div class="mb-1">💎</div><div>水晶</div>
+          </button>
+          <button onclick="setStylePreset('minimal')" id="style-minimal" class="style-preset-btn px-3 py-3 rounded-xl text-xs font-medium transition-all text-center">
+            <div class="mb-1">◻️</div><div>极简</div>
+          </button>
+          <button onclick="setStylePreset('pill')" id="style-pill" class="style-preset-btn px-3 py-3 rounded-xl text-xs font-medium transition-all text-center">
+            <div class="mb-1">💊</div><div>胶囊</div>
+          </button>
+        </div>
+        <style>
+          .style-preset-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            cursor: pointer;
+          }
+          .style-preset-btn:hover { border-color: var(--accent-1); }
+          .style-preset-btn.active {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white;
+            border-color: transparent;
+          }
+        </style>
+      </div>
+
+      {/* ===== 外观配色 ===== */}
+      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.17s;">
+        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🎨 配色方案</h2>
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
+          <button onclick="setColorPreset('purple')" data-color-btn="purple" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all">
+            <span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-cyan-400 mr-1 align-middle"></span>紫罗兰
+          </button>
+          <button onclick="setColorPreset('ocean')" data-color-btn="ocean" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all">
+            <span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 mr-1 align-middle"></span>海洋蓝
+          </button>
+          <button onclick="setColorPreset('sunset')" data-color-btn="sunset" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all">
+            <span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-rose-500 to-orange-400 mr-1 align-middle"></span>日落橙
+          </button>
+          <button onclick="setColorPreset('forest')" data-color-btn="forest" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all">
+            <span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-green-400 mr-1 align-middle"></span>森林绿
+          </button>
+          <button onclick="setColorPreset('lavender')" data-color-btn="lavender" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all">
+            <span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-400 mr-1 align-middle"></span>薰衣草
+          </button>
+          <button onclick="setColorPreset('sakura')" data-color-btn="sakura" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all">
+            <span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-pink-500 to-rose-400 mr-1 align-middle"></span>樱花粉
+          </button>
+        </div>
+        <style>
+          .color-preset-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            cursor: pointer;
+          }
+          .color-preset-btn:hover { border-color: var(--accent-1); }
+          .color-preset-btn.active {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white;
+            border-color: transparent;
+          }
+        </style>
+      </div>
+
+      {/* ===== 音乐管理 ===== */}
+      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.18s;">
+        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🎵 音乐管理</h2>
+        <p class="text-sm mb-4" style="color: var(--text-muted);">管理播放器曲目，支持在线音频链接</p>
+        <div id="admin-music-tracks" class="space-y-3"></div>
+        <div class="mt-3 flex gap-3">
+          <button onclick="addMusicTrack()" class="ripple px-4 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/10 glass" style="color: var(--text-primary); border: 1px solid var(--glass-border);">➕ 添加曲目</button>
+          <button onclick="saveMusicTracks()" class="ripple px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-500 to-cyan-400 hover:opacity-90 transition-opacity">💾 保存曲目</button>
+        </div>
+      </div>
       {/* ===== 侧边栏设置 ===== */}
       <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.18s;">
         <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">📐 侧边栏设置</h2>
@@ -161,6 +247,9 @@ import Admin from '../../layouts/Admin.astro';
       if (services.length === 0) services = [...defaultServices];
       renderServices();
       updateAvatarPreview();
+      updateStyleButtons();
+      updateColorButtons();
+      loadAdminTracks();
     } catch (e) { services = [...defaultServices]; renderServices(); }
   }
 
@@ -172,43 +261,46 @@ import Admin from '../../layouts/Admin.astro';
 
   function renderServices() {
     document.getElementById('services-container').innerHTML = services.map((s, i) => `
-      <div class="service-item" data-index="${i}">
-        <div class="flex items-center gap-2 min-w-0 flex-1">
-          <div class="flex flex-col gap-1">
-            <label class="text-[10px]" style="color: var(--text-muted);">图标</label>
-            <select onchange="updateService(${i},'icon',this.value)" class="service-input w-14 text-center" style="padding:0.375rem;">
+      <div class="rounded-xl p-4" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-medium" style="color: var(--text-primary);">${s.icon} ${s.title}</span>
+          <button onclick="removeService(${i})" class="text-xs px-2 py-0.5 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors">🗑️ 删除</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-[10px] block mb-1" style="color: var(--text-muted);">图标</label>
+            <select onchange="updateService(${i},'icon',this.value)" class="service-input" style="padding:0.375rem 0.5rem;">
               ${iconOptions.map(icon => `<option value="${icon}" ${s.icon===icon?'selected':''}>${icon}</option>`).join('')}
             </select>
           </div>
-          <div class="flex-1 min-w-0">
-            <label class="text-[10px]" style="color: var(--text-muted);">标题</label>
+          <div>
+            <label class="text-[10px] block mb-1" style="color: var(--text-muted);">标题</label>
             <input value="${s.title||''}" onchange="updateService(${i},'title',this.value)" class="service-input" />
           </div>
-          <div class="flex-1 min-w-0">
-            <label class="text-[10px]" style="color: var(--text-muted);">描述</label>
+          <div>
+            <label class="text-[10px] block mb-1" style="color: var(--text-muted);">描述</label>
             <input value="${s.desc||''}" onchange="updateService(${i},'desc',this.value)" class="service-input" />
           </div>
-        </div>
-        <div class="flex flex-col gap-1" style="min-width:200px;">
-          <label class="text-[10px]" style="color: var(--text-muted);">链接 URL</label>
-          <input value="${s.url||''}" onchange="updateService(${i},'url',this.value)" class="service-input" placeholder="https://..." />
-        </div>
-        <div class="flex flex-col gap-1" style="min-width:200px;">
-          <label class="text-[10px]" style="color: var(--text-muted);">复制按钮链接（留空则复制上方链接）</label>
-          <input value="${s.copyUrl||''}" onchange="updateService(${i},'copyUrl',this.value)" class="service-input" placeholder="留空则复制主链接" />
-        </div>
-        <div class="flex items-center gap-2">
-          <div class="flex flex-col gap-1">
-            <label class="text-[10px]" style="color: var(--text-muted);">配色</label>
-            <select onchange="updateService(${i},'color',this.value)" class="service-input w-10" style="padding:0.375rem;">
-              ${colorOptions.map(c => `<option value="${c}" ${s.color===c?'selected':''}>●</option>`).join('')}
-            </select>
+          <div>
+            <label class="text-[10px] block mb-1" style="color: var(--text-muted);">链接 URL</label>
+            <input value="${s.url||''}" onchange="updateService(${i},'url',this.value)" class="service-input" placeholder="https://..." />
           </div>
-          <div class="flex flex-col gap-1">
-            <label class="text-[10px]" style="color: var(--text-muted);">复制按钮</label>
-            <button onclick="toggleCopyable(${i})" class="px-2 py-1 rounded text-[10px] font-medium transition-all ${s.copyable?'bg-green-500/20 text-green-400 border border-green-500/30':'glass'}">${s.copyable?'✅':'❌'}</button>
+          <div>
+            <label class="text-[10px] block mb-1" style="color: var(--text-muted);">复制按钮链接（留空则复制主链接）</label>
+            <input value="${s.copyUrl||''}" onchange="updateService(${i},'copyUrl',this.value)" class="service-input" placeholder="留空则复制主链接" />
           </div>
-          <button onclick="removeService(${i})" class="mt-4 px-2 py-1 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all text-sm">🗑️</button>
+          <div class="flex items-end gap-3">
+            <div>
+              <label class="text-[10px] block mb-1" style="color: var(--text-muted);">配色</label>
+              <select onchange="updateService(${i},'color',this.value)" class="service-input w-12" style="padding:0.375rem;">
+                ${colorOptions.map(c => `<option value="${c}" ${s.color===c?'selected':''}>●</option>`).join('')}
+              </select>
+            </div>
+            <div>
+              <label class="text-[10px] block mb-1" style="color: var(--text-muted);">复制按钮</label>
+              <button onclick="toggleCopyable(${i})" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${s.copyable?'bg-green-500/20 text-green-400 border border-green-500/30':'glass'}" style="border:1px solid var(--glass-border);">${s.copyable?'✅ 开启':'❌ 关闭'}</button>
+            </div>
+          </div>
         </div>
       </div>
     `).join('');
@@ -222,6 +314,94 @@ import Admin from '../../layouts/Admin.astro';
   }
   function removeService(i) { services.splice(i, 1); renderServices(); }
   function resetServices() { if (confirm('确定要重置服务列表为默认值吗？')) { services = [...defaultServices]; renderServices(); } }
+
+
+  // Style presets
+  var currentStyle = localStorage.getItem('style-preset') || 'default';
+  var stylePresets = {
+    default: { radius: '20px', frostBlur: '0px', tint: 'rgba(255,255,255,0.16)', innerBlur: '20px', innerSpread: '-5px' },
+    frosted: { radius: '20px', frostBlur: '8px', tint: 'rgba(255,255,255,0.12)', innerBlur: '12px', innerSpread: '-3px' },
+    crystal: { radius: '28px', frostBlur: '2px', tint: 'rgba(255,255,255,0.2)', innerBlur: '24px', innerSpread: '-8px' },
+    minimal: { radius: '12px', frostBlur: '0px', tint: 'rgba(255,255,255,0.08)', innerBlur: '8px', innerSpread: '-2px' },
+    pill: { radius: '100px', frostBlur: '0px', tint: 'rgba(255,255,255,0.18)', innerBlur: '16px', innerSpread: '-4px' },
+  };
+  function updateStyleButtons() {
+    document.querySelectorAll('.style-preset-btn').forEach(function(btn) { btn.classList.remove('active'); });
+    var active = document.getElementById('style-' + currentStyle);
+    if (active) active.classList.add('active');
+  }
+  function setStylePreset(id) {
+    currentStyle = id;
+    localStorage.setItem('style-preset', id);
+    var sv = stylePresets[id] || stylePresets.default;
+    var root = document.documentElement;
+    root.style.setProperty('--lg-radius', sv.radius);
+    root.style.setProperty('--frost-blur', sv.frostBlur);
+    root.style.setProperty('--glass-tint', sv.tint);
+    root.style.setProperty('--inner-blur', sv.innerBlur);
+    root.style.setProperty('--inner-spread', sv.innerSpread);
+    updateStyleButtons();
+  }
+
+  // Color presets
+  var currentColor = localStorage.getItem('color-preset') || 'purple';
+  function updateColorButtons() {
+    document.querySelectorAll('[data-color-btn]').forEach(function(btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-color-btn') === currentColor);
+    });
+  }
+  function setColorPreset(id) {
+    currentColor = id;
+    localStorage.setItem('color-preset', id);
+    document.documentElement.setAttribute('data-color', id);
+    updateColorButtons();
+  }
+
+  // Music tracks (loaded from API)
+  var adminTracks = [];
+  function loadAdminTracks() {
+    fetch('/api/music').then(function(r) { return r.json(); }).then(function(data) {
+      adminTracks = Array.isArray(data) ? data : [];
+      renderAdminTracks();
+    }).catch(function() { adminTracks = []; renderAdminTracks(); });
+  }
+  function renderAdminTracks() {
+    var c = document.getElementById('admin-music-tracks');
+    if (!c) return;
+    c.innerHTML = adminTracks.map(function(t, i) {
+      return '<div class="rounded-xl p-4" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">' +
+        '<div class="flex items-center justify-between mb-3">' +
+          '<span class="text-xs font-medium" style="color: var(--text-primary);">🎵 曲目 ' + (i + 1) + '</span>' +
+          '<button onclick="removeMusicTrack(' + i + ')" class="text-xs px-2 py-0.5 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors">🗑️ 删除</button>' +
+        '</div>' +
+        '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">' +
+          '<div><label class="text-[10px] block mb-1" style="color: var(--text-muted);">标题</label>' +
+            '<input value="' + (t.title||'').replace(/"/g, '&quot;') + '" onchange="adminTracks[' + i + '].title=this.value" class="service-input" /></div>' +
+          '<div><label class="text-[10px] block mb-1" style="color: var(--text-muted);">艺术家</label>' +
+            '<input value="' + (t.artist||'').replace(/"/g, '&quot;') + '" onchange="adminTracks[' + i + '].artist=this.value" class="service-input" /></div>' +
+          '<div><label class="text-[10px] block mb-1" style="color: var(--text-muted);">音频 URL</label>' +
+            '<input value="' + (t.src||'').replace(/"/g, '&quot;') + '" onchange="adminTracks[' + i + '].src=this.value" class="service-input" placeholder="https://...mp3" /></div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+  function addMusicTrack() { adminTracks.push({ title: '', artist: '', src: '' }); renderAdminTracks(); }
+  function removeMusicTrack(i) { adminTracks.splice(i, 1); renderAdminTracks(); }
+  function saveMusicTracks() {
+    fetch('/api/music', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tracks: adminTracks }) })
+    .then(function(r) { return r.json(); })
+    .then(function(result) {
+      var st = document.getElementById('save-status');
+      if (result.ok) { st.textContent = '✅ 音乐曲目已保存！'; st.style.color = '#22c55e'; }
+      else { st.textContent = '❌ 保存失败'; st.style.color = '#ef4444'; }
+      st.classList.remove('hidden');
+      setTimeout(function() { st.classList.add('hidden'); }, 3000);
+    }).catch(function() {
+      var st = document.getElementById('save-status');
+      st.textContent = '❌ 网络错误'; st.style.color = '#ef4444';
+      st.classList.remove('hidden');
+    });
+  }
 
   async function saveAll() {
     const st = document.getElementById('save-status');
@@ -262,4 +442,7 @@ import Admin from '../../layouts/Admin.astro';
   document.getElementById('avatarUrl')?.addEventListener('input', updateAvatarPreview);
   loadSettings();
 </script>
+
+
+
 
