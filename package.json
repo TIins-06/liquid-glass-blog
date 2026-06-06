@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "liquid-glass-blog",
   "type": "module",
   "version": "1.0.0",
@@ -9,25 +9,14 @@
     "astro": "astro"
   },
   "dependencies": {
-    "0": "t",
-    "1": "a",
-    "2": "i",
-    "3": "l",
-    "4": "w",
-    "5": "i",
-    "6": "n",
-    "7": "d",
-    "8": "c",
-    "9": "s",
-    "10": "s",
-    "11": "=",
-    "12": "^",
-    "13": "4",
-    "14": ".",
-    "15": "0",
-    "16": ".",
-    "17": "1",
-    "18": "4"
+    "@astrojs/mdx": "^6.0.2",
+    "@astrojs/react": "^5.0.0",
+    "@tailwindcss/vite": "^4.0.14",
+    "astro": "^6.4.0",
+    "framer-motion": "^12.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.0.14"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
