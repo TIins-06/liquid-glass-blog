@@ -1,20 +1,37 @@
 import type { AstroGlobal } from 'astro';
 
 export interface SiteSettings {
+  // Profile
   nickname: string;
   qqNumber: string;
   signature: string;
   avatarUrl: string;
+  // Appearance
   backgroundUrl: string;
   theme: string;
   animations: boolean | string;
   musicTracks: string;
   musicVolume: string;
+  // Hero Section
   heroTitle: string;
   heroSubtitle: string;
   heroDescription: string;
-  adminPassword: string;
+  heroEmoji: string;
+  heroTagline: string;
+  // Sidebar
   services: string;
+  sidebarTitle: string;
+  // Footer
+  footerText: string;
+  footerTechBadge: string;
+  // Section Labels
+  sectionBlogsTitle: string;
+  sectionBlogsBarColor: string;
+  sectionTechTitle: string;
+  sectionTechBarColor: string;
+  // Misc
+  adminPassword: string;
+  customCss: string;
 }
 
 export async function getSettings(): Promise<SiteSettings> {
@@ -35,13 +52,23 @@ export async function getSettings(): Promise<SiteSettings> {
     heroTitle: '液态玻璃',
     heroSubtitle: 'Blog',
     heroDescription: '一个融合了现代设计美学与前沿前端技术的个人博客',
-    adminPassword: 'liquid2026',
+    heroEmoji: '👋',
+    heroTagline: 'Hi, Welcome! I\'m %s!',
     services: JSON.stringify([
-      { icon: '🌐', title: 'Tunnel VPN', desc: '安全代理服务', url: 'https://cc.likegz.dpdns.org/admin', color: 'from-blue-500/20 to-cyan-500/20', copyable: true },
+      { icon: '🌐', title: 'Tunnel VPN', desc: '安全代理服务', url: 'https://cc.likegz.dpdns.org/admin', color: 'from-blue-500/20 to-cyan-500/20', copyable: true, copyUrl: '' },
       { icon: '🖼️', title: 'Telegraph 图床', desc: '高速图片托管', url: 'https://image.hiokt.dpdns.org', color: 'from-green-500/20 to-emerald-500/20' },
       { icon: '📺', title: 'MoonTV 影视', desc: '在线影视平台', url: 'https://moon.hiokt.dpdns.org', color: 'from-purple-500/20 to-pink-500/20' },
       { icon: '📋', title: 'SubTracker 订阅', desc: '订阅管理平台', url: 'https://sub.hiokt.dpdns.org', color: 'from-orange-500/20 to-yellow-500/20' },
     ]),
+    sidebarTitle: 'Services',
+    footerText: 'Stay curious. Thanks for dropping by. 👋',
+    footerTechBadge: 'Built with Astro 6',
+    sectionBlogsTitle: 'Latest Blogs',
+    sectionBlogsBarColor: 'accent-1',
+    sectionTechTitle: 'Tech Stack',
+    sectionTechBarColor: 'accent-2',
+    adminPassword: 'liquid2026',
+    customCss: '',
   };
 
   try {
@@ -77,3 +104,4 @@ export async function setSettings(settings: Record<string, string>): Promise<voi
     Object.entries(settings).map(([k, v]) => kv.put(`settings:${k}`, v))
   );
 }
+

@@ -1,19 +1,17 @@
 ---
 const year = new Date().getFullYear();
+import { getSettings } from '../../lib/kv';
+const settings = await getSettings();
 ---
 
 <footer class="py-10 px-6 mt-20" style="border-top: 1px solid var(--glass-border);">
   <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-center">
     <div class="flex items-center gap-2 text-sm" style="color: var(--text-muted);">
-      <span>🚀</span>
-      <span class="font-mono">Built with Astro 6</span>
-    </div>
-    <div class="flex items-center gap-2 text-sm" style="color: var(--text-muted);">
       <span>☁️</span>
-      <span class="font-mono">Deployed on Cloudflare</span>
+      <span class="font-mono">{settings.footerTechBadge || 'Built with Astro 6'}</span>
     </div>
     <p class="animated-gradient-text font-bold text-lg tracking-wider">
-      Stay curious. Thanks for dropping by. 👋
+      {settings.footerText || 'Stay curious. Thanks for dropping by. 👋'}
     </p>
   </div>
 </footer>

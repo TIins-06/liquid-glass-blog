@@ -1,0 +1,99 @@
+/* ============================================
+   tunan-blog 风格导航栏
+   来源: here-tunan/tunan-blog/ui
+   ============================================ */
+
+/* 浮动胶囊导航栏 */
+.tunan-nav {
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  inset-x: 0;
+  top: 1rem;
+  margin: 0 auto;
+  max-width: 640px;
+  height: 52px;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px) saturate(100%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 0 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.tunan-nav.scrolled {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+/* Section 标题样式 */
+.tunan-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.tunan-section-label {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.tunan-section-bar {
+  width: 3px;
+  height: 20px;
+  border-radius: 2px;
+  background: var(--accent-1);
+}
+
+.tunan-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.tunan-view-all {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--accent-1-light);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.tunan-view-all:hover {
+  gap: 0.5rem;
+  color: var(--accent-2-light);
+}
+
+/* 渐变动画文字 */
+.animated-gradient-text {
+  background: linear-gradient(to right, var(--accent-1), var(--accent-2), var(--accent-1-light), var(--accent-1));
+  background-size: 300% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: gradient-animation 8s ease infinite;
+}
+
+@keyframes gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 波浪 emoji 动画 */
+@keyframes wave {
+  0%, 100% { transform: rotate(0deg); }
+  10%, 30%, 50%, 70%, 90% { transform: rotate(14deg); }
+  20%, 40%, 60%, 80% { transform: rotate(-8deg); }
+}
+
+.animate-wave {
+  animation: wave 2.5s ease-in-out infinite;
+  transform-origin: 70% 70%;
+  display: inline-block;
+}

@@ -1,4 +1,4 @@
-﻿export const prerender = false;
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { getSettings, setSettings } from '../../lib/kv';
 
@@ -13,7 +13,9 @@ export const GET: APIRoute = async (Astro) => {
 export const PUT: APIRoute = async (Astro) => {
   try {
     const body = await Astro.request.json();
-    await setSettings(body);
+    // Filter out adminPassword to prevent overwriting
+    const { adminPassword, ...safeBody } = body;
+    await setSettings(safeBody);
     return new Response(JSON.stringify({ ok: true }), {
       headers: { 'Content-Type': 'application/json' }
     });
