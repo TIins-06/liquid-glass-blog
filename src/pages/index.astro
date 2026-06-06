@@ -26,9 +26,22 @@ const barColors = {
   "accent-1-light": "var(--accent-1-light)",
   "accent-2-light": "var(--accent-2-light)",
 };
+const hasBackground = !!(settings.backgroundUrl && settings.backgroundUrl.trim());
 ---
 
-<Base title={(settings.nickname || "TIins") + " - " + (settings.heroTitle || "液态玻璃") + " " + (settings.heroSubtitle || "Blog")}>
+{hasBackground && (
+    <div class="fixed inset-0 z-0">
+      <img src={settings.backgroundUrl} alt="" class="w-full h-full object-cover opacity-20" style="filter: blur(16px) brightness(0.4);" />
+      <div class="absolute inset-0" style="background: linear-gradient(to bottom, var(--gradient-start), transparent, var(--gradient-end));"></div>
+    </div>
+  )}
+  {!hasBackground && (
+    <div class="fixed inset-0 overflow-hidden pointer-events-none" style="z-index: 0;">
+      <div class="absolute w-[500px] h-[500px] rounded-full blur-[120px] animate-float" style="background: var(--accent-1); opacity: 0.12; top: -10%; left: -5%;"></div>
+      <div class="absolute w-[400px] h-[400px] rounded-full blur-[100px] animate-float" style="background: var(--accent-2); opacity: 0.1; bottom: -5%; right: -5%; animation-delay: -3s;"></div>
+    </div>
+  )}
+  <Base title={(settings.nickname || "TIins") + " - " + (settings.heroTitle || "液态玻璃") + " " + (settings.heroSubtitle || "Blog")}>
 
   <div class="home-layout">
     <aside class="home-sidebar" id="sidebar">
