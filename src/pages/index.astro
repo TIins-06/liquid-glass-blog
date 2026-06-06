@@ -194,6 +194,42 @@ const barColors = {
   </div>
 
   <script is:inline>
+    function copyServiceUrl(btn) {
+      var url = btn.getAttribute('data-copy-url');
+      if (!url) return;
+      navigator.clipboard.writeText(url).then(function() {
+        btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>';
+        setTimeout(function() {
+          btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+        }, 1500);
+      });
+    }
+
+    (function() {
+      var toggle = document.getElementById('sidebar-toggle');
+      var sidebar = document.getElementById('sidebar');
+      var hideIcon = document.getElementById('sidebar-icon-hide');
+      var showIcon = document.getElementById('sidebar-icon-show');
+      var overlay = document.getElementById('sidebar-overlay');
+      if (!toggle || !sidebar) return;
+      var collapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+      if (collapsed) {
+        sidebar.classList.add('collapsed');
+        if (hideIcon) hideIcon.style.display = 'none';
+        if (showIcon) showIcon.style.display = 'block';
+      }
+      toggle.addEventListener('click', function() {
+        var isCollapsed = sidebar.classList.toggle('collapsed');
+        localStorage.setItem('sidebar-collapsed', String(isCollapsed));
+        if (hideIcon) hideIcon.style.display = isCollapsed ? 'none' : 'block';
+        if (showIcon) showIcon.style.display = isCollapsed ? 'block' : 'none';
+        if (overlay) {
+          if (isCollapsed || window.innerWidth > 768) overlay.classList.remove('active');
+          else overlay.classList.add('active');
+        }
+      });
+    })();
+
     (function() {
       var startDate = new Date('2026-06-01T00:00:00+08:00');
       function updateUptime() {
