@@ -541,7 +541,128 @@ body {
 }
 .home-right-sidebar::-webkit-scrollbar { width: 3px; }
 .home-right-sidebar::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 100px; }
-/* ===== Music Capsule (bottom player) ===== */
+/* ===== Music Mini Card (new style) ===== */
+.music-mini-card {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 50;
+  width: 160px;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 8px 32px -8px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset;
+  background: linear-gradient(135deg, var(--accent-1), color-mix(in srgb, var(--accent-1) 60%, var(--accent-2)));
+}
+.music-mini-card::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 0;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  pointer-events: none;
+}
+.music-mini-card > * { position: relative; z-index: 1; }
+.music-mini-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 12px 40px -8px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.15) inset;
+}
+
+.music-mini-card .mmc-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.75rem 0.5rem;
+}
+.music-mini-card .mmc-art {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  background: rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.music-mini-card .mmc-meta {
+  min-width: 0;
+  flex: 1;
+}
+.music-mini-card .mmc-status {
+  font-size: 0.5rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 0.1rem;
+}
+.music-mini-card .mmc-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.music-mini-card .mmc-artist {
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.music-mini-card .mmc-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem 0.625rem;
+}
+.music-mini-card .mmc-btn {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  font-size: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.music-mini-card .mmc-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
+.music-mini-card .mmc-btn-main {
+  width: 2rem;
+  height: 2rem;
+  background: rgba(255,255,255,0.25);
+  font-size: 0.7rem;
+}
+.music-mini-card .mmc-close-btn {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.35rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.5);
+  font-size: 0.45rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: background 0.2s;
+}
+.music-mini-card .mmc-close-btn:hover {
+  background: rgba(255,255,255,0.3);
+  color: white;
+}
+
+/* ===== Music Capsule (bottom player) ===== *//* ===== Music Capsule (bottom player) ===== */
 .music-capsule {
   position: fixed;
   bottom: 1rem;

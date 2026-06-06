@@ -136,25 +136,27 @@ export default function MusicPlayer() {
 
   if (!expanded) {
     return (
-      <div className="music-capsule lg-capsule" onClick={() => setExpanded(true)}>
-        <button
-          onClick={(e) => { e.stopPropagation(); togglePlay(); }}
-          className="mc-play"
-        >
-          {isPlaying ? '⏸' : '▶'}
-        </button>
-        <div className="mc-info">
-          <div className="mc-title">{track?.title || '无曲目'}</div>
-          <div className="mc-artist">{track?.artist || ''}</div>
+      <div className="music-mini-card" onClick={() => setExpanded(true)}>
+        <div className="mmc-top">
+          <div className="mmc-art">
+            <span className="text-xl">🎵</span>
+          </div>
+          <div className="mmc-meta">
+            <div className="mmc-status">{isPlaying ? '正在播放' : '未在播放'}</div>
+            <div className="mmc-title">{track?.title || '无曲目'}</div>
+            <div className="mmc-artist">{track?.artist || ''}</div>
+          </div>
+        </div>
+        <div className="mmc-controls" onClick={(e) => e.stopPropagation()}>
+          <button onClick={prevTrack} className="mmc-btn">⏮</button>
+          <button onClick={togglePlay} className="mmc-btn mmc-btn-main">{isPlaying ? '⏸' : '▶'}</button>
+          <button onClick={nextTrack} className="mmc-btn">⏭</button>
         </div>
         <button
           onClick={(e) => { e.stopPropagation(); setVisible(false); }}
-          className="mc-close"
-          title="隐藏播放器"
-        >
-          ✕
-        </button>
-        <div className="mc-progress-bar" style={{ width: progress + '%' }} />
+          className="mmc-close-btn"
+          title="隐藏"
+        >✕</button>
       </div>
     );
   }
