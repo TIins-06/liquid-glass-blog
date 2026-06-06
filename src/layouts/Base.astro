@@ -80,6 +80,14 @@ const {
         root.style.setProperty('--glass-tint', sv.tint);
         root.style.setProperty('--inner-blur', sv.innerBlur);
         root.style.setProperty('--inner-spread', sv.innerSpread);
+
+        // Apply saved card settings
+        const cardRadiusMap = { sharp: '4px', small: '12px', medium: '20px', large: '28px', pill: '100px' };
+        const cardBlurMap = { none: '0px', light: '8px', medium: '20px', heavy: '32px', ultra: '48px' };
+        const cardRadius = localStorage.getItem('card-radius') || 'medium';
+        const cardBlur = localStorage.getItem('card-blur') || 'medium';
+        root.style.setProperty('--card-radius', cardRadiusMap[cardRadius] || '20px');
+        root.style.setProperty('--card-blur', cardBlurMap[cardBlur] || '20px');
       })();
     </script>
   </body>

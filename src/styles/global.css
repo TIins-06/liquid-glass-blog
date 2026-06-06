@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 @theme {
   --font-display: 'Inter', system-ui, sans-serif;
@@ -26,6 +26,8 @@
   --inner-color: rgba(255,255,255,0.5);
   --glass-tint: rgba(255,255,255,0.16);
   --frost-blur: 12px;
+  --card-radius: 20px;
+  --card-blur: 20px;
   --lg-radius: 20px;
   --lg-radius-sm: 14px;
   --lg-radius-lg: 28px;
@@ -72,7 +74,7 @@ body {
   isolation: isolate;
   background: none;
   border: none;
-  border-radius: var(--lg-radius);
+  border-radius: var(--card-radius);
   box-shadow: 0 20px 35px -8px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1) inset;
   transition: transform 0.3s cubic-bezier(0.2,0.9,0.4,1.1), box-shadow 0.3s ease;
 }
@@ -196,15 +198,15 @@ body {
 .glass-card {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
-  border-radius: var(--lg-radius);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border-radius: var(--card-radius);
+  backdrop-filter: blur(var(--card-blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--card-blur)) saturate(150%);
 }
 [data-theme="light"] .glass-card {
   background: rgba(255,255,255,0.55);
   border-color: rgba(0,0,0,0.08);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(var(--card-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--card-blur)) saturate(180%);
 }
 
 
