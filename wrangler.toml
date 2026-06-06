@@ -4,4 +4,4 @@ compatibility_flags = ["nodejs_compat"]
 
 [[kv_namespaces]]
 binding = "BLOG_KV"
-id = "placeholder-will-be-set-via-dashboard"
+id = "d5923229a0c747f5b02dae8340b8221b"
