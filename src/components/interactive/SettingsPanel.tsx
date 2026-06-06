@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 const COLOR_PRESETS = [
   { id: 'purple', label: '紫罗兰', gradient: 'from-purple-500 to-cyan-400' },
@@ -71,8 +71,8 @@ export default function SettingsPanel() {
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
       <div
-        className="relative glass-strong rounded-2xl p-6 w-full max-w-sm animate-slide-up max-h-[85vh] overflow-y-auto"
-        style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}
+        className="relative rounded-2xl p-6 w-full max-w-sm animate-slide-up max-h-[85vh] overflow-y-auto"
+        style={{ background: 'var(--bg-secondary)', border: '1px solid var(--glass-border)' }}
       >
         <h2 className="text-lg font-bold mb-5" style={{ color: 'var(--text-primary)' }}>⚙️ 设置</h2>
 
@@ -136,7 +136,7 @@ export default function SettingsPanel() {
         <hr className="mb-4" style={{ borderColor: 'var(--glass-border)' }} />
 
         {/* Admin Link */}
-        <a href="/admin" className="w-full py-2.5 rounded-xl text-sm font-medium text-center transition-all hover:bg-white/10 mb-3 block glass" style={{ color: 'var(--text-primary)' }}>
+        <a href="/admin" className="w-full py-2.5 rounded-xl text-sm font-medium text-center transition-all hover:bg-white/10 mb-3 block glass" style={{ color: 'var(--text-primary)', border: '1px solid var(--glass-border)' }}>
           ⚙️ 管理后台
         </a>
 

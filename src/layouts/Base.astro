@@ -1,4 +1,4 @@
-﻿---
+---
 import Navbar from '../components/layout/Navbar.astro';
 import Footer from '../components/layout/Footer.astro';
 import SettingsPanel from '../components/interactive/SettingsPanel.tsx';
@@ -37,7 +37,7 @@ const {
   <body class="min-h-screen">
     <CursorEffect client:load />
     <Navbar />
-    <main class="pt-20 min-h-screen">
+    <main>
       <slot />
     </main>
     <Footer />
@@ -57,6 +57,3 @@ const {
     </script>
   </body>
 </html>
-
-
-

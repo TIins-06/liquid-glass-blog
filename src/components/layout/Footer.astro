@@ -1,21 +1,19 @@
-﻿---
+---
 const year = new Date().getFullYear();
 ---
 
-<footer class="glass-strong mt-20 py-8 px-6">
-  <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-    <div class="flex items-center gap-2">
-      <div class="w-6 h-6 rounded bg-gradient-to-br from-purple-500 to-cyan-400 flex items-center justify-center text-white font-bold text-xs">
-        L
-      </div>
-      <span class="text-sm text-slate-400">© {year} Liquid Glass Blog</span>
+<footer class="py-10 px-6 mt-20" style="border-top: 1px solid var(--glass-border);">
+  <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-center">
+    <div class="flex items-center gap-2 text-sm" style="color: var(--text-muted);">
+      <span>🚀</span>
+      <span class="font-mono">Built with Astro 6</span>
     </div>
-    <div class="flex items-center gap-4 text-sm text-slate-400">
-      <a href="https://github.com" target="_blank" class="hover:text-white transition-colors">GitHub</a>
-      <span class="text-slate-600">·</span>
-      <span>Built with Astro</span>
-      <span class="text-slate-600">·</span>
-      <span>Deployed on Cloudflare</span>
+    <div class="flex items-center gap-2 text-sm" style="color: var(--text-muted);">
+      <span>☁️</span>
+      <span class="font-mono">Deployed on Cloudflare</span>
     </div>
+    <p class="animated-gradient-text font-bold text-lg tracking-wider">
+      Stay curious. Thanks for dropping by. 👋
+    </p>
   </div>
 </footer>

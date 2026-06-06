@@ -1,4 +1,4 @@
-﻿---
+---
 export const prerender = false;
 import Base from '../layouts/Base.astro';
 import GlassCard from '../components/glass/GlassCard.astro';
@@ -12,45 +12,39 @@ const posts = (await getCollection('blog'))
 const avatarUrl = settings.avatarUrl || `https://q.qlogo.cn/g?b=qq&nk=${settings.qqNumber}&s=100`;
 const hasBackground = settings.backgroundUrl && settings.backgroundUrl.trim() !== '';
 
-const services = [
-  { icon: '🌐', title: 'EdgeTunnel VPN', desc: '安全代理服务', url: 'https://cc.likegz.dpdns.org', color: 'from-blue-500/20 to-cyan-500/20' },
-  { icon: '🖼️', title: 'Telegraph 图床', desc: '高速图片托管', url: 'https://image.hiokt.dpdns.org', color: 'from-green-500/20 to-emerald-500/20' },
-  { icon: '📺', title: 'MoonTV 影视', desc: '在线影视平台', url: 'https://moon.hiokt.dpdns.org', color: 'from-purple-500/20 to-pink-500/20' },
-  { icon: '📋', title: 'SubTracker 订阅', desc: '订阅管理平台', url: 'https://sub.hiokt.dpdns.org', color: 'from-orange-500/20 to-yellow-500/20' },
-];
+// Parse services from settings or use defaults
+let services = [];
+try {
+  services = JSON.parse(settings.services || '[]');
+} catch {}
+if (services.length === 0) {
+  services = [
+    { icon: '🌐', title: 'Tunnel VPN', desc: '安全代理服务', url: 'https://cc.likegz.dpdns.org/admin', color: 'from-blue-500/20 to-cyan-500/20', copyable: true },
+    { icon: '🖼️', title: 'Telegraph 图床', desc: '高速图片托管', url: 'https://image.hiokt.dpdns.org', color: 'from-green-500/20 to-emerald-500/20' },
+    { icon: '📺', title: 'MoonTV 影视', desc: '在线影视平台', url: 'https://moon.hiokt.dpdns.org', color: 'from-purple-500/20 to-pink-500/20' },
+    { icon: '📋', title: 'SubTracker 订阅', desc: '订阅管理平台', url: 'https://sub.hiokt.dpdns.org', color: 'from-orange-500/20 to-yellow-500/20' },
+  ];
+}
 ---
 
 <Base title={`${settings.nickname || 'TIins'} - ${settings.heroTitle || '液态玻璃'} ${settings.heroSubtitle || 'Blog'}`}>
 
-  {/* Background */}
-  {hasBackground ? (
-    <div class="fixed inset-0 z-0">
-      <img src={settings.backgroundUrl} alt="" class="w-full h-full object-cover opacity-20" style="filter: blur(16px) brightness(0.4);" />
-      <div class="absolute inset-0" style="background: linear-gradient(to bottom, var(--gradient-start), transparent, var(--gradient-end));"></div>
-    </div>
-  ) : (
-    <div class="fixed inset-0 overflow-hidden pointer-events-none" style="z-index: 0;">
-      <div class="absolute w-[500px] h-[500px] rounded-full blur-[120px] animate-float" style="background: var(--accent-1); opacity: 0.12; top: -10%; left: -5%;"></div>
-      <div class="absolute w-[400px] h-[400px] rounded-full blur-[100px] animate-float" style="background: var(--accent-2); opacity: 0.1; bottom: -5%; right: -5%; animation-delay: -3s;"></div>
-      <div class="absolute w-[300px] h-[300px] rounded-full blur-[80px] animate-float" style="background: var(--accent-1-light); opacity: 0.08; top: 40%; left: 50%; animation-delay: -1.5s;"></div>
-    </div>
-  )}
-
-  <div class="home-layout relative z-10">
+  <div class="home-layout">
     {/* ===== Sidebar ===== */}
-    <aside class="home-sidebar">
+    <aside class="home-sidebar" id="sidebar">
       {/* Profile Card */}
-      <div class="glass-card rounded-2xl p-6 mb-5 text-center animate-slide-up">
-        <div class="flex justify-center mb-4">
+      <div class="mb-5 text-center animate-slide-up">
+        <div class="flex justify-center mb-3">
           <div class="relative">
-            <div class="absolute -inset-1 rounded-full opacity-60 animate-pulse-glow" style="background: linear-gradient(135deg, var(--accent-1-light), var(--accent-2-light));"></div>
-            <img src={avatarUrl} alt={settings.nickname} class="relative w-24 h-24 rounded-full object-cover border-3 border-white/10" style="background: var(--bg-secondary);" />
-            <div class="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-green-400 border-2 border-[var(--bg-secondary)] shadow-lg shadow-green-400/50"></div>
+            <a href="/" class="block">
+              <img src={avatarUrl} alt={settings.nickname} class="relative w-20 h-20 rounded-full object-cover shadow-lg ring-4 ring-white/10 dark:ring-white/5 transform hover:scale-110 hover:rotate-6 transition-all duration-300" style="background: var(--bg-secondary);" />
+            </a>
+            <div class="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full bg-green-400 border-2 shadow-lg shadow-green-400/50" style="border-color: var(--bg-primary);"></div>
           </div>
         </div>
-        <h2 class="text-xl font-bold mb-1">{settings.nickname || 'TIins'}</h2>
-        <p class="text-xs mb-3" style="color: var(--text-muted);">{settings.signature || '保持热爱，奔赴山海 ✨'}</p>
-        <div class="flex items-center justify-center gap-2 text-[10px]" style="color: var(--text-muted);">
+        <h2 class="text-lg font-bold mb-0.5">{settings.nickname || 'TIins'}</h2>
+        <p class="text-xs mb-2" style="color: var(--text-muted);">{settings.signature || '保持热爱，奔赴山海 ✨'}</p>
+        <div class="flex items-center justify-center gap-1.5 text-[10px]" style="color: var(--text-muted);">
           <span class="px-2 py-0.5 rounded-full" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">QQ {settings.qqNumber}</span>
           <span class="px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">Active</span>
         </div>
@@ -58,24 +52,45 @@ const services = [
 
       {/* Services */}
       <div class="sidebar-section animate-slide-up" style="animation-delay: 0.1s;">
-        <div class="sidebar-title">服务</div>
-        <div class="space-y-1">
+        <div class="sidebar-title">Services</div>
+        <div class="space-y-0.5">
           {services.map((s) => (
-            <a href={s.url} target="_blank" rel="noopener" class="service-link group">
-              <div class={`service-icon bg-gradient-to-br ${s.color}`}>{s.icon}</div>
-              <div class="min-w-0">
-                <div class="text-sm font-medium truncate" style="color: var(--text-primary);">{s.title}</div>
-                <div class="text-[10px]" style="color: var(--text-muted);">{s.desc}</div>
+            <div class="service-link group" style="position: relative;">
+              <div class={`service-icon bg-gradient-to-br ${s.color || 'from-gray-500/20 to-gray-500/20'}`}>{s.icon}</div>
+              <div class="min-w-0 flex-1">
+                <a href={s.url} target="_blank" rel="noopener" class="block">
+                  <div class="text-sm font-medium truncate" style="color: var(--text-primary);">{s.title}</div>
+                  <div class="text-[10px]" style="color: var(--text-muted);">{s.desc}</div>
+                </a>
               </div>
-            </a>
+              {s.copyable && (
+                <button
+                  class="copy-btn"
+                  data-copy={s.url}
+                  title="复制链接"
+                  onclick={`
+                    navigator.clipboard.writeText('${s.url}').then(() => {
+                      this.classList.add('copied');
+                      this.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>';
+                      setTimeout(() => {
+                        this.classList.remove('copied');
+                        this.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+                      }, 1500);
+                    });
+                  `}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                </button>
+              )}
+            </div>
           ))}
         </div>
       </div>
 
       {/* Quick Nav */}
-      <div class="sidebar-section animate-slide-up" style="animation-delay: 0.2s;">
-        <div class="sidebar-title">导航</div>
-        <div class="space-y-1">
+      <div class="sidebar-section animate-slide-up" style="animation-delay: 0.15s;">
+        <div class="sidebar-title">Navigation</div>
+        <div class="space-y-0.5">
           <a href="/blog" class="service-link">
             <div class="service-icon" style="background: var(--glass-bg);">📝</div>
             <div>
@@ -101,77 +116,130 @@ const services = [
       </div>
     </aside>
 
+    {/* Sidebar Toggle Button */}
+    <button id="sidebar-toggle" class="sidebar-toggle" title="切换侧边栏">
+      <svg id="sidebar-icon-hide" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <line x1="9" y1="3" x2="9" y2="21"/>
+      </svg>
+      <svg id="sidebar-icon-show" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <line x1="9" y1="3" x2="9" y2="21"/>
+        <path d="M13 3l5 9-5 9"/>
+      </svg>
+    </button>
+
     {/* ===== Main Content ===== */}
     <div class="home-main">
-      {/* Hero Banner */}
-      <div class="glass-card rounded-2xl p-8 md:p-12 mb-8 text-center animate-slide-up">
-        <div class="inline-block mb-4">
-          <span class="glass px-4 py-1.5 rounded-full text-xs font-medium" style="color: var(--accent-1-light);">
-            ✨ {settings.heroDescription || '用玻璃质感重新定义博客体验'}
-          </span>
-        </div>
-        <h1 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight">
-          <span class="text-gradient">{settings.nickname || 'TIins'}</span>
-          <span class="block text-lg md:text-xl font-normal mt-2" style="color: var(--text-secondary);">
-            {settings.heroTitle || '液态玻璃'} {settings.heroSubtitle || 'Blog'}
-          </span>
-        </h1>
-        <p class="text-sm max-w-lg mx-auto mb-6" style="color: var(--text-muted);">
-          {settings.signature || '保持热爱，奔赴山海 ✨'}
-        </p>
-        <div class="flex items-center justify-center gap-3 flex-wrap">
-          <a href="/blog" class="ripple glass-strong px-6 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-opacity" style="background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
-            浏览文章 →
-          </a>
-          <a href="/tags" class="ripple glass px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:bg-white/10" style="color: var(--text-primary);">
-            按标签探索
-          </a>
+      {/* Welcome Section (tunan style) */}
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 py-6 mb-8 border-b" style="border-color: var(--glass-border);">
+        <header class="flex-1 text-center sm:text-left">
+          <h1 class="text-2xl sm:text-3xl font-bold">
+            <span class="text-4xl inline-block animate-wave">👋</span>{' '}
+            <span class="bg-gradient-to-r bg-clip-text text-transparent" style={`background-image: linear-gradient(to right, var(--text-primary), var(--text-secondary));`}>
+              Hi, Welcome! I'm {settings.nickname || 'TIins'}!
+            </span>
+          </h1>
+          <p class="mt-2 text-sm" style="color: var(--text-muted);">{settings.signature || '保持热爱，奔赴山海 ✨'}</p>
+        </header>
+        <div class="mt-4 sm:mt-0 flex-shrink-0">
+          <img
+            src={avatarUrl}
+            alt={settings.nickname}
+            width="100"
+            class="rounded-full shadow-lg ring-4 dark:ring-gray-800 transform hover:scale-110 hover:rotate-6 transition-all duration-300 ease-out sm:w-[120px]"
+            style="ring-color: var(--glass-border); background: var(--bg-secondary);"
+          />
         </div>
       </div>
 
-      {/* Latest Articles */}
-      {posts.length > 0 && (
-        <div class="mb-8">
-          <div class="flex items-center justify-between mb-5">
-            <h2 class="text-lg font-bold" style="color: var(--text-primary);">📝 最新文章</h2>
-            <a href="/blog" class="text-xs font-medium transition-colors" style="color: var(--accent-1-light);">查看全部 →</a>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {posts.map((post, i) => (
-              <a href={`/blog/${post.id}`} class="block group animate-slide-up" style={`animation-delay: ${i * 0.05}s;`}>
-                <GlassCard class="p-5 h-full">
-                  <div class="flex items-center gap-1.5 mb-2">
-                    {post.data.tags?.slice(0, 2).map((tag) => (
-                      <span class="text-[10px] px-2 py-0.5 rounded-full" style="background: var(--accent-1); opacity: 0.15; color: var(--accent-1-light);">{tag}</span>
-                    ))}
-                  </div>
-                  <h3 class="text-sm font-bold mb-1.5 group-hover:opacity-80 transition-opacity" style="color: var(--text-primary);">
-                    {post.data.title}
-                  </h3>
-                  <p class="text-xs mb-3 line-clamp-2" style="color: var(--text-muted);">
-                    {post.data.description}
-                  </p>
-                  <div class="text-[10px]" style="color: var(--text-muted);">
-                    {post.data.date.toLocaleDateString('zh-CN')}
-                  </div>
-                </GlassCard>
+      {/* Main Content with sections */}
+      <div class="space-y-10">
+        {/* Latest Articles */}
+        {posts.length > 0 && (
+          <section>
+            <div class="section-header">
+              <div class="section-label">
+                <div class="section-bar"></div>
+                <h3>Latest Blogs</h3>
+              </div>
+              <a href="/blog" class="view-all">
+                <span>View all</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
               </a>
+            </div>
+            <div class="space-y-3">
+              {posts.map((post, i) => (
+                <a href={`/blog/${post.id}`} class="block group animate-slide-up" style={`animation-delay: ${i * 0.05}s;`}>
+                  <div class="glass-card p-5 flex items-start gap-4 hover:border-[color:var(--accent-1)]/30 transition-all">
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                        <h3 class="text-sm font-bold group-hover:opacity-80 transition-opacity" style="color: var(--text-primary);">
+                          {post.data.title}
+                        </h3>
+                        {post.data.tags?.slice(0, 2).map((tag) => (
+                          <span class="text-[10px] px-2 py-0.5 rounded-full" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-muted);">{tag}</span>
+                        ))}
+                      </div>
+                      <p class="text-xs line-clamp-2" style="color: var(--text-muted);">
+                        {post.data.description}
+                      </p>
+                      <div class="text-[10px] mt-2" style="color: var(--text-muted);">
+                        {post.data.date.toLocaleDateString('zh-CN')}
+                      </div>
+                    </div>
+                    <svg class="w-4 h-4 flex-shrink-0 mt-1 opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--accent-1-light);">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Tech Stack */}
+        <section>
+          <div class="section-header">
+            <div class="section-label">
+              <div class="section-bar" style="background: var(--accent-2);"></div>
+              <h3>Tech Stack</h3>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            {['Astro 6', 'Tailwind v4', 'React 19', 'Cloudflare Workers', 'KV Storage'].map((tech) => (
+              <span class="text-xs px-3 py-1.5 rounded-full glass font-mono" style="color: var(--text-secondary);">
+                {tech}
+              </span>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* Tech Stack */}
-      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.3s;">
-        <h3 class="text-sm font-bold mb-3" style="color: var(--text-primary);">🛠 技术栈</h3>
-        <div class="flex flex-wrap gap-2">
-          {['Astro 6', 'Tailwind v4', 'React 19', 'Cloudflare Workers', 'KV Storage'].map((tech) => (
-            <span class="text-[10px] px-2.5 py-1 rounded-full glass" style="color: var(--text-secondary);">
-              {tech}
-            </span>
-          ))}
-        </div>
+        </section>
       </div>
     </div>
   </div>
+
+  <script is:inline>
+    (function() {
+      const toggle = document.getElementById('sidebar-toggle');
+      const sidebar = document.getElementById('sidebar');
+      const hideIcon = document.getElementById('sidebar-icon-hide');
+      const showIcon = document.getElementById('sidebar-icon-show');
+      if (!toggle || !sidebar) return;
+
+      // Restore state
+      const collapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+      if (collapsed) {
+        sidebar.classList.add('collapsed');
+        if (hideIcon) hideIcon.style.display = 'none';
+        if (showIcon) showIcon.style.display = 'block';
+      }
+
+      toggle.addEventListener('click', () => {
+        const isCollapsed = sidebar.classList.toggle('collapsed');
+        localStorage.setItem('sidebar-collapsed', String(isCollapsed));
+        if (hideIcon) hideIcon.style.display = isCollapsed ? 'none' : 'block';
+        if (showIcon) showIcon.style.display = isCollapsed ? 'block' : 'none';
+      });
+    })();
+  </script>
 </Base>

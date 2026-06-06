@@ -1,53 +1,74 @@
-﻿---
+---
 const navLinks = [
-  { href: '/', label: '首页' },
-  { href: '/blog', label: '文章' },
-  { href: '/tags', label: '标签' },
+  { href: '/', label: 'Home', icon: '🏠' },
+  { href: '/blog', label: 'Blog', icon: '📝' },
+  { href: '/tags', label: 'Tags', icon: '🏷️' },
 ];
 
 const currentPath = Astro.url.pathname;
 ---
 
-<header class="fixed top-0 left-0 right-0 z-50 glass-strong">
-  <nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-    <a href="/" class="flex items-center gap-3 group">
-      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--accent-1)] to-[var(--accent-2)] flex items-center justify-center text-white font-bold text-sm shadow-lg group-hover:scale-110 transition-transform">
-        L
-      </div>
-      <span class="font-bold text-lg text-gradient hidden sm:block">Liquid Glass</span>
+<div
+  id="navbar"
+  class="fixed z-50 flex inset-x-0 top-4 mx-auto max-w-screen-lg items-center justify-between rounded-2xl glass-strong px-3 sm:px-5 transition-all duration-300"
+  style="height: 52px; max-width: 640px;"
+>
+  <nav class="flex items-center gap-0.5 sm:gap-1">
+    <a href="/" class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/5 transition-all group">
+      <span class="w-6 h-6 rounded-lg bg-gradient-to-br from-[var(--accent-1)] to-[var(--accent-2)] flex items-center justify-center text-white font-bold text-[10px] shadow-sm group-hover:scale-110 transition-transform">L</span>
+      <span class="font-semibold text-sm text-gradient hidden sm:block">Liquid Glass</span>
     </a>
-
-    <div class="flex items-center gap-1">
-      {navLinks.map((link) => (
-        <a
-          href={link.href}
-          class={`ripple px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-            currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href))
-              ? 'text-white bg-white/10'
-              : 'text-[color:var(--text-secondary)] hover:text-white hover:bg-white/5'
-          }`}
-        >
-          {link.label}
-        </a>
-      ))}
-<button
-        id="settings-toggle" type="button"
-        class="ripple ml-1 p-2 rounded-lg text-[color:var(--text-secondary)] hover:text-white hover:bg-white/5 transition-all"
-        aria-label="设置"
+    {navLinks.map((link) => (
+      <a
+        href={link.href}
+        class={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+          currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href))
+            ? 'bg-white/10 text-white'
+            : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-white/5'
+        }`}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-        </svg>
-      </button>
-    </div>
+        <span class="text-sm">{link.icon}</span>
+        <span class="hidden sm:inline">{link.label}</span>
+      </a>
+    ))}
   </nav>
-</header>
+
+  <div class="flex items-center gap-1">
+    <a href="/admin" class="flex items-center justify-center w-9 h-9 rounded-full hover:bg-white/5 transition-all text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]" title="管理后台">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </a>
+    <button
+      id="settings-toggle" type="button"
+      class="flex items-center justify-center w-9 h-9 rounded-full hover:bg-white/5 transition-all text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
+      aria-label="设置"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>
+    </button>
+  </div>
+</div>
 
 <script>
+  // Scroll-based navbar styling
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    const navbar = document.getElementById('navbar');
+    if (!navbar) return;
+    const scrollY = window.scrollY;
+    if (scrollY > 50) {
+      navbar.classList.add('bg-background/80');
+    } else {
+      navbar.classList.remove('bg-background/80');
+    }
+    lastScroll = scrollY;
+  });
+
   document.getElementById('settings-toggle')?.addEventListener('click', () => {
     window.dispatchEvent(new CustomEvent('toggle-settings'));
   });
 </script>
-
-

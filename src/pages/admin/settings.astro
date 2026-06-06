@@ -1,4 +1,4 @@
-﻿�---
+---
 export const prerender = false;
 import Admin from '../../layouts/Admin.astro';
 ---
@@ -6,7 +6,7 @@ import Admin from '../../layouts/Admin.astro';
 <Admin title="站点设置 | 管理后台">
   <div class="max-w-4xl mx-auto px-6">
     <div class="mb-8 animate-slide-up">
-      <a href="/admin" class="text-sm mb-4 inline-block transition-colors hover:text-purple-400" style="color: var(--text-muted);">← 返回仪表盘</a>
+      <a href="/admin" class="text-sm mb-4 inline-block transition-colors hover:opacity-80" style="color: var(--text-muted);">← 返回仪表盘</a>
       <h1 class="text-3xl font-bold" style="color: var(--text-primary);">⚙️ 站点设置</h1>
       <p class="mt-2" style="color: var(--text-secondary);">管理你的博客个性化配置，所有设置跨设备同步</p>
     </div>
@@ -18,22 +18,21 @@ import Admin from '../../layouts/Admin.astro';
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm mb-1" style="color: var(--text-secondary);">昵称</label>
-            <input id="nickname" type="text" class="w-full px-4 py-2.5 rounded-xl text-sm" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);" />
+            <input id="nickname" type="text" class="service-input" />
           </div>
           <div>
             <label class="block text-sm mb-1" style="color: var(--text-secondary);">QQ号</label>
-            <input id="qqNumber" type="text" class="w-full px-4 py-2.5 rounded-xl text-sm" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);" />
+            <input id="qqNumber" type="text" class="service-input" />
           </div>
           <div class="md:col-span-2">
             <label class="block text-sm mb-1" style="color: var(--text-secondary);">个性签名</label>
-            <input id="signature" type="text" class="w-full px-4 py-2.5 rounded-xl text-sm" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);" />
+            <input id="signature" type="text" class="service-input" />
           </div>
           <div class="md:col-span-2">
             <label class="block text-sm mb-1" style="color: var(--text-secondary);">头像URL（留空则使用QQ头像）</label>
-            <input id="avatarUrl" type="text" class="w-full px-4 py-2.5 rounded-xl text-sm" placeholder="https://..." style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);" />
+            <input id="avatarUrl" type="text" class="service-input" placeholder="https://..." />
           </div>
         </div>
-        {/* Avatar Preview */}
         <div class="mt-4 flex items-center gap-4">
           <div class="w-16 h-16 rounded-full p-0.5 bg-gradient-to-br from-purple-500 to-cyan-400">
             <img id="avatar-preview" src="" class="w-full h-full rounded-full object-cover" alt="avatar" />
@@ -43,158 +42,237 @@ import Admin from '../../layouts/Admin.astro';
       </div>
 
       {/* Appearance Section */}
-      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.2s;">
+      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.15s;">
         <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🎨 外观设置</h2>
         <div class="space-y-4">
           <div>
             <label class="block text-sm mb-1" style="color: var(--text-secondary);">背景图URL（留空使用默认渐变）</label>
-            <input id="backgroundUrl" type="text" class="w-full px-4 py-2.5 rounded-xl text-sm" placeholder="https://..." style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);" />
+            <input id="backgroundUrl" type="text" class="service-input" placeholder="https://..." />
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm mb-1" style="color: var(--text-secondary);">首页标题</label>
+              <input id="heroTitle" type="text" class="service-input" />
+            </div>
+            <div>
+              <label class="block text-sm mb-1" style="color: var(--text-secondary);">首页副标题</label>
+              <input id="heroSubtitle" type="text" class="service-input" />
+            </div>
           </div>
           <div>
-            <label class="block text-sm mb-1" style="color: var(--text-secondary);">主题</label>
-            <select id="theme" class="w-full px-4 py-2.5 rounded-xl text-sm" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);">
-              <option value="dark">暗色</option>
-              <option value="light">亮色</option>
-            </select>
-          </div>
-          <div class="flex items-center gap-3">
-            <input id="animations" type="checkbox" class="w-4 h-4 rounded" />
-            <label for="animations" class="text-sm" style="color: var(--text-secondary);">启用动效</label>
+            <label class="block text-sm mb-1" style="color: var(--text-secondary);">首页描述</label>
+            <input id="heroDescription" type="text" class="service-input" />
           </div>
         </div>
       </div>
 
-      {/* Hero Section */}
-      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.3s;">
-        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🏠 首页设置</h2>
-        <div class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm mb-1" style="color: var(--text-secondary);">标题</label>
-              <input id="heroTitle" type="text" class="w-full px-4 py-2.5 rounded-xl text-sm" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);" />
-            </div>
-            <div>
-              <label class="block text-sm mb-1" style="color: var(--text-secondary);">副标题</label>
-              <input id="heroSubtitle" type="text" class="w-full px-4 py-2.5 rounded-xl text-sm" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);" />
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm mb-1" style="color: var(--text-secondary);">描述</label>
-            <input id="heroDescription" type="text" class="w-full px-4 py-2.5 rounded-xl text-sm" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);" />
-          </div>
-        </div>
-      </div>
-
-      {/* Security Section */}
-      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.4s;">
-        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🔒 安全设置</h2>
-        <div>
-          <label class="block text-sm mb-1" style="color: var(--text-secondary);">管理员密码</label>
-          <input id="adminPassword" type="password" class="w-full px-4 py-2.5 rounded-xl text-sm" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);" />
-          <p class="text-xs mt-1" style="color: var(--text-muted);">留空则不修改密码</p>
+      {/* Services Management Section */}
+      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.2s;">
+        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🔗 侧边栏服务管理</h2>
+        <p class="text-sm mb-4" style="color: var(--text-muted);">自定义管理首页侧边栏中的服务链接</p>
+        <div id="services-container" class="space-y-3"></div>
+        <div class="mt-4 flex gap-3">
+          <button onclick="addService()" class="ripple px-4 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/10 glass" style="color: var(--text-primary); border: 1px solid var(--glass-border);">
+            ➕ 添加服务
+          </button>
         </div>
       </div>
 
       {/* Save Button */}
-      <div class="flex justify-end animate-slide-up" style="animation-delay: 0.5s;">
-        <button id="save-btn" onclick="saveSettings()" class="ripple px-8 py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-500 to-cyan-400 hover:opacity-90 transition-opacity">
-          💾 保存设置
+      <div class="flex gap-4 animate-slide-up" style="animation-delay: 0.3s;">
+        <button onclick="saveAll()" class="ripple px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-500 to-cyan-400 hover:opacity-90 transition-opacity">
+          💾 保存所有设置
+        </button>
+        <button onclick="resetServices()" class="ripple px-4 py-2 rounded-xl text-sm font-medium transition-all glass" style="color: var(--text-muted); border: 1px solid var(--glass-border);">
+          🔄 重置服务列表
         </button>
       </div>
 
-      {/* Status */}
-      <div id="save-status" class="text-center text-sm hidden" style="color: var(--text-muted);"></div>
+      <div id="save-status" class="text-center text-sm py-2 hidden rounded-xl" style="color: var(--text-muted);"></div>
     </div>
   </div>
 </Admin>
 
 <script is:inline>
-  (function() {
-    // Check auth
-    if (!localStorage.getItem('admin_token')) {
-      window.location.href = '/admin/login';
-      return;
-    }
+  let services = [];
 
-    // Load current settings
-    fetch('/api/settings')
-      .then(r => r.json())
-      .then(data => {
-        document.getElementById('nickname').value = data.nickname || '';
-        document.getElementById('qqNumber').value = data.qqNumber || '';
-        document.getElementById('signature').value = data.signature || '';
-        document.getElementById('avatarUrl').value = data.avatarUrl || '';
-        document.getElementById('backgroundUrl').value = data.backgroundUrl || '';
-        document.getElementById('theme').value = data.theme || 'dark';
-        document.getElementById('animations').checked = data.animations !== false && data.animations !== 'off';
-        document.getElementById('heroTitle').value = data.heroTitle || '';
-        document.getElementById('heroSubtitle').value = data.heroSubtitle || '';
-        document.getElementById('heroDescription').value = data.heroDescription || '';
-        // Avatar preview
-        updateAvatarPreview();
+  const defaultServices = [
+    { icon: '🌐', title: 'Tunnel VPN', desc: '安全代理服务', url: 'https://cc.likegz.dpdns.org/admin', color: 'from-blue-500/20 to-cyan-500/20', copyable: true },
+    { icon: '🖼️', title: 'Telegraph 图床', desc: '高速图片托管', url: 'https://image.hiokt.dpdns.org', color: 'from-green-500/20 to-emerald-500/20' },
+    { icon: '📺', title: 'MoonTV 影视', desc: '在线影视平台', url: 'https://moon.hiokt.dpdns.org', color: 'from-purple-500/20 to-pink-500/20' },
+    { icon: '📋', title: 'SubTracker 订阅', desc: '订阅管理平台', url: 'https://sub.hiokt.dpdns.org', color: 'from-orange-500/20 to-yellow-500/20' },
+  ];
+
+  const colorOptions = [
+    'from-blue-500/20 to-cyan-500/20',
+    'from-green-500/20 to-emerald-500/20',
+    'from-purple-500/20 to-pink-500/20',
+    'from-orange-500/20 to-yellow-500/20',
+    'from-red-500/20 to-rose-500/20',
+    'from-indigo-500/20 to-violet-500/20',
+    'from-teal-500/20 to-cyan-500/20',
+    'from-amber-500/20 to-yellow-500/20',
+  ];
+
+  const iconOptions = ['🌐', '🖼️', '📺', '📋', '🔧', '🎮', '📡', '🛡️', '🎵', '📁', '🚀', '💡'];
+
+  async function loadSettings() {
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch('/api/settings', {
+        headers: { 'Authorization': 'Bearer ' + token }
       });
-
-    // Avatar preview on QQ number change
-    document.getElementById('qqNumber').addEventListener('input', updateAvatarPreview);
-  })();
+      const data = await res.json();
+      document.getElementById('nickname').value = data.nickname || '';
+      document.getElementById('qqNumber').value = data.qqNumber || '';
+      document.getElementById('signature').value = data.signature || '';
+      document.getElementById('avatarUrl').value = data.avatarUrl || '';
+      document.getElementById('backgroundUrl').value = data.backgroundUrl || '';
+      document.getElementById('heroTitle').value = data.heroTitle || '';
+      document.getElementById('heroSubtitle').value = data.heroSubtitle || '';
+      document.getElementById('heroDescription').value = data.heroDescription || '';
+      try {
+        services = JSON.parse(data.services || '[]');
+      } catch { services = [...defaultServices]; }
+      if (services.length === 0) services = [...defaultServices];
+      renderServices();
+      updateAvatarPreview();
+    } catch (e) {
+      console.error('Failed to load settings:', e);
+      services = [...defaultServices];
+      renderServices();
+    }
+  }
 
   function updateAvatarPreview() {
-    var qq = document.getElementById('qqNumber').value.trim();
-    var customUrl = document.getElementById('avatarUrl').value.trim();
-    var url = customUrl || (qq ? 'https://q.qlogo.cn/g?b=qq&nk=' + qq + '&s=100' : '');
-    if (url) document.getElementById('avatar-preview').src = url;
+    const qq = document.getElementById('qqNumber').value;
+    const url = document.getElementById('avatarUrl').value;
+    const preview = document.getElementById('avatar-preview');
+    preview.src = url || 'https://q.qlogo.cn/g?b=qq&nk=' + qq + '&s=100';
   }
 
-  function saveSettings() {
-    var btn = document.getElementById('save-btn');
-    var status = document.getElementById('save-status');
-    btn.disabled = true;
-    btn.textContent = '保存中...';
-    status.className = 'text-center text-sm';
-    status.style.color = 'var(--text-muted)';
-    status.textContent = '正在保存...';
+  function renderServices() {
+    const container = document.getElementById('services-container');
+    container.innerHTML = services.map((s, i) => `
+      <div class="service-item" data-index="${i}">
+        <div class="flex items-center gap-2 min-w-0 flex-1">
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px]" style="color: var(--text-muted);">图标</label>
+            <select onchange="updateService(${i}, 'icon', this.value)" class="service-input w-14 text-center" style="padding: 0.375rem;">
+              ${iconOptions.map(icon => `<option value="${icon}" ${s.icon === icon ? 'selected' : ''}>${icon}</option>`).join('')}
+            </select>
+          </div>
+          <div class="flex-1 min-w-0">
+            <label class="text-[10px]" style="color: var(--text-muted);">标题</label>
+            <input value="${s.title || ''}" onchange="updateService(${i}, 'title', this.value)" class="service-input" placeholder="服务名称" />
+          </div>
+          <div class="flex-1 min-w-0">
+            <label class="text-[10px]" style="color: var(--text-muted);">描述</label>
+            <input value="${s.desc || ''}" onchange="updateService(${i}, 'desc', this.value)" class="service-input" placeholder="简短描述" />
+          </div>
+        </div>
+        <div class="flex flex-col gap-1" style="min-width: 200px;">
+          <label class="text-[10px]" style="color: var(--text-muted);">链接 URL</label>
+          <input value="${s.url || ''}" onchange="updateService(${i}, 'url', this.value)" class="service-input" placeholder="https://..." />
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px]" style="color: var(--text-muted);">配色</label>
+            <select onchange="updateService(${i}, 'color', this.value)" class="service-input w-10" style="padding: 0.375rem;">
+              ${colorOptions.map(c => `<option value="${c}" ${s.color === c ? 'selected' : ''}>●</option>`).join('')}
+            </select>
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px]" style="color: var(--text-muted);">复制按钮</label>
+            <button onclick="toggleCopyable(${i})" class="px-2 py-1 rounded text-[10px] font-medium transition-all ${s.copyable ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'glass'}" style="color: ${s.copyable ? '' : 'var(--text-muted)'};">
+              ${s.copyable ? '✅' : '❌'}
+            </button>
+          </div>
+          <button onclick="removeService(${i})" class="mt-4 px-2 py-1 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all text-sm" title="删除">🗑️</button>
+        </div>
+      </div>
+    `).join('');
+  }
 
-    var data = {
-      nickname: document.getElementById('nickname').value,
-      qqNumber: document.getElementById('qqNumber').value,
-      signature: document.getElementById('signature').value,
-      avatarUrl: document.getElementById('avatarUrl').value,
-      backgroundUrl: document.getElementById('backgroundUrl').value,
-      theme: document.getElementById('theme').value,
-      animations: document.getElementById('animations').checked ? 'true' : 'false',
-      heroTitle: document.getElementById('heroTitle').value,
-      heroSubtitle: document.getElementById('heroSubtitle').value,
-      heroDescription: document.getElementById('heroDescription').value,
-    };
+  function updateService(index, field, value) {
+    services[index][field] = value;
+  }
 
-    var pw = document.getElementById('adminPassword').value.trim();
-    if (pw) data.adminPassword = pw;
+  function toggleCopyable(index) {
+    services[index].copyable = !services[index].copyable;
+    renderServices();
+  }
 
-    fetch('/api/settings', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    })
-    .then(r => r.json())
-    .then(result => {
-      if (result.ok) {
-        status.textContent = '✅ 设置已保存并同步到所有设备';
-        status.style.color = '#22c55e';
-        document.getElementById('adminPassword').value = '';
-      } else {
-        status.textContent = '❌ 保存失败: ' + (result.error || '未知错误');
-        status.style.color = '#ef4444';
-      }
-    })
-    .catch(err => {
-      status.textContent = '❌ 网络错误: ' + err.message;
-      status.style.color = '#ef4444';
-    })
-    .finally(() => {
-      btn.disabled = false;
-      btn.textContent = '💾 保存设置';
-      setTimeout(() => { status.className = 'text-center text-sm hidden'; }, 5000);
+  function addService() {
+    services.push({
+      icon: '🌐',
+      title: '新服务',
+      desc: '描述',
+      url: 'https://',
+      color: colorOptions[Math.floor(Math.random() * colorOptions.length)],
+      copyable: false,
     });
+    renderServices();
   }
-</script>
 
+  function removeService(index) {
+    services.splice(index, 1);
+    renderServices();
+  }
+
+  function resetServices() {
+    if (confirm('确定要重置服务列表为默认值吗？')) {
+      services = [...defaultServices];
+      renderServices();
+    }
+  }
+
+  async function saveAll() {
+    const statusEl = document.getElementById('save-status');
+    statusEl.className = 'text-center text-sm py-2 rounded-xl';
+    statusEl.style.color = 'var(--text-muted)';
+    statusEl.textContent = '保存中...';
+    statusEl.classList.remove('hidden');
+
+    try {
+      const token = localStorage.getItem('admin_token');
+      const body = {
+        nickname: document.getElementById('nickname').value,
+        qqNumber: document.getElementById('qqNumber').value,
+        signature: document.getElementById('signature').value,
+        avatarUrl: document.getElementById('avatarUrl').value,
+        backgroundUrl: document.getElementById('backgroundUrl').value,
+        heroTitle: document.getElementById('heroTitle').value,
+        heroSubtitle: document.getElementById('heroSubtitle').value,
+        heroDescription: document.getElementById('heroDescription').value,
+        services: JSON.stringify(services),
+      };
+
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token,
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (res.ok) {
+        statusEl.textContent = '✅ 所有设置已保存！页面将在2秒后刷新...';
+        statusEl.style.color = '#22c55e';
+        setTimeout(() => window.location.reload(), 2000);
+      } else {
+        statusEl.textContent = '❌ 保存失败，请重试';
+        statusEl.style.color = '#ef4444';
+      }
+    } catch (e) {
+      statusEl.textContent = '❌ 网络错误，请重试';
+      statusEl.style.color = '#ef4444';
+    }
+  }
+
+  document.getElementById('qqNumber')?.addEventListener('input', updateAvatarPreview);
+  document.getElementById('avatarUrl')?.addEventListener('input', updateAvatarPreview);
+
+  loadSettings();
+</script>
