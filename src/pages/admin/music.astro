@@ -12,261 +12,378 @@ import Admin from '../../layouts/Admin.astro';
     </div>
 
     {/* Tabs */}
-    <div class="flex gap-1 p-1 rounded-xl mb-6" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">
-      <button onclick="switchTab('search')" id="tab-search" class="flex-1 py-2 rounded-lg text-sm font-medium transition-all tab-active">🔍 搜索</button>
-      <button onclick="switchTab('playlist')" id="tab-playlist" class="flex-1 py-2 rounded-lg text-sm font-medium transition-all tab-inactive">📋 播放列表</button>
-      <button onclick="switchTab('favorites')" id="tab-favorites" class="flex-1 py-2 rounded-lg text-sm font-medium transition-all tab-inactive">❤️ 收藏</button>
+    <div class="m-tab-bar">
+      <button onclick="switchTab('search')" id="tab-search" class="m-tab m-tab-active">🔍 搜索</button>
+      <button onclick="switchTab('playlist')" id="tab-playlist" class="m-tab m-tab-inactive">📋 播放列表</button>
+      <button onclick="switchTab('favorites')" id="tab-favorites" class="m-tab m-tab-inactive">❤️ 收藏</button>
+      <button onclick="switchTab('source')" id="tab-source" class="m-tab m-tab-inactive">🌐 音源</button>
     </div>
 
     {/* Search Tab */}
-    <div id="panel-search" class="tab-panel">
-      <div class="flex gap-3 mb-6">
-        <input id="search-input" type="text" placeholder="搜索歌曲、歌手..." class="flex-1 px-4 py-2.5 rounded-xl text-sm" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);" onkeydown="if(event.key==='Enter')doSearch()" />
-        <button onclick="doSearch()" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-500 to-cyan-400 hover:opacity-90 transition-opacity">搜索</button>
+    <div id="panel-search" class="m-panel">
+      <div class="flex gap-3 mb-5">
+        <input id="search-input" type="text" placeholder="搜索歌曲、歌手..." class="m-input flex-1" onkeydown="if(event.key==='Enter')doSearch()" />
+        <button onclick="doSearch()" class="m-btn-primary">搜索</button>
       </div>
       <div id="search-results" class="space-y-2"></div>
-      <div id="search-status" class="text-center text-sm py-4 hidden" style="color: var(--text-muted);"></div>
+      <div id="search-status" class="m-status hidden"></div>
     </div>
 
     {/* Playlist Tab */}
-    <div id="panel-playlist" class="tab-panel hidden">
+    <div id="panel-playlist" class="m-panel hidden">
       <div id="playlist-tracks" class="space-y-2"></div>
       <div class="mt-4 flex gap-3">
-        <button onclick="savePlaylist()" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-500 to-cyan-400 hover:opacity-90 transition-opacity">💾 保存播放列表</button>
-        <button onclick="clearPlaylist()" class="px-4 py-2 rounded-xl text-sm font-medium glass" style="color: var(--text-muted); border: 1px solid var(--glass-border);">🗑️ 清空</button>
+        <button onclick="savePlaylist()" class="m-btn-primary">💾 保存播放列表</button>
+        <button onclick="clearPlaylist()" class="m-btn-ghost">🗑️ 清空</button>
       </div>
-      <div id="playlist-status" class="text-center text-sm mt-3 hidden"></div>
+      <div id="playlist-status" class="m-status hidden mt-3"></div>
     </div>
 
     {/* Favorites Tab */}
-    <div id="panel-favorites" class="tab-panel hidden">
+    <div id="panel-favorites" class="m-panel hidden">
       <div id="favorites-list" class="space-y-2"></div>
       <div class="mt-4 flex gap-3">
-        <button onclick="importFavorites()" class="px-4 py-2 rounded-xl text-sm font-medium glass" style="color: var(--text-primary); border: 1px solid var(--glass-border);">📥 导入到播放列表</button>
-        <button onclick="saveFavorites()" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-500 to-cyan-400 hover:opacity-90 transition-opacity">💾 保存收藏</button>
+        <button onclick="importFavorites()" class="m-btn-ghost">📥 导入到播放列表</button>
+        <button onclick="saveFavorites()" class="m-btn-primary">💾 保存收藏</button>
       </div>
-      <div id="favorites-status" class="text-center text-sm mt-3 hidden"></div>
+      <div id="favorites-status" class="m-status hidden mt-3"></div>
+    </div>
+
+    {/* Custom Source Tab */}
+    <div id="panel-source" class="m-panel hidden">
+      <div class="m-card p-4 mb-4">
+        <h3 class="text-sm font-semibold mb-3" style="color:var(--text-primary);">🌐 自定义音源</h3>
+        <p class="text-xs mb-3" style="color:var(--text-muted);">配置自定义音乐 API 接口，支持 lx-music-source 等第三方音源</p>
+        <div class="space-y-3">
+          <div>
+            <label class="m-label">API 接口地址</label>
+            <input id="source-url" type="text" class="m-input" placeholder="https://your-api.com/api.php" />
+          </div>
+          <div class="flex gap-3">
+            <div class="flex-1">
+              <label class="m-label">音源名称</label>
+              <input id="source-name" type="text" class="m-input" placeholder="我的音源" />
+            </div>
+            <div class="flex-1">
+              <label class="m-label">音源类型</label>
+              <select id="source-type" class="m-input">
+                <option value="lx">lx-music-api</option>
+                <option value="netease">网易云直连</option>
+                <option value="kugou">酷狗直连</option>
+                <option value="custom">自定义JSON</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex gap-3 items-end">
+            <div class="flex-1">
+              <label class="m-label">测试搜索关键词</label>
+              <input id="source-test" type="text" class="m-input" placeholder="周杰伦" />
+            </div>
+            <button onclick="testSource()" class="m-btn-primary" style="height:2.5rem;">🧪 测试</button>
+          </div>
+        </div>
+        <div id="source-test-result" class="mt-3 hidden"></div>
+        <div class="mt-4 flex gap-3">
+          <button onclick="saveSource()" class="m-btn-primary">💾 保存音源配置</button>
+          <button onclick="deleteSource()" class="m-btn-ghost" style="color:#ef4444;">🗑️ 删除音源</button>
+        </div>
+      </div>
+      <div class="m-card p-4">
+        <h3 class="text-sm font-semibold mb-3" style="color:var(--text-primary);">📚 内置音源</h3>
+        <div class="space-y-2">
+          <div class="m-source-item" onclick="selectBuiltin('netease')">
+            <span>🎵</span><div class="flex-1"><div class="m-si-title">网易云音乐</div><div class="m-si-desc">官方 API 接口</div></div>
+            <span class="m-si-badge">默认</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </Admin>
 
 <style>
-  .tab-active { background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: white; }
-  .tab-inactive { color: var(--text-muted); }
-  .tab-inactive:hover { color: var(--text-primary); }
-  .search-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.75rem; background: var(--glass-bg); border: 1px solid var(--glass-border); transition: all 0.2s; }
-  .search-item:hover { border-color: var(--accent-1); background: rgba(255,255,255,0.08); }
-  .search-item .si-art { width: 3rem; height: 3rem; border-radius: 0.5rem; object-fit: cover; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-  .si-info { flex: 1; min-width: 0; }
-  .si-title { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .si-artist { font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .si-album { font-size: 0.6rem; color: var(--text-muted); }
-  .si-actions { display: flex; gap: 0.375rem; flex-shrink: 0; }
-  .si-btn { padding: 0.375rem 0.625rem; border-radius: 0.5rem; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-primary); font-size: 0.7rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-  .si-btn:hover { border-color: var(--accent-1); }
-  .si-btn-play { background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: white; border-color: transparent; }
-  .si-btn-fav { color: #ef4444; }
-  .si-btn-fav.active { background: rgba(239,68,68,0.15); border-color: #ef4444; }
-  .si-duration { font-size: 0.6rem; color: var(--text-muted); font-family: monospace; flex-shrink: 0; }
-  .audio-preview { width: 100%; height: 36px; margin-top: 0.25rem; border-radius: 0.5rem; }
+  .m-tab-bar { display: flex; gap: 0.25rem; padding: 0.25rem; border-radius: 0.75rem; margin-bottom: 1.5rem; background: var(--glass-bg); border: 1px solid var(--glass-border); }
+  .m-tab { flex: 1; padding: 0.5rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s; }
+  .m-tab-active { background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: white; }
+  .m-tab-inactive { background: transparent; color: var(--text-muted); }
+  .m-tab-inactive:hover { color: var(--text-primary); background: rgba(255,255,255,0.05); }
+  .m-card { border-radius: var(--card-radius); background: var(--glass-bg); border: 1px solid var(--glass-border); }
+  [data-theme="light"] .m-card { background: rgba(255,255,255,0.6); }
+  .m-input { width: 100%; padding: 0.625rem 0.875rem; border-radius: 0.625rem; font-size: 0.8rem; background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary); outline: none; transition: border-color 0.2s; }
+  [data-theme="light"] .m-input { background: rgba(0,0,0,0.03); border-color: rgba(0,0,0,0.12); }
+  .m-input:focus { border-color: var(--accent-1); }
+  .m-input::placeholder { color: var(--text-muted); }
+  .m-label { display: block; font-size: 0.7rem; font-weight: 500; color: var(--text-muted); margin-bottom: 0.25rem; }
+  .m-btn-primary { padding: 0.625rem 1.25rem; border-radius: 0.75rem; font-size: 0.8rem; font-weight: 600; color: white; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); border: none; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
+  .m-btn-primary:hover { opacity: 0.9; }
+  .m-btn-ghost { padding: 0.5rem 1rem; border-radius: 0.625rem; font-size: 0.8rem; font-weight: 500; color: var(--text-muted); background: var(--glass-bg); border: 1px solid var(--glass-border); cursor: pointer; transition: all 0.2s; }
+  .m-btn-ghost:hover { border-color: var(--accent-1); color: var(--text-primary); }
+  .m-status { text-align: center; font-size: 0.75rem; color: var(--text-muted); padding: 0.5rem; }
+  .m-song-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.875rem; border-radius: 0.75rem; background: var(--glass-bg); border: 1px solid var(--glass-border); transition: all 0.2s; }
+  [data-theme="light"] .m-song-item { background: rgba(255,255,255,0.6); }
+  .m-song-item:hover { border-color: var(--accent-1); }
+  .m-song-art { width: 2.75rem; height: 2.75rem; border-radius: 0.5rem; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1rem; overflow: hidden; }
+  .m-song-art img { width: 100%; height: 100%; object-fit: cover; }
+  .m-song-info { flex: 1; min-width: 0; }
+  .m-song-title { font-size: 0.75rem; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .m-song-artist { font-size: 0.65rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .m-song-dur { font-size: 0.6rem; color: var(--text-muted); font-family: monospace; flex-shrink: 0; }
+  .m-song-actions { display: flex; gap: 0.25rem; flex-shrink: 0; }
+  .m-song-btn { padding: 0.3rem 0.5rem; border-radius: 0.375rem; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-primary); font-size: 0.65rem; cursor: pointer; transition: all 0.15s; }
+  [data-theme="light"] .m-song-btn { background: rgba(255,255,255,0.6); }
+  .m-song-btn:hover { border-color: var(--accent-1); }
+  .m-song-btn-play { background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: white; border-color: transparent; }
+  .m-song-btn-play:hover { opacity: 0.85; }
+  .m-song-btn-del { color: #ef4444; }
+  .m-source-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.75rem; background: var(--glass-bg); border: 1px solid var(--glass-border); cursor: pointer; transition: all 0.2s; }
+  [data-theme="light"] .m-source-item { background: rgba(255,255,255,0.6); }
+  .m-source-item:hover { border-color: var(--accent-1); }
+  .m-si-title { font-size: 0.75rem; font-weight: 600; color: var(--text-primary); }
+  .m-si-desc { font-size: 0.65rem; color: var(--text-muted); }
+  .m-si-badge { font-size: 0.6rem; padding: 0.15rem 0.5rem; border-radius: 999px; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: white; }
+  .m-audio { width: 100%; height: 32px; margin-top: 0.25rem; border-radius: 0.5rem; }
+  select.m-input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; padding-right: 2rem; }
 </style>
 
 <script is:inline>
-  (function() {
-    if (!localStorage.getItem('admin_token')) {
-      window.location.href = '/admin/login';
-      return;
-    }
-    loadPlaylist();
-    loadFavorites();
-  })();
+(function() {
+  if (!localStorage.getItem('admin_token')) { window.location.href = '/admin/login'; return; }
+  loadPlaylist();
+  loadFavorites();
+  loadSource();
+})();
 
-  var playlist = [];
-  var favorites = [];
-  var currentAudio = null;
+var playlist = [];
+var favorites = [];
+var currentAudio = null;
+var customSource = null;
 
-  // Tab switching
-  function switchTab(tab) {
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
-    document.getElementById('panel-' + tab).classList.remove('hidden');
-    document.querySelectorAll('[id^="tab-"]').forEach(b => { b.className = 'flex-1 py-2 rounded-lg text-sm font-medium transition-all tab-inactive'; });
-    document.getElementById('tab-' + tab).className = 'flex-1 py-2 rounded-lg text-sm font-medium transition-all tab-active';
+function switchTab(tab) {
+  document.querySelectorAll('.m-panel').forEach(function(p) { p.classList.add('hidden'); });
+  document.getElementById('panel-' + tab).classList.remove('hidden');
+  document.querySelectorAll('.m-tab').forEach(function(b) { b.className = 'm-tab m-tab-inactive'; });
+  document.getElementById('tab-' + tab).className = 'm-tab m-tab-active';
+}
+
+// --- SEARCH ---
+function getSearchUrl(q) {
+  if (customSource && customSource.url) {
+    return customSource.url + '?search=' + encodeURIComponent(q) + '&source=' + (customSource.type || 'lx');
   }
+  return '/api/music/search?q=' + encodeURIComponent(q);
+}
 
-  // Search
-  function doSearch() {
-    var q = document.getElementById('search-input').value.trim();
-    if (!q) return;
-    var status = document.getElementById('search-status');
-    var results = document.getElementById('search-results');
-    status.className = 'text-center text-sm py-4';
-    status.style.color = 'var(--text-muted)';
-    status.textContent = '搜索中...';
-    status.classList.remove('hidden');
-    results.innerHTML = '';
+function doSearch() {
+  var q = document.getElementById('search-input').value.trim();
+  if (!q) return;
+  var status = document.getElementById('search-status');
+  var results = document.getElementById('search-results');
+  status.className = 'm-status'; status.textContent = '搜索中...'; status.classList.remove('hidden');
+  results.innerHTML = '';
+  fetch(getSearchUrl(q))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      status.classList.add('hidden');
+      var songs = data.songs || data.data || data.result || [];
+      if (songs.length === 0) { results.innerHTML = '<div class="m-status">未找到结果</div>'; return; }
+      results.innerHTML = songs.map(function(s, i) {
+        var isFav = favorites.some(function(f) { return f.id === s.id; });
+        var dur = s.duration ? Math.floor(s.duration / 60) + ':' + String(Math.floor(s.duration % 60)).padStart(2, '0') : '--:--';
+        var art = s.cover ? '<img src="' + s.cover + '" onerror="this.parentElement.textContent=\'🎵\'" />' : '🎵';
+        return '<div class="m-song-item">' +
+          '<div class="m-song-art">' + art + '</div>' +
+          '<div class="m-song-info"><div class="m-song-title">' + escH(s.title) + '</div><div class="m-song-artist">' + escH(s.artist || s.singer || '') + '</div>' +
+          '<audio class="m-audio" controls preload="none" src="' + (s.src || s.url || '') + '"></audio></div>' +
+          '<span class="m-song-dur">' + dur + '</span>' +
+          '<div class="m-song-actions">' +
+            '<button class="m-song-btn m-song-btn-play" onclick="playSong(' + i + ')" title="播放">▶</button>' +
+            '<button class="m-song-btn" onclick="addToPlaylist(' + i + ')" title="加入播放列表">📋</button>' +
+            '<button class="m-song-btn' + (isFav ? ' m-song-btn-fav' : '') + '" onclick="toggleFavorite(' + i + ')" title="收藏">' + (isFav ? '❤️' : '🤍') + '</button>' +
+          '</div></div>';
+      }).join('');
+      window._sr = songs;
+    })
+    .catch(function(e) { status.textContent = '❌ 搜索失败'; status.style.color = '#ef4444'; });
+}
 
-    fetch('/api/music/search?q=' + encodeURIComponent(q))
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        status.classList.add('hidden');
-        var songs = data.songs || [];
-        if (songs.length === 0) {
-          results.innerHTML = '<div class="text-center py-8 text-sm" style="color:var(--text-muted);">未找到结果</div>';
-          return;
-        }
-        results.innerHTML = songs.map(function(s, i) {
-          var isFav = favorites.some(function(f) { return f.id === s.id; });
-          var dur = Math.floor(s.duration / 60) + ':' + String(s.duration % 60).padStart(2, '0');
-          return '<div class="search-item">' +
-            '<div class="si-art">' + (s.cover ? '<img src="' + s.cover + '" class="w-full h-full rounded-lg object-cover" onerror="this.parentElement.textContent=\'🎵\'" />' : '🎵') + '</div>' +
-            '<div class="si-info"><div class="si-title">' + escHtml(s.title) + '</div><div class="si-artist">' + escHtml(s.artist) + '</div><div class="si-album">' + escHtml(s.album) + '</div>' +
-            '<audio class="audio-preview" controls preload="none" src="' + s.src + '"></audio></div>' +
-            '<span class="si-duration">' + dur + '</span>' +
-            '<div class="si-actions">' +
-              '<button class="si-btn" onclick="playSong(\'' + escAttr(s.src) + '\',\'' + escAttr(s.title) + '\',\'' + escAttr(s.artist) + '\')" title="播放">▶</button>' +
-              '<button class="si-btn" onclick="addToPlaylist(' + i + ')" title="加入播放列表">📋</button>' +
-              '<button class="si-btn si-btn-fav ' + (isFav ? 'active' : '') + '" onclick="toggleFavorite(' + i + ')" title="收藏">' + (isFav ? '❤️' : '🤍') + '</button>' +
-            '</div>' +
-          '</div>';
-        }).join('');
-        window._searchResults = songs;
-      })
-      .catch(function(e) {
-        status.textContent = '❌ 搜索失败: ' + e.message;
-        status.style.color = '#ef4444';
-      });
-  }
+function playSong(i) {
+  var s = window._sr && window._sr[i]; if (!s) return;
+  var src = s.src || s.url || '';
+  if (currentAudio) { currentAudio.pause(); }
+  currentAudio = new Audio(src);
+  currentAudio.play().catch(function() {});
+  window.dispatchEvent(new CustomEvent('play-music', { detail: { src: src } }));
+}
 
-  // Play
-  function playSong(src, title, artist) {
-    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-    currentAudio = new Audio(src);
-    currentAudio.play().catch(function() {});
-    window.dispatchEvent(new CustomEvent('play-music', { detail: { src: src } }));
-  }
+// --- PLAYLIST ---
+function addToPlaylist(i) {
+  var s = window._sr && window._sr[i]; if (!s) return;
+  playlist.push({ title: s.title, artist: s.artist || s.singer || '', src: s.src || s.url || '', cover: s.cover || '', id: s.id || Date.now(), album: s.album || '', duration: s.duration || 0 });
+  renderPlaylist();
+}
+function removeFromPlaylist(i) { playlist.splice(i, 1); renderPlaylist(); }
+function movePlaylistItem(i, d) { var j = i + d; if (j < 0 || j >= playlist.length) return; var t = playlist[i]; playlist[i] = playlist[j]; playlist[j] = t; renderPlaylist(); }
 
-  // Playlist
-  function addToPlaylist(idx) {
-    var s = window._searchResults && window._searchResults[idx];
-    if (!s) return;
-    playlist.push({ title: s.title, artist: s.artist, src: s.src, cover: s.cover, id: s.id, album: s.album, duration: s.duration });
+function renderPlaylist() {
+  var c = document.getElementById('playlist-tracks');
+  if (!playlist.length) { c.innerHTML = '<div class="m-status py-8">播放列表为空，去搜索页添加歌曲</div>'; return; }
+  c.innerHTML = playlist.map(function(t, i) {
+    var dur = t.duration ? Math.floor(t.duration / 60) + ':' + String(Math.floor(t.duration % 60)).padStart(2, '0') : '--:--';
+    var art = t.cover ? '<img src="' + t.cover + '" onerror="this.parentElement.textContent=\'🎵\'" />' : '🎵';
+    return '<div class="m-song-item">' +
+      '<div class="m-song-art" style="width:2.5rem;height:2.5rem;font-size:0.85rem;">' + art + '</div>' +
+      '<div class="m-song-info"><div class="m-song-title">' + escH(t.title) + '</div><div class="m-song-artist">' + escH(t.artist) + '</div></div>' +
+      '<span class="m-song-dur">' + dur + '</span>' +
+      '<div class="m-song-actions">' +
+        '<button class="m-song-btn" onclick="movePlaylistItem(' + i + ',-1)" title="上移">⬆</button>' +
+        '<button class="m-song-btn" onclick="movePlaylistItem(' + i + ',1)" title="下移">⬇</button>' +
+        '<button class="m-song-btn m-song-btn-play" onclick="playPlaylist(' + i + ')" title="播放">▶</button>' +
+        '<button class="m-song-btn m-song-btn-del" onclick="removeFromPlaylist(' + i + ')" title="移除">✕</button>' +
+      '</div></div>';
+  }).join('');
+}
+
+function playPlaylist(i) {
+  var t = playlist[i]; if (!t) return;
+  if (currentAudio) currentAudio.pause();
+  currentAudio = new Audio(t.src);
+  currentAudio.play().catch(function() {});
+  window.dispatchEvent(new CustomEvent('play-music', { detail: { src: t.src } }));
+}
+
+function savePlaylist() {
+  var st = document.getElementById('playlist-status');
+  st.className = 'm-status mt-3'; st.textContent = '保存中...';
+  fetch('/api/music', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tracks: playlist }) })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { st.textContent = d.ok ? '✅ 已保存' : '❌ 失败'; st.style.color = d.ok ? '#22c55e' : '#ef4444'; })
+    .catch(function() { st.textContent = '❌ 网络错误'; st.style.color = '#ef4444'; });
+  setTimeout(function() { st.classList.add('hidden'); }, 3000);
+}
+
+function clearPlaylist() { if (confirm('确定清空播放列表？')) { playlist = []; renderPlaylist(); } }
+
+function loadPlaylist() {
+  fetch('/api/music').then(function(r) { return r.json(); }).then(function(d) {
+    playlist = Array.isArray(d) ? d : [];
     renderPlaylist();
-  }
+  }).catch(function() {});
+}
 
-  function removeFromPlaylist(i) { playlist.splice(i, 1); renderPlaylist(); }
+// --- FAVORITES ---
+function toggleFavorite(i) {
+  var s = window._sr && window._sr[i]; if (!s) return;
+  var idx = favorites.findIndex(function(f) { return f.id === s.id; });
+  if (idx >= 0) favorites.splice(idx, 1); else favorites.push({ title: s.title, artist: s.artist || s.singer || '', src: s.src || s.url || '', cover: s.cover || '', id: s.id || Date.now(), album: s.album || '', duration: s.duration || 0 });
+  doSearch(); renderFavorites();
+}
+function removeFavorite(i) { favorites.splice(i, 1); renderFavorites(); }
 
-  function movePlaylistItem(i, dir) {
-    var j = i + dir;
-    if (j < 0 || j >= playlist.length) return;
-    var tmp = playlist[i]; playlist[i] = playlist[j]; playlist[j] = tmp;
-    renderPlaylist();
-  }
+function renderFavorites() {
+  var c = document.getElementById('favorites-list');
+  if (!favorites.length) { c.innerHTML = '<div class="m-status py-8">暂无收藏</div>'; return; }
+  c.innerHTML = favorites.map(function(t, i) {
+    var dur = t.duration ? Math.floor(t.duration / 60) + ':' + String(Math.floor(t.duration % 60)).padStart(2, '0') : '--:--';
+    var art = t.cover ? '<img src="' + t.cover + '" onerror="this.parentElement.textContent=\'🎵\'" />' : '🎵';
+    return '<div class="m-song-item">' +
+      '<div class="m-song-art" style="width:2.5rem;height:2.5rem;font-size:0.85rem;">' + art + '</div>' +
+      '<div class="m-song-info"><div class="m-song-title">' + escH(t.title) + '</div><div class="m-song-artist">' + escH(t.artist) + '</div></div>' +
+      '<span class="m-song-dur">' + dur + '</span>' +
+      '<div class="m-song-actions">' +
+        '<button class="m-song-btn m-song-btn-play" onclick="playFav(' + i + ')" title="播放">▶</button>' +
+        '<button class="m-song-btn" onclick="favToPlaylist(' + i + ')" title="加入播放列表">📋</button>' +
+        '<button class="m-song-btn m-song-btn-del" onclick="removeFavorite(' + i + ')" title="取消收藏">✕</button>' +
+      '</div></div>';
+  }).join('');
+}
 
-  function renderPlaylist() {
-    var c = document.getElementById('playlist-tracks');
-    if (playlist.length === 0) {
-      c.innerHTML = '<div class="text-center py-8 text-sm" style="color:var(--text-muted);">播放列表为空，去搜索页添加歌曲吧</div>';
-      return;
-    }
-    c.innerHTML = playlist.map(function(t, i) {
-      var dur = t.duration ? Math.floor(t.duration / 60) + ':' + String(t.duration % 60).padStart(2, '0') : '--:--';
-      return '<div class="search-item">' +
-        '<div class="si-art" style="width:2.5rem;height:2.5rem;font-size:0.9rem;">' + (t.cover ? '<img src="' + t.cover + '" class="w-full h-full rounded-lg object-cover" onerror="this.parentElement.textContent=\'🎵\'" />' : '🎵') + '</div>' +
-        '<div class="si-info"><div class="si-title">' + escHtml(t.title) + '</div><div class="si-artist">' + escHtml(t.artist) + '</div></div>' +
-        '<span class="si-duration">' + dur + '</span>' +
-        '<div class="si-actions">' +
-          '<button class="si-btn" onclick="movePlaylistItem(' + i + ',-1)" title="上移">⬆</button>' +
-          '<button class="si-btn" onclick="movePlaylistItem(' + i + ',1)" title="下移">⬇</button>' +
-          '<button class="si-btn si-btn-play" onclick="playSong(\'' + escAttr(t.src) + '\',\'' + escAttr(t.title) + '\',\'' + escAttr(t.artist) + '\')" title="播放">▶</button>' +
-          '<button class="si-btn" onclick="removeFromPlaylist(' + i + ')" title="移除" style="color:#ef4444;">✕</button>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-  }
+function playFav(i) {
+  var t = favorites[i]; if (!t) return;
+  if (currentAudio) currentAudio.pause();
+  currentAudio = new Audio(t.src);
+  currentAudio.play().catch(function() {});
+  window.dispatchEvent(new CustomEvent('play-music', { detail: { src: t.src } }));
+}
 
-  function savePlaylist() {
-    var st = document.getElementById('playlist-status');
-    st.className = 'text-center text-sm mt-3';
-    st.style.color = 'var(--text-muted)';
-    st.textContent = '保存中...';
-    fetch('/api/music', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tracks: playlist }) })
-      .then(function(r) { return r.json(); })
-      .then(function(d) { st.textContent = d.ok ? '✅ 播放列表已保存' : '❌ 保存失败'; st.style.color = d.ok ? '#22c55e' : '#ef4444'; })
-      .catch(function() { st.textContent = '❌ 网络错误'; st.style.color = '#ef4444'; });
-    setTimeout(function() { st.classList.add('hidden'); }, 3000);
-  }
+function favToPlaylist(i) {
+  var t = favorites[i]; if (!t) return;
+  if (!playlist.some(function(p) { return p.id === t.id; })) playlist.push(Object.assign({}, t));
+  renderPlaylist();
+}
 
-  function clearPlaylist() { if (confirm('确定清空播放列表？')) { playlist = []; renderPlaylist(); } }
+function importFavorites() {
+  var count = 0;
+  favorites.forEach(function(t) { if (!playlist.some(function(p) { return p.id === t.id; })) { playlist.push(Object.assign({}, t)); count++; } });
+  renderPlaylist();
+  alert('已导入 ' + count + ' 首歌曲到播放列表');
+}
 
-  function loadPlaylist() {
-    fetch('/api/music').then(function(r) { return r.json(); }).then(function(d) {
-      playlist = Array.isArray(d) ? d : [];
-      renderPlaylist();
-    }).catch(function() {});
-  }
+function saveFavorites() {
+  var st = document.getElementById('favorites-status');
+  st.className = 'm-status mt-3'; st.textContent = '保存中...';
+  fetch('/api/music/favorites', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ favorites: favorites }) })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { st.textContent = d.ok ? '✅ 已保存' : '❌ 失败'; st.style.color = d.ok ? '#22c55e' : '#ef4444'; })
+    .catch(function() { st.textContent = '❌ 网络错误'; st.style.color = '#ef4444'; });
+  setTimeout(function() { st.classList.add('hidden'); }, 3000);
+}
 
-  // Favorites
-  function toggleFavorite(idx) {
-    var s = window._searchResults && window._searchResults[idx];
-    if (!s) return;
-    var existIdx = favorites.findIndex(function(f) { return f.id === s.id; });
-    if (existIdx >= 0) { favorites.splice(existIdx, 1); } else { favorites.push({ title: s.title, artist: s.artist, src: s.src, cover: s.cover, id: s.id, album: s.album, duration: s.duration }); }
-    doSearch(); // re-render search results
+function loadFavorites() {
+  fetch('/api/music/favorites').then(function(r) { return r.json(); }).then(function(d) {
+    favorites = Array.isArray(d) ? d : [];
     renderFavorites();
+  }).catch(function() {});
+}
+
+// --- CUSTOM SOURCE ---
+function loadSource() {
+  try { customSource = JSON.parse(localStorage.getItem('music-source') || 'null'); } catch {}
+  if (customSource) {
+    document.getElementById('source-url').value = customSource.url || '';
+    document.getElementById('source-name').value = customSource.name || '';
+    document.getElementById('source-type').value = customSource.type || 'lx';
   }
+}
 
-  function removeFavorite(i) { favorites.splice(i, 1); renderFavorites(); }
+function saveSource() {
+  customSource = {
+    url: document.getElementById('source-url').value.trim(),
+    name: document.getElementById('source-name').value.trim() || '自定义音源',
+    type: document.getElementById('source-type').value,
+  };
+  localStorage.setItem('music-source', JSON.stringify(customSource));
+  alert('✅ 音源配置已保存');
+}
 
-  function renderFavorites() {
-    var c = document.getElementById('favorites-list');
-    if (favorites.length === 0) {
-      c.innerHTML = '<div class="text-center py-8 text-sm" style="color:var(--text-muted);">暂无收藏</div>';
-      return;
-    }
-    c.innerHTML = favorites.map(function(t, i) {
-      var dur = t.duration ? Math.floor(t.duration / 60) + ':' + String(t.duration % 60).padStart(2, '0') : '--:--';
-      return '<div class="search-item">' +
-        '<div class="si-art" style="width:2.5rem;height:2.5rem;font-size:0.9rem;">' + (t.cover ? '<img src="' + t.cover + '" class="w-full h-full rounded-lg object-cover" onerror="this.parentElement.textContent=\'🎵\'" />' : '🎵') + '</div>' +
-        '<div class="si-info"><div class="si-title">' + escHtml(t.title) + '</div><div class="si-artist">' + escHtml(t.artist) + '</div></div>' +
-        '<span class="si-duration">' + dur + '</span>' +
-        '<div class="si-actions">' +
-          '<button class="si-btn si-btn-play" onclick="playSong(\'' + escAttr(t.src) + '\',\'' + escAttr(t.title) + '\',\'' + escAttr(t.artist) + '\')" title="播放">▶</button>' +
-          '<button class="si-btn" onclick="removeFavorite(' + i + ')" title="取消收藏" style="color:#ef4444;">✕</button>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-  }
+function deleteSource() {
+  customSource = null;
+  localStorage.removeItem('music-source');
+  document.getElementById('source-url').value = '';
+  document.getElementById('source-name').value = '';
+  alert('音源已删除，恢复使用默认音源');
+}
 
-  function saveFavorites() {
-    var st = document.getElementById('favorites-status');
-    st.className = 'text-center text-sm mt-3';
-    st.style.color = 'var(--text-muted)';
-    st.textContent = '保存中...';
-    fetch('/api/music/favorites', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ favorites: favorites }) })
-      .then(function(r) { return r.json(); })
-      .then(function(d) { st.textContent = d.ok ? '✅ 收藏已保存' : '❌ 保存失败'; st.style.color = d.ok ? '#22c55e' : '#ef4444'; })
-      .catch(function() { st.textContent = '❌ 网络错误'; st.style.color = '#ef4444'; });
-    setTimeout(function() { st.classList.add('hidden'); }, 3000);
-  }
+function selectBuiltin(id) {
+  customSource = null;
+  localStorage.removeItem('music-source');
+  alert('已切换到内置音源');
+}
 
-  function importFavorites() {
-    favorites.forEach(function(s) {
-      if (!playlist.some(function(p) { return p.id === s.id; })) {
-        playlist.push(Object.assign({}, s));
-      }
-    });
-    renderPlaylist();
-    alert('已导入 ' + favorites.length + ' 首收藏到播放列表');
-  }
+function testSource() {
+  var url = document.getElementById('source-url').value.trim();
+  var q = document.getElementById('source-test').value.trim() || '周杰伦';
+  var result = document.getElementById('source-test-result');
+  if (!url) { alert('请先填写 API 地址'); return; }
+  result.className = 'm-status mt-3'; result.textContent = '测试中...'; result.classList.remove('hidden');
+  fetch(url + '?search=' + encodeURIComponent(q) + '&source=' + document.getElementById('source-type').value)
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var songs = d.songs || d.data || d.result || [];
+      if (songs.length > 0) { result.textContent = '✅ 连接成功，返回 ' + songs.length + ' 首结果'; result.style.color = '#22c55e'; }
+      else { result.textContent = '⚠️ 连接成功但无结果'; result.style.color = '#f59e0b'; }
+    })
+    .catch(function(e) { result.textContent = '❌ 连接失败: ' + e.message; result.style.color = '#ef4444'; });
+}
 
-  function loadFavorites() {
-    fetch('/api/music/favorites').then(function(r) { return r.json(); }).then(function(d) {
-      favorites = Array.isArray(d) ? d : [];
-      renderFavorites();
-    }).catch(function() {});
-  }
-
-  // Helpers
-  function escHtml(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function escAttr(s) { return String(s || '').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function escH(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 </script>
