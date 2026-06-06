@@ -3,8 +3,7 @@ import type { APIRoute } from 'astro';
 import { getSettings } from '../../lib/kv';
 
 export const POST: APIRoute = async (Astro) => {
-  const env = (Astro.locals as any).runtime?.env ?? {};
-  const settings = await getSettings(env);
+  const settings = await getSettings();
   try {
     const { password } = await Astro.request.json();
     if (password === settings.adminPassword) {

@@ -3,18 +3,16 @@ import type { APIRoute } from 'astro';
 import { getSettings, setSetting } from '../../lib/kv';
 
 export const GET: APIRoute = async (Astro) => {
-  const env = (Astro.locals as any).runtime?.env ?? {};
-  const settings = await getSettings(env);
+  const settings = await getSettings();
   return new Response(settings.musicTracks, {
     headers: { 'Content-Type': 'application/json' }
   });
 };
 
 export const PUT: APIRoute = async (Astro) => {
-  const env = (Astro.locals as any).runtime?.env ?? {};
   try {
     const { tracks } = await Astro.request.json();
-    await setSetting(env, 'musicTracks', JSON.stringify(tracks));
+    await setSetting('musicTracks', JSON.stringify(tracks));
     return new Response(JSON.stringify({ ok: true }), {
       headers: { 'Content-Type': 'application/json' }
     });

@@ -5,8 +5,8 @@ import GlassCard from '../components/glass/GlassCard.astro';
 import { getCollection } from 'astro:content';
 import { getSettings } from '../lib/kv';
 
-const env = (Astro.locals as any).runtime?.env ?? {};
-const settings = await getSettings(env);
+// env is now imported via cloudflare:workers inside getSettings
+const settings = await getSettings();
 
 const posts = (await getCollection('blog'))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -152,3 +152,4 @@ const hasBackground = settings.backgroundUrl && settings.backgroundUrl.trim() !=
 
   {/* Footer is inside Base.astro — rendered automatically */}
 </Base>
+

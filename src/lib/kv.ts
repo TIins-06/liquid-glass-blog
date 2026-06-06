@@ -16,11 +16,7 @@ export interface SiteSettings {
   adminPassword: string;
 }
 
-export function getEnv(Astro: AstroGlobal) {
-  return (Astro.locals as any).runtime?.env ?? {};
-}
-
-export async function getSettings(env: any): Promise<SiteSettings> {
+export async function getSettings(): Promise<SiteSettings> {
   const defaults: SiteSettings = {
     nickname: 'TIins',
     qqNumber: '807592247',
@@ -41,11 +37,12 @@ export async function getSettings(env: any): Promise<SiteSettings> {
     adminPassword: 'liquid2026'
   };
 
-  if (!env.BLOG_KV) return defaults;
-
   try {
+    const { env } = await import('cloudflare:workers');
+    const kv = (env as any).BLOG_KV;
+    if (!kv) return defaults;
     const keys = Object.keys(defaults);
-    const results = await Promise.all(keys.map(k => env.BLOG_KV.get(`settings:${k}`)));
+    const results = await Promise.all(keys.map(k => kv.get(`settings:${k}`)));
     const settings = { ...defaults };
     keys.forEach((k, i) => {
       if (results[i] !== null) {
@@ -58,14 +55,18 @@ export async function getSettings(env: any): Promise<SiteSettings> {
   }
 }
 
-export async function setSetting(env: any, key: string, value: string): Promise<void> {
-  if (!env.BLOG_KV) throw new Error('KV not available');
-  await env.BLOG_KV.put(`settings:${key}`, value);
+export async function setSetting(key: string, value: string): Promise<void> {
+  const { env } = await import('cloudflare:workers');
+  const kv = (env as any).BLOG_KV;
+  if (!kv) throw new Error('KV not available');
+  await kv.put(`settings:${key}`, value);
 }
 
-export async function setSettings(env: any, settings: Record<string, string>): Promise<void> {
-  if (!env.BLOG_KV) throw new Error('KV not available');
+export async function setSettings(settings: Record<string, string>): Promise<void> {
+  const { env } = await import('cloudflare:workers');
+  const kv = (env as any).BLOG_KV;
+  if (!kv) throw new Error('KV not available');
   await Promise.all(
-    Object.entries(settings).map(([k, v]) => env.BLOG_KV.put(`settings:${k}`, v))
+    Object.entries(settings).map(([k, v]) => kv.put(`settings:${k}`, v))
   );
 }
