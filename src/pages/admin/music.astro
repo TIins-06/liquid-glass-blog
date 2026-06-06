@@ -1,4 +1,4 @@
----
+﻿---
 export const prerender = false;
 import Admin from '../../layouts/Admin.astro';
 ---
@@ -348,30 +348,43 @@ function loadFavorites() {
 
 // --- CUSTOM SOURCE ---
 function loadSource() {
-  try { customSource = JSON.parse(localStorage.getItem('music-source') || 'null'); } catch {}
-  if (customSource) {
-    document.getElementById('source-url').value = customSource.url || '';
-    document.getElementById('source-name').value = customSource.name || '';
-    document.getElementById('source-type').value = customSource.type || 'lx';
-  }
+  fetch('/api/settings').then(function(r) { return r.json(); }).then(function(data) {
+    if (data && data.musicSourceConfig) {
+      try {
+        customSource = JSON.parse(data.musicSourceConfig);
+        document.getElementById('source-url').value = customSource.url || '';
+        document.getElementById('source-name').value = customSource.name || '';
+        document.getElementById('source-type').value = customSource.type || 'lx';
+      } catch {}
+    }
+  }).catch(function() {});
 }
 
 function saveSource() {
-  customSource = {
-    url: document.getElementById('source-url').value.trim(),
-    name: document.getElementById('source-name').value.trim() || '自定义音源',
-    type: document.getElementById('source-type').value,
-  };
-  localStorage.setItem('music-source', JSON.stringify(customSource));
-  alert('✅ 音源配置已保存');
+  var url = document.getElementById('source-url').value.trim();
+  var name = document.getElementById('source-name').value.trim() || '自定义音源';
+  var type = document.getElementById('source-type').value;
+  customSource = { url: url, name: name, type: type };
+  // Save to KV (cross-device)
+  fetch('/api/settings', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ musicSourceConfig: JSON.stringify(customSource) })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.ok) alert('✅ 音源配置已保存到云端（跨设备同步）');
+    else alert('❌ 保存失败');
+  }).catch(function() { alert('❌ 网络错误'); });
 }
 
 function deleteSource() {
   customSource = null;
-  localStorage.removeItem('music-source');
   document.getElementById('source-url').value = '';
   document.getElementById('source-name').value = '';
-  alert('音源已删除，恢复使用默认音源');
+  fetch('/api/settings', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ musicSourceConfig: '' })
+  }).then(function() { alert('音源已删除，恢复使用默认音源'); }).catch(function() { alert('音源已清除'); });
 }
 
 function selectBuiltin(id) {
@@ -383,29 +396,43 @@ function selectBuiltin(id) {
 function testSource() {
   var url = document.getElementById('source-url').value.trim();
   var q = document.getElementById('source-test').value.trim() || '周杰伦';
+  var type = document.getElementById('source-type').value;
   var result = document.getElementById('source-test-result');
   if (!url) { alert('请先填写 API 地址'); return; }
   if (url.endsWith('.js') || url.endsWith('.ts')) {
     result.className = 'm-status mt-3'; result.style.color = '#ef4444'; result.classList.remove('hidden');
-    result.textContent = '❌ 请输入 API 接口地址，不是 JS 文件地址。lx-music-source 的 JS 文件需要配合 lx-music-api-server 使用';
+    result.innerHTML = '❌ 请输入 API 接口地址，不是 JS 文件地址。<br/><small>lx-music-source 的 JS 文件需要配合 lx-music-api-server 使用。<br/>请部署 lx-music-api-server 后填入其 API 地址（如 http://your-server:10001）</small>';
     return;
   }
   result.className = 'm-status mt-3'; result.textContent = '测试中...'; result.classList.remove('hidden');
-  fetch(url + '?search=' + encodeURIComponent(q) + '&source=' + document.getElementById('source-type').value)
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      var songs = d.songs || d.data || d.result || [];
+  if (type === 'lx') {
+    // lx-music-api uses POST with JSON body
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: 'musicSearch', params: { keyword: q, page: 1, limit: 5, source: 'kw' } })
+    }).then(function(r) { return r.json(); }).then(function(d) {
+      var songs = d.data || d.songs || d.result || [];
       if (songs.length > 0) { result.textContent = '✅ 连接成功，返回 ' + songs.length + ' 首结果'; result.style.color = '#22c55e'; }
-      else { result.textContent = '⚠️ 连接成功但无结果'; result.style.color = '#f59e0b'; }
-    })
-    .catch(function(e) {
-      if (e.message.includes('Unexpected token')) {
-        result.textContent = '❌ 返回的不是 JSON 数据。如果使用 lx-music-source，需要部署 lx-music-api-server 并填入其 API 地址';
-      } else {
-        result.textContent = '❌ 连接失败: ' + e.message;
-      }
+      else { result.textContent = '⚠️ 连接成功但无结果（请确认 lx-music-api-server 已启动）'; result.style.color = '#f59e0b'; }
+    }).catch(function(e) {
+      result.textContent = '❌ 连接失败: ' + e.message + '（确保 lx-music-api-server 已启动且支持 CORS）';
       result.style.color = '#ef4444';
     });
+  } else {
+    // Other API types use GET
+    fetch(url + '?search=' + encodeURIComponent(q) + '&source=' + type)
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var songs = d.songs || d.data || d.result || [];
+        if (songs.length > 0) { result.textContent = '✅ 连接成功，返回 ' + songs.length + ' 首结果'; result.style.color = '#22c55e'; }
+        else { result.textContent = '⚠️ 连接成功但无结果'; result.style.color = '#f59e0b'; }
+      })
+      .catch(function(e) {
+        result.textContent = '❌ 连接失败: ' + e.message;
+        result.style.color = '#ef4444';
+      });
+  }
 }
 
 function escH(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }

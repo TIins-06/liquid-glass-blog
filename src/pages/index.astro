@@ -1,4 +1,4 @@
----
+﻿---
 export const prerender = false;
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
@@ -250,6 +250,59 @@ const barColors = {
         if (totalEl) totalEl.textContent = d.total || '0';
       }).catch(function() {});
     })();
+  <script is:inline>
+    (function() {
+      var musicList = document.getElementById('home-music-list');
+      if (!musicList) return;
+
+      function playHomeTrack(src, title) {
+        if (!src) return;
+        window.dispatchEvent(new CustomEvent('play-music', { detail: { src: src, title: title } }));
+      }
+
+      function renderHomeMusic(tracks) {
+        if (!tracks || tracks.length === 0) {
+          musicList.innerHTML = '<div class="text-[10px]" style="color:var(--text-muted);">暂无曲目，去管理后台添加吧</div>';
+          return;
+        }
+        var playable = tracks.filter(function(t) { return t.src; });
+        if (playable.length === 0) {
+          musicList.innerHTML = '<div class="text-[10px]" style="color:var(--text-muted);">暂无可播放曲目</div>';
+          return;
+        }
+        musicList.innerHTML = playable.slice(0, 6).map(function(t, i) {
+          var art = t.cover ? '<img src="' + t.cover + '" style="width:100%;height:100%;object-fit:cover;border-radius:4px;" onerror="this.parentElement.textContent=&apos;🎵&apos;" />' : '🎵';
+          return '<div class="home-music-item" onclick="playHomeTrack(\'' + (t.src||'').replace(/'/g,"\\'") + '\', \'' + (t.title||'').replace(/'/g,"\\'") + '\')" style="display:flex;align-items:center;gap:0.4rem;padding:0.3rem;border-radius:0.5rem;cursor:pointer;transition:background 0.15s;">' +
+            '<div style="width:2rem;height:2rem;border-radius:0.375rem;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));display:flex;align-items:center;justify-content:center;font-size:0.5rem;flex-shrink:0;overflow:hidden;">' + art + '</div>' +
+            '<div style="flex:1;min-width:0;">' +
+              '<div style="font-size:0.65rem;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (t.title||'未知') + '</div>' +
+              '<div style="font-size:0.55rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (t.artist||'') + '</div>' +
+            '</div>' +
+            '<div style="font-size:0.5rem;color:var(--accent-1-light);">▶</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      // Load from API
+      fetch('/api/music').then(function(r) { return r.json(); }).then(function(data) {
+        var tracks = Array.isArray(data) ? data : [];
+        renderHomeMusic(tracks);
+      }).catch(function() {
+        musicList.innerHTML = '<div class="text-[10px]" style="color:var(--text-muted);">加载失败</div>';
+      });
+
+      // Hover effects
+      musicList.addEventListener('mouseover', function(e) {
+        var item = e.target.closest('.home-music-item');
+        if (item) item.style.background = 'rgba(255,255,255,0.06)';
+      });
+      musicList.addEventListener('mouseout', function(e) {
+        var item = e.target.closest('.home-music-item');
+        if (item) item.style.background = '';
+      });
+    })();
+  </script>
+
   </script>
 
 </Base>

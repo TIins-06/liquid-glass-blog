@@ -1,4 +1,4 @@
-import type { AstroGlobal } from 'astro';
+﻿import type { AstroGlobal } from 'astro';
 
 export interface SiteSettings {
   // Profile
@@ -31,6 +31,7 @@ export interface SiteSettings {
   sectionTechBarColor: string;
   // Misc
   adminPassword: string;
+  musicSourceConfig: string;
   customCss: string;
 }
 
@@ -68,6 +69,7 @@ export async function getSettings(): Promise<SiteSettings> {
     sectionTechTitle: 'Tech Stack',
     sectionTechBarColor: 'accent-2',
     adminPassword: 'liquid2026',
+    musicSourceConfig: '',
     customCss: '',
   };
 
@@ -104,4 +106,5 @@ export async function setSettings(settings: Record<string, string>): Promise<voi
     Object.entries(settings).map(([k, v]) => kv.put(`settings:${k}`, v))
   );
 }
+
 
