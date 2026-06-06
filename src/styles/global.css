@@ -611,6 +611,26 @@ body {
   max-width: 100%;
 }
 
+/* ===== Sidebar Card (unified glass style) ===== */
+.sidebar-card {
+  padding: 1rem;
+  border-radius: var(--card-radius);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--card-blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--card-blur)) saturate(150%);
+  box-shadow: 0 8px 32px -8px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(255,255,255,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.sidebar-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px -8px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+[data-theme="light"] .sidebar-card {
+  background: rgba(255,255,255,0.5);
+  border-color: rgba(0,0,0,0.08);
+  box-shadow: 0 8px 32px -8px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(255,255,255,0.3);
+}
 /* ===== Right Sidebar (Home) ===== */
 .home-right-sidebar {
   width: 240px;
