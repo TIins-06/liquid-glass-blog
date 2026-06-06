@@ -1,0 +1,208 @@
+�---
+export const prerender = false;
+---
+
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#7c3aed" />
+    <title>登录 | 管理后台</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      @import "tailwindcss";
+      :root {
+        --bg-primary: #0a0a1a;
+        --bg-secondary: #111127;
+        --text-primary: #e2e8f0;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+        --glass-bg: rgba(255, 255, 255, 0.06);
+        --glass-border: rgba(255, 255, 255, 0.12);
+        --glass-glow: rgba(124, 58, 237, 0.15);
+        --gradient-start: #0a0a1a;
+        --gradient-mid: #1a0a2e;
+        --gradient-end: #0a1a2e;
+        --color-primary: #7c3aed;
+        --color-primary-light: #a78bfa;
+        --color-accent: #06b6d4;
+        --color-accent-light: #22d3ee;
+      }
+      body {
+        background: linear-gradient(135deg, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
+        color: var(--text-primary);
+        min-height: 100vh;
+        font-family: 'Inter', system-ui, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+      }
+      .glass {
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border: 1px solid var(--glass-border);
+      }
+      .glass-strong {
+        background: var(--glass-bg);
+        backdrop-filter: blur(24px) saturate(200%);
+        -webkit-backdrop-filter: blur(24px) saturate(200%);
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 8px 32px var(--glass-glow);
+      }
+      .text-gradient {
+        background: linear-gradient(135deg, var(--color-primary-light), var(--color-accent-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+      }
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      .login-card { animation: slideUp 0.6s ease-out forwards; }
+      .login-input {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 0.75rem;
+        padding: 0.875rem 1rem;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        width: 100%;
+        outline: none;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+      }
+      .login-input:focus {
+        border-color: var(--color-primary);
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+      }
+      .login-input::placeholder { color: var(--text-muted); }
+      .login-btn {
+        background: linear-gradient(135deg, var(--color-primary), #5b21b6);
+        border: none;
+        border-radius: 0.75rem;
+        padding: 0.875rem 1.5rem;
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        width: 100%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .login-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+      .login-btn:active { transform: translateY(0); }
+      .login-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+      .error-msg { color: #f87171; font-size: 0.8rem; margin-top: 0.5rem; text-align: center; display: none; }
+    </style>
+  </head>
+  <body>
+    {/* Background Orbs */}
+    <div class="absolute inset-0 overflow-hidden pointer-events-none" style="position: fixed;">
+      <div class="absolute w-[500px] h-[500px] rounded-full bg-purple-600/20 blur-[120px]" style="top: -10%; left: -5%; animation: float 6s ease-in-out infinite;"></div>
+      <div class="absolute w-[400px] h-[400px] rounded-full bg-cyan-500/15 blur-[100px]" style="bottom: -5%; right: -5%; animation: float 6s ease-in-out infinite -3s;"></div>
+    </div>
+
+    <div class="relative z-10 w-full max-w-md mx-auto px-6 login-card">
+      {/* Logo */}
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl glass-strong mb-4" style="animation: float 6s ease-in-out infinite;">
+          <span class="text-2xl">💎</span>
+        </div>
+        <h1 class="text-2xl font-bold text-gradient">管理后台</h1>
+        <p class="text-sm mt-2" style="color: var(--text-muted);">液态玻璃博客 · 管理员登录</p>
+      </div>
+
+      {/* Login Card */}
+      <div class="glass-strong rounded-2xl p-8">
+        <form id="login-form" autocomplete="off">
+          <label class="block mb-2 text-sm font-medium" style="color: var(--text-secondary);">管理员密码</label>
+          <input
+            id="password-input"
+            type="password"
+            class="login-input mb-4"
+            placeholder="请输入密码..."
+            required
+            autofocus
+          />
+          <div id="error-msg" class="error-msg"></div>
+          <button type="submit" id="login-btn" class="login-btn mt-4">
+            <span id="btn-text">登 录</span>
+            <span id="btn-loading" style="display: none;">验证中...</span>
+          </button>
+        </form>
+      </div>
+
+      <p class="text-center text-xs mt-6" style="color: var(--text-muted);">
+        <a href="/" class="hover:text-purple-400 transition-colors">← 返回首页</a>
+      </p>
+    </div>
+
+    <script is:inline>
+      (function () {
+        const token = localStorage.getItem('admin_token');
+        if (token) {
+          window.location.href = '/admin';
+          return;
+        }
+
+        const form = document.getElementById('login-form');
+        const input = document.getElementById('password-input');
+        const btn = document.getElementById('login-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnLoading = document.getElementById('btn-loading');
+        const errorMsg = document.getElementById('error-msg');
+
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+          const password = input.value.trim();
+          if (!password) return;
+
+          btn.disabled = true;
+          btnText.style.display = 'none';
+          btnLoading.style.display = 'inline';
+          errorMsg.style.display = 'none';
+
+          try {
+            const res = await fetch('/api/auth', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ password })
+            });
+            const data = await res.json();
+
+            if (data.ok && data.token) {
+              localStorage.setItem('admin_token', data.token);
+              window.location.href = '/admin';
+            } else {
+              errorMsg.textContent = data.error || '密码错误';
+              errorMsg.style.display = 'block';
+            }
+          } catch (err) {
+            errorMsg.textContent = '网络错误，请重试';
+            errorMsg.style.display = 'block';
+          } finally {
+            btn.disabled = false;
+            btnText.style.display = 'inline';
+            btnLoading.style.display = 'none';
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

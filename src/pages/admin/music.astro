@@ -1,0 +1,115 @@
+﻿---
+export const prerender = false;
+import Admin from '../../layouts/Admin.astro';
+---
+
+<Admin title="音乐管理 | 管理后台">
+  <div class="max-w-4xl mx-auto px-6">
+    <div class="mb-8 animate-slide-up">
+      <a href="/admin" class="text-sm mb-4 inline-block transition-colors hover:text-purple-400" style="color: var(--text-muted);">← 返回仪表盘</a>
+      <h1 class="text-3xl font-bold" style="color: var(--text-primary);">🎵 音乐管理</h1>
+      <p class="mt-2" style="color: var(--text-secondary);">管理博客播放器的音乐曲目和音源</p>
+    </div>
+
+    <div id="tracks-container" class="space-y-4"></div>
+
+    <div class="mt-6 flex gap-4 animate-slide-up" style="animation-delay: 0.3s;">
+      <button onclick="addTrack()" class="ripple glass px-6 py-2.5 rounded-xl text-sm font-medium transition-all hover:bg-white/10" style="color: var(--text-primary); border: 1px solid var(--glass-border);">
+        ➕ 添加曲目
+      </button>
+      <button onclick="saveTracks()" class="ripple px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-500 to-cyan-400 hover:opacity-90 transition-opacity">
+        💾 保存所有曲目
+      </button>
+    </div>
+
+    <div id="save-status" class="text-center text-sm mt-4 hidden" style="color: var(--text-muted);"></div>
+  </div>
+</Admin>
+
+<script is:inline>
+  (function() {
+    if (!localStorage.getItem('admin-token')) {
+      window.location.href = '/admin/login';
+      return;
+    }
+    loadTracks();
+  })();
+
+  var tracks = [];
+
+  function loadTracks() {
+    fetch('/api/music')
+      .then(r => r.json())
+      .then(data => {
+        tracks = Array.isArray(data) ? data : [];
+        renderTracks();
+      })
+      .catch(() => { tracks = []; renderTracks(); });
+  }
+
+  function renderTracks() {
+    var container = document.getElementById('tracks-container');
+    container.innerHTML = tracks.map(function(t, i) {
+      return '<div class="glass-card rounded-2xl p-5 animate-slide-up" style="animation-delay: ' + (i * 0.05) + 's;">' +
+        '<div class="flex items-center justify-between mb-3">' +
+          '<span class="text-sm font-medium" style="color: var(--text-primary);">曲目 ' + (i + 1) + '</span>' +
+          '<button onclick="removeTrack(' + i + ')" class="text-xs px-3 py-1 rounded-lg hover:bg-red-500/20 text-red-400 transition-colors">删除</button>' +
+        '</div>' +
+        '<div class="grid grid-cols-1 md:grid-cols-3 gap-3">' +
+          '<div>' +
+            '<label class="block text-xs mb-1" style="color: var(--text-muted);">标题</label>' +
+            '<input type="text" value="' + (t.title || '').replace(/"/g, '&quot;') + '" onchange="tracks[' + i + '].title=this.value" class="w-full px-3 py-2 rounded-lg text-sm" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);" />' +
+          '</div>' +
+          '<div>' +
+            '<label class="block text-xs mb-1" style="color: var(--text-muted);">艺术家</label>' +
+            '<input type="text" value="' + (t.artist || '').replace(/"/g, '&quot;') + '" onchange="tracks[' + i + '].artist=this.value" class="w-full px-3 py-2 rounded-lg text-sm" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);" />' +
+          '</div>' +
+          '<div>' +
+            '<label class="block text-xs mb-1" style="color: var(--text-muted);">音频URL</label>' +
+            '<input type="text" value="' + (t.src || '').replace(/"/g, '&quot;') + '" onchange="tracks[' + i + '].src=this.value" placeholder="https://...mp3" class="w-full px-3 py-2 rounded-lg text-sm" style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary);" />' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function addTrack() {
+    tracks.push({ title: '', artist: '', src: '' });
+    renderTracks();
+  }
+
+  function removeTrack(i) {
+    tracks.splice(i, 1);
+    renderTracks();
+  }
+
+  function saveTracks() {
+    var status = document.getElementById('save-status');
+    status.className = 'text-center text-sm mt-4';
+    status.style.color = 'var(--text-muted)';
+    status.textContent = '保存中...';
+
+    fetch('/api/music', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tracks: tracks })
+    })
+    .then(r => r.json())
+    .then(result => {
+      if (result.ok) {
+        status.textContent = '✅ 曲目已保存';
+        status.style.color = '#22c55e';
+      } else {
+        status.textContent = '❌ 保存失败';
+        status.style.color = '#ef4444';
+      }
+    })
+    .catch(err => {
+      status.textContent = '❌ 网络错误';
+      status.style.color = '#ef4444';
+    })
+    .finally(function() {
+      setTimeout(function() { status.className = 'text-center text-sm mt-4 hidden'; }, 4000);
+    });
+  }
+</script>

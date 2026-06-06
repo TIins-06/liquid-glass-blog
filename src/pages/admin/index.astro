@@ -1,0 +1,107 @@
+�---
+export const prerender = false;
+import Admin from '../../layouts/Admin.astro';
+---
+
+<Admin title="仪表盘 | 管理后台">
+  <div class="max-w-6xl mx-auto px-6">
+    {/* Welcome Header */}
+    <div class="mb-10 animate-slide-up">
+      <h1 class="text-3xl font-bold mb-2" style="color: var(--text-primary);">
+        欢迎回来，<span class="text-gradient">管理员</span> 👋
+      </h1>
+      <p class="text-sm" style="color: var(--text-muted);">管理你的液态玻璃博客</p>
+    </div>
+
+    {/* Stats Cards */}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.1s;">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
+            <span class="text-lg">📝</span>
+          </div>
+          <span class="text-sm font-medium" style="color: var(--text-secondary);">文章总数</span>
+        </div>
+        <div class="text-3xl font-bold text-gradient">—</div>
+        <p class="text-xs mt-1" style="color: var(--text-muted);">通过文章管理查看</p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.2s;">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center">
+            <span class="text-lg">🎵</span>
+          </div>
+          <span class="text-sm font-medium" style="color: var(--text-secondary);">音乐曲目</span>
+        </div>
+        <div class="text-3xl font-bold text-gradient">—</div>
+        <p class="text-xs mt-1" style="color: var(--text-muted);">通过音乐管理查看</p>
+      </div>
+
+      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.3s;">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
+            <span class="text-lg">⚙️</span>
+          </div>
+          <span class="text-sm font-medium" style="color: var(--text-secondary);">站点状态</span>
+        </div>
+        <div class="text-3xl font-bold text-green-400">●</div>
+        <p class="text-xs mt-1" style="color: var(--text-muted);">运行正常</p>
+      </div>
+    </div>
+
+    {/* Quick Links */}
+    <div class="mb-10 animate-slide-up" style="animation-delay: 0.4s;">
+      <h2 class="text-lg font-bold mb-5" style="color: var(--text-primary);">快捷入口</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <a href="/admin/settings" class="glass-card rounded-2xl p-6 block group">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+              🎛️
+            </div>
+            <div>
+              <h3 class="text-base font-bold group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">站点设置</h3>
+              <p class="text-xs mt-0.5" style="color: var(--text-muted);">编辑个人信息、主题、动效等</p>
+            </div>
+          </div>
+        </a>
+
+        <a href="/admin/music" class="glass-card rounded-2xl p-6 block group">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+              🎵
+            </div>
+            <div>
+              <h3 class="text-base font-bold group-hover:text-cyan-400 transition-colors" style="color: var(--text-primary);">音乐管理</h3>
+              <p class="text-xs mt-0.5" style="color: var(--text-muted);">添加、编辑和管理背景音乐</p>
+            </div>
+          </div>
+        </a>
+
+        <a href="/admin/articles" class="glass-card rounded-2xl p-6 block group">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-violet-500/20 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+              📄
+            </div>
+            <div>
+              <h3 class="text-base font-bold group-hover:text-violet-400 transition-colors" style="color: var(--text-primary);">文章管理</h3>
+              <p class="text-xs mt-0.5" style="color: var(--text-muted);">查看和管理博客文章</p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    {/* Quick Preview Link */}
+    <div class="animate-slide-up" style="animation-delay: 0.5s;">
+      <div class="glass-card rounded-2xl p-6 flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold" style="color: var(--text-primary);">查看博客前台</h3>
+          <p class="text-xs mt-1" style="color: var(--text-muted);">在新标签页打开博客首页</p>
+        </div>
+        <a href="/" target="_blank" class="glass px-5 py-2.5 rounded-xl text-sm font-semibold text-purple-300 hover:bg-white/10 transition-all">
+          打开 →
+        </a>
+      </div>
+    </div>
+  </div>
+</Admin>

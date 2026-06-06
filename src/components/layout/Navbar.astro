@@ -30,9 +30,19 @@ const currentPath = Astro.url.pathname;
           {link.label}
         </a>
       ))}
+      <a
+        href="/admin"
+        class={`ripple px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+          currentPath.startsWith('/admin')
+            ? 'text-purple-300 bg-purple-500/10'
+            : 'text-[color:var(--text-muted)] hover:text-white hover:bg-white/5'
+        }`}
+      >
+        ⚙️
+      </a>
       <button
         id="settings-toggle" type="button"
-        class="ripple ml-2 p-2 rounded-lg text-[color:var(--text-secondary)] hover:text-white hover:bg-white/5 transition-all"
+        class="ripple ml-1 p-2 rounded-lg text-[color:var(--text-secondary)] hover:text-white hover:bg-white/5 transition-all"
         aria-label="设置"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -49,5 +59,3 @@ const currentPath = Astro.url.pathname;
     window.dispatchEvent(new CustomEvent('toggle-settings'));
   });
 </script>
-
-

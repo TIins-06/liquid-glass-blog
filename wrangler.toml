@@ -1,0 +1,7 @@
+﻿name = "liquid-glass-blog"
+compatibility_date = "2024-09-25"
+compatibility_flags = ["nodejs_compat"]
+
+[[kv_namespaces]]
+binding = "BLOG_KV"
+id = "placeholder-will-be-set-via-dashboard"
