@@ -196,6 +196,7 @@ body {
 .glass-card {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
+  border-radius: var(--lg-radius);
 }
 
 /* ===== Glass Utility ===== */
@@ -581,4 +582,5 @@ body {
   background: linear-gradient(to right, var(--accent-1), var(--accent-2));
   transition: width 0.15s linear;
 }
+
 
