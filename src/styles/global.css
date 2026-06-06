@@ -25,7 +25,7 @@
   --inner-spread: -5px;
   --inner-color: rgba(255,255,255,0.5);
   --glass-tint: rgba(255,255,255,0.16);
-  --frost-blur: 0px;
+  --frost-blur: 12px;
   --lg-radius: 20px;
   --lg-radius-sm: 14px;
   --lg-radius-lg: 28px;
@@ -197,6 +197,14 @@ body {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);
   border-radius: var(--lg-radius);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+}
+[data-theme="light"] .glass-card {
+  background: rgba(255,255,255,0.55);
+  border-color: rgba(0,0,0,0.08);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
 }
 
 
@@ -608,6 +616,7 @@ body {
   background: linear-gradient(to right, var(--accent-1), var(--accent-2));
   transition: width 0.15s linear;
 }
+
 
 
 
