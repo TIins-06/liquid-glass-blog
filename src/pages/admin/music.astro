@@ -167,7 +167,7 @@ function switchTab(tab) {
 
 // --- SEARCH ---
 function getSearchUrl(q) {
-  if (customSource && customSource.url) {
+  if (customSource && customSource.url && !customSource.url.endsWith('.js') && !customSource.url.endsWith('.ts')) {
     return customSource.url + '?search=' + encodeURIComponent(q) + '&source=' + (customSource.type || 'lx');
   }
   return '/api/music/search?q=' + encodeURIComponent(q);
@@ -189,16 +189,16 @@ function doSearch() {
       results.innerHTML = songs.map(function(s, i) {
         var isFav = favorites.some(function(f) { return f.id === s.id; });
         var dur = s.duration ? Math.floor(s.duration / 60) + ':' + String(Math.floor(s.duration % 60)).padStart(2, '0') : '--:--';
-        var art = s.cover ? '<img src="' + s.cover + '" onerror="this.parentElement.textContent=\'🎵\'" />' : '🎵';
-        return '<div class="m-song-item">' +
-          '<div class="m-song-art">' + art + '</div>' +
-          '<div class="m-song-info"><div class="m-song-title">' + escH(s.title) + '</div><div class="m-song-artist">' + escH(s.artist || s.singer || '') + '</div>' +
-          '<audio class="m-audio" controls preload="none" src="' + (s.src || s.url || '') + '"></audio></div>' +
-          '<span class="m-song-dur">' + dur + '</span>' +
-          '<div class="m-song-actions">' +
-            '<button class="m-song-btn m-song-btn-play" onclick="playSong(' + i + ')" title="播放">▶</button>' +
-            '<button class="m-song-btn" onclick="addToPlaylist(' + i + ')" title="加入播放列表">📋</button>' +
-            '<button class="m-song-btn' + (isFav ? ' m-song-btn-fav' : '') + '" onclick="toggleFavorite(' + i + ')" title="收藏">' + (isFav ? '❤️' : '🤍') + '</button>' +
+        var art = s.cover ? '<img src="' + s.cover + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.textContent=\'🎵\'" />' : '🎵';
+        return '<div style="' + S + '" onmouseover="this.style.borderColor=\'var(--accent-1)\'" onmouseout="this.style.borderColor=\'var(--glass-border)\'">' +
+          '<div style="' + SA + '">' + art + '</div>' +
+          '<div style="' + SI + ';padding-top:0.25rem;"><div style="' + ST + '">' + escH(s.title) + '</div><div style="' + SR + '">' + escH(s.artist || s.singer || '') + '</div>' +
+          '<audio style="width:100%;height:32px;margin-top:0.25rem;border-radius:0.5rem;" controls preload="none" src="' + (s.src || s.url || '') + '"></audio></div>' +
+          '<span style="' + SD + '">' + dur + '</span>' +
+          '<div style="' + SB + '">' +
+            '<button style="' + SBTN + SPLAY + '" onclick="playSong(' + i + ')" title="播放">▶</button>' +
+            '<button style="' + SBTN + '" onclick="addToPlaylist(' + i + ')" title="加入播放列表">📋</button>' +
+            '<button style="' + SBTN + (isFav ? 'color:#ef4444;background:rgba(239,68,68,0.12);' : '') + '" onclick="toggleFavorite(' + i + ')" title="收藏">' + (isFav ? '❤️' : '🤍') + '</button>' +
           '</div></div>';
       }).join('');
       window._sr = songs;
@@ -224,21 +224,32 @@ function addToPlaylist(i) {
 function removeFromPlaylist(i) { playlist.splice(i, 1); renderPlaylist(); }
 function movePlaylistItem(i, d) { var j = i + d; if (j < 0 || j >= playlist.length) return; var t = playlist[i]; playlist[i] = playlist[j]; playlist[j] = t; renderPlaylist(); }
 
+var S = 'display:flex;align-items:center;gap:0.75rem;padding:0.625rem 0.875rem;border-radius:0.75rem;background:var(--glass-bg);border:1px solid var(--glass-border);transition:all 0.2s;';
+var SA = 'width:2.75rem;height:2.75rem;border-radius:0.5rem;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem;overflow:hidden;';
+var SI = 'flex:1;min-width:0;';
+var ST = 'font-size:0.75rem;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+var SR = 'font-size:0.65rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+var SD = 'font-size:0.6rem;color:var(--text-muted);font-family:monospace;flex-shrink:0;';
+var SB = 'display:flex;gap:0.25rem;flex-shrink:0;';
+var SBTN = 'padding:0.3rem 0.5rem;border-radius:0.375rem;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--text-primary);font-size:0.65rem;cursor:pointer;transition:all 0.15s;';
+var SPLAY = 'background:linear-gradient(135deg,var(--accent-1),var(--accent-2));color:white;border-color:transparent;';
+var SDEL = 'color:#ef4444;';
+
 function renderPlaylist() {
   var c = document.getElementById('playlist-tracks');
-  if (!playlist.length) { c.innerHTML = '<div class="m-status py-8">播放列表为空，去搜索页添加歌曲</div>'; return; }
+  if (!playlist.length) { c.innerHTML = '<div style="text-align:center;padding:2rem;font-size:0.75rem;color:var(--text-muted);">播放列表为空，去搜索页添加歌曲</div>'; return; }
   c.innerHTML = playlist.map(function(t, i) {
     var dur = t.duration ? Math.floor(t.duration / 60) + ':' + String(Math.floor(t.duration % 60)).padStart(2, '0') : '--:--';
-    var art = t.cover ? '<img src="' + t.cover + '" onerror="this.parentElement.textContent=\'🎵\'" />' : '🎵';
-    return '<div class="m-song-item">' +
-      '<div class="m-song-art" style="width:2.5rem;height:2.5rem;font-size:0.85rem;">' + art + '</div>' +
-      '<div class="m-song-info"><div class="m-song-title">' + escH(t.title) + '</div><div class="m-song-artist">' + escH(t.artist) + '</div></div>' +
-      '<span class="m-song-dur">' + dur + '</span>' +
-      '<div class="m-song-actions">' +
-        '<button class="m-song-btn" onclick="movePlaylistItem(' + i + ',-1)" title="上移">⬆</button>' +
-        '<button class="m-song-btn" onclick="movePlaylistItem(' + i + ',1)" title="下移">⬇</button>' +
-        '<button class="m-song-btn m-song-btn-play" onclick="playPlaylist(' + i + ')" title="播放">▶</button>' +
-        '<button class="m-song-btn m-song-btn-del" onclick="removeFromPlaylist(' + i + ')" title="移除">✕</button>' +
+    var art = t.cover ? '<img src="' + t.cover + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.textContent=\'🎵\'" />' : '🎵';
+    return '<div style="' + S + '" onmouseover="this.style.borderColor=\'var(--accent-1)\'" onmouseout="this.style.borderColor=\'var(--glass-border)\'">' +
+      '<div style="' + SA + '">' + art + '</div>' +
+      '<div style="' + SI + '"><div style="' + ST + '">' + escH(t.title) + '</div><div style="' + SR + '">' + escH(t.artist) + '</div></div>' +
+      '<span style="' + SD + '">' + dur + '</span>' +
+      '<div style="' + SB + '">' +
+        '<button style="' + SBTN + '" onclick="movePlaylistItem(' + i + ',-1)" title="上移">⬆</button>' +
+        '<button style="' + SBTN + '" onclick="movePlaylistItem(' + i + ',1)" title="下移">⬇</button>' +
+        '<button style="' + SBTN + SPLAY + '" onclick="playPlaylist(' + i + ')" title="播放">▶</button>' +
+        '<button style="' + SBTN + SDEL + '" onclick="removeFromPlaylist(' + i + ')" title="移除">✕</button>' +
       '</div></div>';
   }).join('');
 }
@@ -374,6 +385,11 @@ function testSource() {
   var q = document.getElementById('source-test').value.trim() || '周杰伦';
   var result = document.getElementById('source-test-result');
   if (!url) { alert('请先填写 API 地址'); return; }
+  if (url.endsWith('.js') || url.endsWith('.ts')) {
+    result.className = 'm-status mt-3'; result.style.color = '#ef4444'; result.classList.remove('hidden');
+    result.textContent = '❌ 请输入 API 接口地址，不是 JS 文件地址。lx-music-source 的 JS 文件需要配合 lx-music-api-server 使用';
+    return;
+  }
   result.className = 'm-status mt-3'; result.textContent = '测试中...'; result.classList.remove('hidden');
   fetch(url + '?search=' + encodeURIComponent(q) + '&source=' + document.getElementById('source-type').value)
     .then(function(r) { return r.json(); })
@@ -382,7 +398,14 @@ function testSource() {
       if (songs.length > 0) { result.textContent = '✅ 连接成功，返回 ' + songs.length + ' 首结果'; result.style.color = '#22c55e'; }
       else { result.textContent = '⚠️ 连接成功但无结果'; result.style.color = '#f59e0b'; }
     })
-    .catch(function(e) { result.textContent = '❌ 连接失败: ' + e.message; result.style.color = '#ef4444'; });
+    .catch(function(e) {
+      if (e.message.includes('Unexpected token')) {
+        result.textContent = '❌ 返回的不是 JSON 数据。如果使用 lx-music-source，需要部署 lx-music-api-server 并填入其 API 地址';
+      } else {
+        result.textContent = '❌ 连接失败: ' + e.message;
+      }
+      result.style.color = '#ef4444';
+    });
 }
 
 function escH(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
