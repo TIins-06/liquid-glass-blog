@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @theme {
   --font-display: 'Inter', system-ui, sans-serif;
@@ -725,4 +725,17 @@ body {
   .sidebar-overlay.active {
     opacity: 1; pointer-events: auto;
   }
+}
+
+/* ===== Sort Button ===== */
+.sort-btn:hover {
+  color: var(--text-primary) !important;
+  background: rgba(255,255,255,0.06);
+}
+.sort-active {
+  color: var(--accent-1-light) !important;
+  background: rgba(124,58,237,0.15);
+}
+[data-theme="light"] .sort-btn:hover {
+  background: rgba(0,0,0,0.04);
 }

@@ -10,7 +10,6 @@ const posts = (await getCollection('blog'))
   .filter((p) => !p.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-// Also load KV-stored articles
 let kvArticles: any[] = [];
 try { kvArticles = JSON.parse(settings.articles || '[]'); } catch {}
 const kvPosts = kvArticles.filter((a: any) => !a.draft).map((a: any) => ({
@@ -22,7 +21,6 @@ const kvPosts = kvArticles.filter((a: any) => !a.draft).map((a: any) => ({
   source: 'kv',
 }));
 
-// Merge and deduplicate (static takes priority)
 const allPosts = [...posts.map(p => ({
   id: p.id, title: p.data.title, description: p.data.description,
   date: p.data.date, tags: p.data.tags, source: 'static',
@@ -30,6 +28,12 @@ const allPosts = [...posts.map(p => ({
   .sort((a: any, b: any) => b.date.valueOf() - a.date.valueOf());
 
 const allTags = [...new Set(allPosts.flatMap((p: any) => p.tags))];
+
+// Serialize posts data for client-side sorting
+const postsJson = JSON.stringify(allPosts.map((p: any) => ({
+  id: p.id, title: p.title, description: p.description,
+  date: p.date.toISOString(), tags: p.tags, source: p.source,
+})));
 ---
 
 <Base title="文章 | 液态玻璃 Blog" description="浏览所有博客文章">
@@ -37,15 +41,22 @@ const allTags = [...new Set(allPosts.flatMap((p: any) => p.tags))];
     <h1 class="text-3xl md:text-4xl font-extrabold mb-4 animate-slide-up">
       <span class="text-gradient">全部文章</span>
     </h1>
-    <p class="mb-8 animate-slide-up" style="color: var(--text-secondary); animation-delay: 0.1s;">
+    <p class="mb-6 animate-slide-up" style="color: var(--text-secondary); animation-delay: 0.1s;">
       共 {allPosts.length} 篇文章
     </p>
 
-    <div class="flex flex-wrap gap-2 mb-10 animate-slide-up" style="animation-delay: 0.2s;">
+    {/* Tag Filter + Sort */}
+    <div class="flex flex-wrap items-center gap-2 mb-8 animate-slide-up" style="animation-delay: 0.2s;">
       <button class="tag-filter ripple px-3 py-1 rounded-full text-xs font-medium transition-all tag-active" data-tag="all">全部</button>
       {allTags.map((tag) => (
         <button class="tag-filter ripple glass px-3 py-1 rounded-full text-xs font-medium transition-all" style="color: var(--text-muted)" data-tag={tag}>{tag}</button>
       ))}
+      <div class="ml-auto flex items-center gap-1.5">
+        <span class="text-[10px]" style="color:var(--text-muted);">排序:</span>
+        <button id="sort-date-desc" class="sort-btn sort-active ripple px-2.5 py-1 rounded-full text-[10px] font-medium transition-all" data-sort="date-desc" title="最新发布">📅 最新</button>
+        <button id="sort-date-asc" class="sort-btn ripple px-2.5 py-1 rounded-full text-[10px] font-medium transition-all" style="color:var(--text-muted);" data-sort="date-asc" title="最早发布">📅 最早</button>
+        <button id="sort-title" class="sort-btn ripple px-2.5 py-1 rounded-full text-[10px] font-medium transition-all" style="color:var(--text-muted);" data-sort="title" title="按标题排序">🔤 标题</button>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="posts-grid">
@@ -54,6 +65,8 @@ const allTags = [...new Set(allPosts.flatMap((p: any) => p.tags))];
           href={post.source === 'kv' ? '/blog/kv/' + post.id : '/blog/' + post.id}
           class="post-card block group animate-slide-up"
           data-tags={post.tags.join(',')}
+          data-date={post.date.toISOString()}
+          data-title={post.title}
           style={`animation-delay: ${0.1 * i}s`}
         >
           <GlassCard class="h-full">
@@ -79,23 +92,69 @@ const allTags = [...new Set(allPosts.flatMap((p: any) => p.tags))];
 </Base>
 
 <script>
+  // Tag filter
+  let currentTag = 'all';
   document.querySelectorAll('.tag-filter').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const tag = btn.getAttribute('data-tag');
+      currentTag = btn.getAttribute('data-tag') || 'all';
       document.querySelectorAll('.tag-filter').forEach((b) => {
         b.classList.remove('tag-active'); b.classList.add('tag-inactive');
         b.style.color = 'var(--text-muted)';
       });
       btn.classList.add('tag-active'); btn.classList.remove('tag-inactive');
-
-      document.querySelectorAll('.post-card').forEach((card) => {
-        const cardTags = card.getAttribute('data-tags') || '';
-        if (tag === 'all' || cardTags.includes(tag)) {
-          (card as HTMLElement).style.display = '';
-        } else {
-          (card as HTMLElement).style.display = 'none';
-        }
-      });
+      applyFilters();
     });
   });
+
+  // Sort
+  document.querySelectorAll('.sort-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const sortType = btn.getAttribute('data-sort');
+      document.querySelectorAll('.sort-btn').forEach((b) => {
+        b.classList.remove('sort-active');
+        b.style.color = 'var(--text-muted)';
+        b.style.background = '';
+      });
+      btn.classList.add('sort-active');
+      btn.style.color = 'var(--accent-1-light)';
+      btn.style.background = 'rgba(124,58,237,0.15)';
+      applySorting(sortType || 'date-desc');
+    });
+  });
+
+  function applyFilters() {
+    document.querySelectorAll('.post-card').forEach((card) => {
+      const cardTags = card.getAttribute('data-tags') || '';
+      if (currentTag === 'all' || cardTags.includes(currentTag)) {
+        (card as HTMLElement).style.display = '';
+      } else {
+        (card as HTMLElement).style.display = 'none';
+      }
+    });
+  }
+
+  function applySorting(sortType: string) {
+    const grid = document.getElementById('posts-grid');
+    if (!grid) return;
+    const cards = Array.from(grid.querySelectorAll('.post-card'));
+    cards.sort((a, b) => {
+      if (sortType === 'date-desc') {
+        return new Date(b.getAttribute('data-date') || '').getTime() - new Date(a.getAttribute('data-date') || '').getTime();
+      } else if (sortType === 'date-asc') {
+        return new Date(a.getAttribute('data-date') || '').getTime() - new Date(b.getAttribute('data-date') || '').getTime();
+      } else if (sortType === 'title') {
+        return (a.getAttribute('data-title') || '').localeCompare(b.getAttribute('data-title') || '');
+      }
+      return 0;
+    });
+    cards.forEach(card => grid.appendChild(card));
+    applyFilters();
+  }
+
+  // Init sort button active state
+  const initBtn = document.getElementById('sort-date-desc');
+  if (initBtn) {
+    initBtn.style.color = 'var(--accent-1-light)';
+    initBtn.style.background = 'rgba(124,58,237,0.15)';
+  }
 </script>
