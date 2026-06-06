@@ -1,0 +1,50 @@
+﻿---
+title: "前端动效的艺术与实践"
+description: "从 CSS 动画到交互设计，探索如何用代码创造令人惊叹的视觉体验。"
+date: 2026-06-05
+tags: ["前端", "动效", "CSS"]
+---
+
+## 为什么动效很重要？
+
+好的动效不仅仅是「好看」，它更是用户体验的重要组成部分：
+
+- **引导注意力**：通过动画指引用户关注重要信息
+- **反馈操作**：让用户知道系统已经接收到他们的操作
+- **维持上下文**：通过过渡动画帮助用户理解页面结构的变化
+
+## CSS 动画基础
+
+### 关键帧动画
+
+```css
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+```
+
+### 过渡动画
+
+```css
+.glass-card {
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.glass-card:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+```
+
+## 性能优化原则
+
+1. **只动画 `transform` 和 `opacity`**：这些属性可以被 GPU 加速
+2. **使用 `will-change` 谨慎**：只在需要时声明
+3. **避免布局抖动**：不要动画会改变布局的属性
+4. **`requestAnimationFrame`**：JavaScript 动画优先使用此 API
+
+> 好的动效应该像呼吸一样自然 —— 你注意到了它的存在，但永远不会觉得它碍事。

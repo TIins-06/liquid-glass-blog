@@ -1,0 +1,44 @@
+﻿---
+title: "Tailwind CSS v4：重新定义原子化 CSS"
+description: "Tailwind CSS v4 带来了全新的引擎和配置方式，探索它的革新之处。"
+date: 2026-06-03
+tags: ["CSS", "Tailwind", "前端"]
+---
+
+## Tailwind v4 的革新
+
+### 原生 CSS 配置
+
+Tailwind v4 彻底抛弃了 `tailwind.config.js`，改用原生 CSS 配置：
+
+```css
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #7c3aed;
+  --color-accent: #06b6d4;
+  --font-display: 'Inter', system-ui, sans-serif;
+}
+```
+
+### Lightning CSS 引擎
+
+底层从 PostCSS 迁移到了 Lightning CSS（基于 Rust），构建速度提升了 **10 倍以上**。
+
+### 兼容性
+
+与 v3 的类名完全兼容，迁移成本几乎为零：
+
+- 所有 utility classes 保持不变
+- 自定义配置通过 CSS 变量实现
+- 插件系统仍然支持
+
+## 实际体验
+
+在我的项目中，Tailwind v4 的优势非常明显：
+
+1. **开发服务器启动**：从 2s 降到 200ms
+2. **热更新**：几乎瞬时
+3. **构建时间**：从 15s 降到 3s
+
+> 工具的进化，最终是为了让创作者更专注于创作本身。

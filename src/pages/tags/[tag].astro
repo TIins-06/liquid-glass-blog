@@ -1,0 +1,64 @@
+﻿---
+import Base from '../../layouts/Base.astro';
+import GlassCard from '../../components/glass/GlassCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const allTags = [...new Set(posts.flatMap((p) => p.data.tags))];
+  return allTags.map((tag) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts
+        .filter((p) => p.data.tags.includes(tag))
+        .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
+    },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<Base title={`${tag} | 液态玻璃 Blog`} description={`包含「${tag}」标签的所有文章`}>
+  <section class="max-w-6xl mx-auto px-6 py-12">
+    <a href="/tags" class="inline-flex items-center gap-2 text-sm mb-6 transition-colors hover:text-purple-400" style="color: var(--text-muted);">
+      ← 所有标签
+    </a>
+
+    <h1 class="text-3xl md:text-4xl font-extrabold mb-2 animate-slide-up">
+      <span class="text-gradient">#{tag}</span>
+    </h1>
+    <p class="mb-10 animate-slide-up" style="color: var(--text-secondary); animation-delay: 0.1s;">
+      共 {posts.length} 篇文章
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {posts.map((post, i) => (
+        <a href={`/blog/${post.id}`} class="block group animate-slide-up" style={`animation-delay: ${0.1 * i}s`}>
+          <GlassCard class="h-full">
+            <div class="flex items-center gap-2 mb-3">
+              {post.data.tags.slice(0, 2).map((t) => (
+                <span class:list={[
+                  'text-xs px-2 py-0.5 rounded-full',
+                  t === tag ? 'bg-purple-500/30 text-purple-300' : 'bg-white/5 text-slate-400',
+                ]}>
+                  {t}
+                </span>
+              ))}
+            </div>
+            <h2 class="text-lg font-bold mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">
+              {post.data.title}
+            </h2>
+            <p class="text-sm mb-4 line-clamp-2" style="color: var(--text-secondary);">
+              {post.data.description}
+            </p>
+            <div class="text-xs" style="color: var(--text-muted);">
+              {post.data.date.toLocaleDateString('zh-CN')}
+            </div>
+          </GlassCard>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>

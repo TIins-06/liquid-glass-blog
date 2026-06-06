@@ -1,0 +1,58 @@
+﻿---
+title: "构建你的 Cloudflare Pages 部署流水线"
+description: "从 GitHub 到 Cloudflare Pages，实现零配置的自动部署。"
+date: 2026-06-02
+tags: ["部署", "Cloudflare", "DevOps"]
+---
+
+## 为什么选择 Cloudflare Pages？
+
+- **全球 CDN**：200+ 数据中心，你的博客在任何地方都飞快
+- **自动 HTTPS**：无需手动配置 SSL 证书
+- **Git 集成**：push 即部署
+- **免费额度充足**：每月 500 次构建，不限带宽
+
+## 部署步骤
+
+### 1. 连接 GitHub 仓库
+
+登录 Cloudflare Dashboard → Workers & Pages → 创建应用程序 → 连接到 Git
+
+### 2. 配置构建
+
+| 设置项 | 值 |
+|--------|-----|
+| 框架预设 | Astro |
+| 构建命令 | `npm run build` |
+| 输出目录 | `dist` |
+
+### 3. 保存并部署
+
+Cloudflare 会自动检测到 `main` 分支的推送并开始构建。
+
+## 自定义域名
+
+在 Pages 项目的设置中：
+
+1. 点击 **自定义域**
+2. 输入你的域名
+3. Cloudflare 自动签发 SSL 证书
+
+```bash
+# 验证部署
+curl -I https://your-domain.com
+# 应该返回 200 OK 和 Cloudflare 的 headers
+```
+
+## 性能对比
+
+部署后用 Lighthouse 测试：
+
+| 指标 | 得分 |
+|------|------|
+| Performance | 98 |
+| Accessibility | 100 |
+| Best Practices | 100 |
+| SEO | 100 |
+
+> 好的部署方案应该像空气一样 —— 你感觉不到它的存在，但它无处不在。

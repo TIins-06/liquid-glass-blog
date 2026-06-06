@@ -1,0 +1,54 @@
+﻿---
+title: "Astro 6：现代静态站点生成的终极选择"
+description: "深入了解 Astro 6 的新特性、架构设计和为什么它是构建内容驱动型网站的最佳框架。"
+date: 2026-06-04
+tags: ["Astro", "前端", "框架"]
+---
+
+## Astro 6 核心特性
+
+### 零 JS 默认
+
+Astro 的核心哲学是「零 JS 默认」—— 每个页面默认不发送任何 JavaScript 到客户端。
+
+```astro
+---
+// 这段代码只在服务端运行
+const posts = await getCollection('blog');
+---
+
+{posts.map(post => <article>{post.title}</article>)}
+```
+
+### Islands 架构
+
+需要交互的部分通过 **Islands** 模式按需加载 React 组件：
+
+```astro
+<Sidebar client:load />
+<SearchBar client:visible />
+<CommentBox client:idle />
+```
+
+### View Transitions
+
+内置的视图过渡 API，让页面切换如丝般顺滑：
+
+```astro
+---
+// ViewTransitions are built into Astro 6
+---
+{/* View transitions are automatic in Astro 6 via transition directives */}
+```
+
+## 为什么选择 Astro？
+
+| 特性 | Astro | Next.js | Gatsby |
+|------|-------|---------|--------|
+| 零 JS 默认 | ✅ | ❌ | ❌ |
+| 静态优先 | ✅ | 可选 | ✅ |
+| 学习曲线 | 低 | 中 | 高 |
+| 构建速度 | 极快 | 中等 | 慢 |
+
+> 选择工具不是选择功能最多的那个，而是选择最适合你需求的那个。
+

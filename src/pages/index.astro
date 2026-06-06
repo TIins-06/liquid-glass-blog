@@ -1,0 +1,94 @@
+﻿---
+import Base from '../layouts/Base.astro';
+import GlassCard from '../components/glass/GlassCard.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+---
+
+<Base>
+  {/* Hero Section */}
+  <section class="relative min-h-[85vh] flex items-center justify-center overflow-hidden">
+    {/* Animated Background Orbs */}
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div class="absolute w-[500px] h-[500px] rounded-full bg-purple-600/20 blur-[120px] animate-float" style="top: -10%; left: -5%;"></div>
+      <div class="absolute w-[400px] h-[400px] rounded-full bg-cyan-500/15 blur-[100px] animate-float" style="bottom: -5%; right: -5%; animation-delay: -3s;"></div>
+      <div class="absolute w-[300px] h-[300px] rounded-full bg-violet-500/10 blur-[80px] animate-float" style="top: 40%; left: 50%; animation-delay: -1.5s;"></div>
+    </div>
+
+    <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
+      <div class="inline-block mb-6">
+        <span class="glass px-4 py-1.5 rounded-full text-sm font-medium text-purple-300 animate-fade-in">
+          ✨ 用玻璃质感重新定义博客体验
+        </span>
+      </div>
+
+      <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight animate-slide-up">
+        <span class="text-gradient">液态玻璃</span>
+        <br />
+        <span style="color: var(--text-secondary)">Blog</span>
+      </h1>
+
+      <p class="text-lg md:text-xl max-w-2xl mx-auto mb-10 animate-slide-up" style="color: var(--text-secondary); animation-delay: 0.2s;">
+        一个融合了现代设计美学与前沿前端技术的个人博客。
+        <br class="hidden md:block" />
+        液态玻璃质感 · 丝滑动效 · 极致体验
+      </p>
+
+      <div class="flex items-center justify-center gap-4 animate-slide-up" style="animation-delay: 0.4s;">
+        <a href="/blog" class="ripple glass-strong px-8 py-3 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-opacity">
+          浏览文章 →
+        </a>
+        <a href="/tags" class="ripple glass px-8 py-3 rounded-xl text-sm font-semibold transition-all hover:bg-white/10" style="color: var(--text-primary);">
+          按标签探索
+        </a>
+      </div>
+    </div>
+
+    {/* Scroll Indicator */}
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float">
+      <div class="w-5 h-8 rounded-full border-2 border-white/20 flex justify-center pt-1.5">
+        <div class="w-1 h-2 rounded-full bg-white/40 animate-bounce"></div>
+      </div>
+    </div>
+  </section>
+
+  {/* Featured Posts */}
+  {posts.length > 0 && (
+    <section class="max-w-6xl mx-auto px-6 py-16">
+      <div class="flex items-center justify-between mb-10">
+        <h2 class="text-2xl font-bold" style="color: var(--text-primary);">最新文章</h2>
+        <a href="/blog" class="text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors">
+          查看全部 →
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {posts.map((post, i) => (
+          <a href={`/blog/${post.id}`} class="block group">
+            <GlassCard class="h-full animate-slide-up" style={{ animationDelay: `${i * 0.1}s` }}>
+              <div class="flex items-center gap-2 mb-3">
+                {post.data.tags?.slice(0, 2).map((tag) => (
+                  <span class="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <h3 class="text-lg font-bold mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">
+                {post.data.title}
+              </h3>
+              <p class="text-sm mb-4 line-clamp-2" style="color: var(--text-secondary);">
+                {post.data.description}
+              </p>
+              <div class="text-xs" style="color: var(--text-muted);">
+                {post.data.date.toLocaleDateString('zh-CN')}
+              </div>
+            </GlassCard>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+</Base>
