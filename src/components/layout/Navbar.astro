@@ -11,7 +11,7 @@ const currentPath = Astro.url.pathname;
 <header class="fixed top-0 left-0 right-0 z-50 glass-strong">
   <nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
     <a href="/" class="flex items-center gap-3 group">
-      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm shadow-lg group-hover:scale-110 transition-transform">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--accent-1)] to-[var(--accent-2)] flex items-center justify-center text-white font-bold text-sm shadow-lg group-hover:scale-110 transition-transform">
         L
       </div>
       <span class="font-bold text-lg text-gradient hidden sm:block">Liquid Glass</span>
@@ -49,4 +49,5 @@ const currentPath = Astro.url.pathname;
     window.dispatchEvent(new CustomEvent('toggle-settings'));
   });
 </script>
+
 

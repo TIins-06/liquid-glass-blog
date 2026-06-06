@@ -51,9 +51,12 @@ const {
         if (animations === 'off') {
           document.documentElement.setAttribute('data-no-animations', '');
         }
+        const color = localStorage.getItem('color-preset') || 'purple';
+        document.documentElement.setAttribute('data-color', color);
       })();
     </script>
   </body>
 </html>
+
 
 

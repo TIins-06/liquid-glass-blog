@@ -5,151 +5,173 @@ import GlassCard from '../components/glass/GlassCard.astro';
 import { getCollection } from 'astro:content';
 import { getSettings } from '../lib/kv';
 
-// env is now imported via cloudflare:workers inside getSettings
 const settings = await getSettings();
-
 const posts = (await getCollection('blog'))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3);
-
+  .slice(0, 6);
 const avatarUrl = settings.avatarUrl || `https://q.qlogo.cn/g?b=qq&nk=${settings.qqNumber}&s=100`;
 const hasBackground = settings.backgroundUrl && settings.backgroundUrl.trim() !== '';
+
+const services = [
+  { icon: '🌐', title: 'EdgeTunnel VPN', desc: '安全代理服务', url: 'https://cc.likegz.dpdns.org', color: 'from-blue-500/20 to-cyan-500/20' },
+  { icon: '🖼️', title: 'Telegraph 图床', desc: '高速图片托管', url: 'https://image.hiokt.dpdns.org', color: 'from-green-500/20 to-emerald-500/20' },
+  { icon: '📺', title: 'MoonTV 影视', desc: '在线影视平台', url: 'https://moon.hiokt.dpdns.org', color: 'from-purple-500/20 to-pink-500/20' },
+  { icon: '📋', title: 'SubTracker 订阅', desc: '订阅管理平台', url: 'https://sub.hiokt.dpdns.org', color: 'from-orange-500/20 to-yellow-500/20' },
+];
 ---
 
 <Base title={`${settings.nickname || 'TIins'} - ${settings.heroTitle || '液态玻璃'} ${settings.heroSubtitle || 'Blog'}`}>
 
-  {/* Background: image or gradient orbs */}
+  {/* Background */}
   {hasBackground ? (
     <div class="fixed inset-0 z-0">
-      <img
-        src={settings.backgroundUrl}
-        alt=""
-        class="w-full h-full object-cover opacity-20"
-        style="filter: blur(16px) brightness(0.4);"
-      />
-      <div class="absolute inset-0 bg-gradient-to-b from-[var(--gradient-start)]/60 via-transparent to-[var(--gradient-end)]/80"></div>
+      <img src={settings.backgroundUrl} alt="" class="w-full h-full object-cover opacity-20" style="filter: blur(16px) brightness(0.4);" />
+      <div class="absolute inset-0" style="background: linear-gradient(to bottom, var(--gradient-start), transparent, var(--gradient-end));"></div>
     </div>
   ) : (
-    <div class="absolute inset-0 overflow-hidden pointer-events-none" style="z-index: 0;">
-      <div class="absolute w-[500px] h-[500px] rounded-full bg-purple-600/20 blur-[120px] animate-float" style="top: -10%; left: -5%;"></div>
-      <div class="absolute w-[400px] h-[400px] rounded-full bg-cyan-500/15 blur-[100px] animate-float" style="bottom: -5%; right: -5%; animation-delay: -3s;"></div>
-      <div class="absolute w-[300px] h-[300px] rounded-full bg-violet-500/10 blur-[80px] animate-float" style="top: 40%; left: 50%; animation-delay: -1.5s;"></div>
+    <div class="fixed inset-0 overflow-hidden pointer-events-none" style="z-index: 0;">
+      <div class="absolute w-[500px] h-[500px] rounded-full blur-[120px] animate-float" style="background: var(--accent-1); opacity: 0.12; top: -10%; left: -5%;"></div>
+      <div class="absolute w-[400px] h-[400px] rounded-full blur-[100px] animate-float" style="background: var(--accent-2); opacity: 0.1; bottom: -5%; right: -5%; animation-delay: -3s;"></div>
+      <div class="absolute w-[300px] h-[300px] rounded-full blur-[80px] animate-float" style="background: var(--accent-1-light); opacity: 0.08; top: 40%; left: 50%; animation-delay: -1.5s;"></div>
     </div>
   )}
 
-  {/* Profile + Hero Section */}
-  <section class="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
-    <div class="relative z-10 w-full max-w-3xl mx-auto px-6 py-12">
-      <GlassCard class="text-center p-10 md:p-14" hover={false}>
-        {/* Avatar with gradient ring */}
-        <div class="flex justify-center mb-8 animate-fade-in">
+  <div class="home-layout relative z-10">
+    {/* ===== Sidebar ===== */}
+    <aside class="home-sidebar">
+      {/* Profile Card */}
+      <div class="glass-card rounded-2xl p-6 mb-5 text-center animate-slide-up">
+        <div class="flex justify-center mb-4">
           <div class="relative">
-            {/* Outer glow ring */}
-            <div
-              class="absolute -inset-1.5 rounded-full opacity-70 animate-pulse-glow"
-              style="background: linear-gradient(135deg, var(--color-primary-light), var(--color-accent-light));"
-            ></div>
-            {/* Avatar image */}
-            <img
-              src={avatarUrl}
-              alt={settings.nickname || 'TIins'}
-              class="relative w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-4 border-white/10"
-              style="background: var(--bg-secondary);"
-            />
-            {/* Online dot */}
-            <div class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-green-400 border-2 border-[var(--bg-secondary)] shadow-lg shadow-green-400/50"></div>
+            <div class="absolute -inset-1 rounded-full opacity-60 animate-pulse-glow" style="background: linear-gradient(135deg, var(--accent-1-light), var(--accent-2-light));"></div>
+            <img src={avatarUrl} alt={settings.nickname} class="relative w-24 h-24 rounded-full object-cover border-3 border-white/10" style="background: var(--bg-secondary);" />
+            <div class="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-green-400 border-2 border-[var(--bg-secondary)] shadow-lg shadow-green-400/50"></div>
           </div>
         </div>
+        <h2 class="text-xl font-bold mb-1">{settings.nickname || 'TIins'}</h2>
+        <p class="text-xs mb-3" style="color: var(--text-muted);">{settings.signature || '保持热爱，奔赴山海 ✨'}</p>
+        <div class="flex items-center justify-center gap-2 text-[10px]" style="color: var(--text-muted);">
+          <span class="px-2 py-0.5 rounded-full" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">QQ {settings.qqNumber}</span>
+          <span class="px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">Active</span>
+        </div>
+      </div>
 
-        {/* Nickname */}
-        <h1 class="text-4xl md:text-5xl font-extrabold mb-3 animate-slide-up">
+      {/* Services */}
+      <div class="sidebar-section animate-slide-up" style="animation-delay: 0.1s;">
+        <div class="sidebar-title">服务</div>
+        <div class="space-y-1">
+          {services.map((s) => (
+            <a href={s.url} target="_blank" rel="noopener" class="service-link group">
+              <div class={`service-icon bg-gradient-to-br ${s.color}`}>{s.icon}</div>
+              <div class="min-w-0">
+                <div class="text-sm font-medium truncate" style="color: var(--text-primary);">{s.title}</div>
+                <div class="text-[10px]" style="color: var(--text-muted);">{s.desc}</div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* Quick Nav */}
+      <div class="sidebar-section animate-slide-up" style="animation-delay: 0.2s;">
+        <div class="sidebar-title">导航</div>
+        <div class="space-y-1">
+          <a href="/blog" class="service-link">
+            <div class="service-icon" style="background: var(--glass-bg);">📝</div>
+            <div>
+              <div class="text-sm font-medium" style="color: var(--text-primary);">全部文章</div>
+              <div class="text-[10px]" style="color: var(--text-muted);">浏览所有博客内容</div>
+            </div>
+          </a>
+          <a href="/tags" class="service-link">
+            <div class="service-icon" style="background: var(--glass-bg);">🏷️</div>
+            <div>
+              <div class="text-sm font-medium" style="color: var(--text-primary);">标签分类</div>
+              <div class="text-[10px]" style="color: var(--text-muted);">按主题浏览文章</div>
+            </div>
+          </a>
+          <a href="/admin" class="service-link">
+            <div class="service-icon" style="background: var(--glass-bg);">⚙️</div>
+            <div>
+              <div class="text-sm font-medium" style="color: var(--text-primary);">管理后台</div>
+              <div class="text-[10px]" style="color: var(--text-muted);">站点设置与管理</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </aside>
+
+    {/* ===== Main Content ===== */}
+    <div class="home-main">
+      {/* Hero Banner */}
+      <div class="glass-card rounded-2xl p-8 md:p-12 mb-8 text-center animate-slide-up">
+        <div class="inline-block mb-4">
+          <span class="glass px-4 py-1.5 rounded-full text-xs font-medium" style="color: var(--accent-1-light);">
+            ✨ {settings.heroDescription || '用玻璃质感重新定义博客体验'}
+          </span>
+        </div>
+        <h1 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight">
           <span class="text-gradient">{settings.nickname || 'TIins'}</span>
+          <span class="block text-lg md:text-xl font-normal mt-2" style="color: var(--text-secondary);">
+            {settings.heroTitle || '液态玻璃'} {settings.heroSubtitle || 'Blog'}
+          </span>
         </h1>
-
-        {/* Signature / Bio */}
-        <p class="text-base md:text-lg max-w-md mx-auto mb-2 animate-slide-up" style="color: var(--text-secondary); animation-delay: 0.15s;">
+        <p class="text-sm max-w-lg mx-auto mb-6" style="color: var(--text-muted);">
           {settings.signature || '保持热爱，奔赴山海 ✨'}
         </p>
-
-        {/* Tagline */}
-        <p class="text-sm mb-8 animate-slide-up" style="color: var(--text-muted); animation-delay: 0.2s;">
-          {settings.heroDescription || '一个融合了现代设计美学与前沿前端技术的个人博客'}
-        </p>
-
-        {/* CTA buttons */}
-        <div class="flex items-center justify-center gap-4 animate-slide-up" style="animation-delay: 0.3s;">
-          <a
-            href="/blog"
-            class="ripple glass-strong px-8 py-3 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-opacity"
-          >
+        <div class="flex items-center justify-center gap-3 flex-wrap">
+          <a href="/blog" class="ripple glass-strong px-6 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-opacity" style="background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
             浏览文章 →
           </a>
-          <a
-            href="/tags"
-            class="ripple glass px-8 py-3 rounded-xl text-sm font-semibold transition-all hover:bg-white/10"
-            style="color: var(--text-primary);"
-          >
+          <a href="/tags" class="ripple glass px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:bg-white/10" style="color: var(--text-primary);">
             按标签探索
           </a>
         </div>
+      </div>
 
-        {/* Stats / badges */}
-        <div class="flex items-center justify-center gap-6 mt-8 text-xs" style="color: var(--text-muted);">
-          <span class="flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-green-400 inline-block"></span>
-            Active
-          </span>
-          <span>QQ {settings.qqNumber}</span>
-          <span>🌙 {settings.theme === 'light' ? 'Light' : 'Dark'}</span>
+      {/* Latest Articles */}
+      {posts.length > 0 && (
+        <div class="mb-8">
+          <div class="flex items-center justify-between mb-5">
+            <h2 class="text-lg font-bold" style="color: var(--text-primary);">📝 最新文章</h2>
+            <a href="/blog" class="text-xs font-medium transition-colors" style="color: var(--accent-1-light);">查看全部 →</a>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {posts.map((post, i) => (
+              <a href={`/blog/${post.id}`} class="block group animate-slide-up" style={`animation-delay: ${i * 0.05}s;`}>
+                <GlassCard class="p-5 h-full">
+                  <div class="flex items-center gap-1.5 mb-2">
+                    {post.data.tags?.slice(0, 2).map((tag) => (
+                      <span class="text-[10px] px-2 py-0.5 rounded-full" style="background: var(--accent-1); opacity: 0.15; color: var(--accent-1-light);">{tag}</span>
+                    ))}
+                  </div>
+                  <h3 class="text-sm font-bold mb-1.5 group-hover:opacity-80 transition-opacity" style="color: var(--text-primary);">
+                    {post.data.title}
+                  </h3>
+                  <p class="text-xs mb-3 line-clamp-2" style="color: var(--text-muted);">
+                    {post.data.description}
+                  </p>
+                  <div class="text-[10px]" style="color: var(--text-muted);">
+                    {post.data.date.toLocaleDateString('zh-CN')}
+                  </div>
+                </GlassCard>
+              </a>
+            ))}
+          </div>
         </div>
-      </GlassCard>
-    </div>
+      )}
 
-    {/* Scroll Indicator */}
-    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 animate-float z-10">
-      <div class="w-5 h-8 rounded-full border-2 border-white/20 flex justify-center pt-1.5">
-        <div class="w-1 h-2 rounded-full bg-white/40 animate-bounce"></div>
+      {/* Tech Stack */}
+      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.3s;">
+        <h3 class="text-sm font-bold mb-3" style="color: var(--text-primary);">🛠 技术栈</h3>
+        <div class="flex flex-wrap gap-2">
+          {['Astro 6', 'Tailwind v4', 'React 19', 'Cloudflare Workers', 'KV Storage'].map((tech) => (
+            <span class="text-[10px] px-2.5 py-1 rounded-full glass" style="color: var(--text-secondary);">
+              {tech}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
-  </section>
-
-  {/* Latest Posts */}
-  {posts.length > 0 && (
-    <section class="max-w-6xl mx-auto px-6 py-16 relative z-10">
-      <div class="flex items-center justify-between mb-10">
-        <h2 class="text-2xl font-bold" style="color: var(--text-primary);">最新文章</h2>
-        <a href="/blog" class="text-sm font-medium text-purple-400 hover:text-purple-300 transition-colors">
-          查看全部 →
-        </a>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {posts.map((post, i) => (
-          <a href={`/blog/${post.id}`} class="block group">
-            <GlassCard class="h-full animate-slide-up" style={{ animationDelay: `${i * 0.1}s` }}>
-              <div class="flex items-center gap-2 mb-3">
-                {post.data.tags?.slice(0, 2).map((tag) => (
-                  <span class="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <h3 class="text-lg font-bold mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">
-                {post.data.title}
-              </h3>
-              <p class="text-sm mb-4 line-clamp-2" style="color: var(--text-secondary);">
-                {post.data.description}
-              </p>
-              <div class="text-xs" style="color: var(--text-muted);">
-                {post.data.date.toLocaleDateString('zh-CN')}
-              </div>
-            </GlassCard>
-          </a>
-        ))}
-      </div>
-    </section>
-  )}
-
-  {/* Footer is inside Base.astro — rendered automatically */}
+  </div>
 </Base>
-
