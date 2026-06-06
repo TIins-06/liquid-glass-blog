@@ -18,3 +18,7 @@ Thumbs.db
 
 # Astro
 .astro/
+
+.wrangler/
+screenshot-home.png
+
