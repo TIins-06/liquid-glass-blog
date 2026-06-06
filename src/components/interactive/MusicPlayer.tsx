@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface Track { title: string; artist: string; src: string; }
 
@@ -70,12 +70,10 @@ export default function MusicPlayer() {
   };
 
   if (!visible) {
-    // Show a tiny pill to reopen
     return (
       <button
         onClick={() => setVisible(true)}
-        className="fixed bottom-4 right-4 z-50 lg-capsule ripple flex items-center gap-1 px-2 py-1"
-        style={{ borderRadius: '100px' }}
+        className="music-hidden-btn fixed bottom-4 right-4 z-50 flex items-center gap-1 px-2.5 py-1.5"
         title="显示音乐播放器"
       >
         <span className="text-xs">🎵</span>
@@ -100,16 +98,12 @@ export default function MusicPlayer() {
         </div>
         <button
           onClick={(e) => { e.stopPropagation(); setVisible(false); }}
-          className="ml-1 w-4 h-4 rounded-full flex items-center justify-center text-[8px] opacity-50 hover:opacity-100 transition-opacity"
-          style={{ color: 'var(--text-muted)' }}
+          className="mc-close"
           title="隐藏播放器"
         >
           ✕
         </button>
-        <div
-          className="absolute bottom-0 left-0 h-[2px] rounded-full"
-          style={{ width: progress + '%', background: 'linear-gradient(to right, var(--accent-1), var(--accent-2))' }}
-        />
+        <div className="mc-progress-bar" style={{ width: progress + '%' }} />
       </div>
     );
   }

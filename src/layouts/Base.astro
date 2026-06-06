@@ -1,4 +1,4 @@
-﻿---
+---
 import Navbar from '../components/layout/Navbar.astro';
 import Footer from '../components/layout/Footer.astro';
 import SettingsPanel from '../components/interactive/SettingsPanel.tsx';
@@ -15,9 +15,6 @@ const {
   title = '液态玻璃 | Liquid Glass Blog',
   description = '一个充满玻璃质感与动效的现代博客',
 } = Astro.props;
-
-const settings = Astro.locals?.settings || {};
-const backgroundUrl = settings.backgroundUrl || '';
 ---
 
 <!doctype html>
@@ -57,21 +54,22 @@ const backgroundUrl = settings.backgroundUrl || '';
         const color = localStorage.getItem('color-preset') || 'purple';
         document.documentElement.setAttribute('data-color', color);
 
-        // Apply custom background from server settings
-        const bgUrl = document.body.getAttribute('data-bg-url');
-        if (bgUrl) {
-          document.body.style.backgroundImage = 'url(' + bgUrl + ')';
-          document.body.style.backgroundSize = 'cover';
-          document.body.style.backgroundPosition = 'center';
-          document.body.style.backgroundAttachment = 'fixed';
-        }
+        // Fetch background from API (cross-device setting)
+        fetch('/api/settings').then(function(r) { return r.json(); }).then(function(data) {
+          if (data && data.backgroundUrl) {
+            document.body.style.backgroundImage = 'url(' + data.backgroundUrl + ')';
+            document.body.style.backgroundSize = 'cover';
+            document.body.style.backgroundPosition = 'center';
+            document.body.style.backgroundAttachment = 'fixed';
+          }
+        }).catch(function() {});
 
         // Apply saved style preset
         const style = localStorage.getItem('style-preset') || 'default';
         const styleValues = {
           default: { radius: '20px', frostBlur: '0px', tint: 'rgba(255,255,255,0.16)', innerBlur: '20px', innerSpread: '-5px' },
-          frosted: { radius: '20px', frostBlur: '8px', tint: 'rgba(255,255,255,0.12)', innerBlur: '12px', innerSpread: '-3px' },
-          crystal: { radius: '28px', frostBlur: '2px', tint: 'rgba(255,255,255,0.2)', innerBlur: '24px', innerSpread: '-8px' },
+          frosted: { radius: '20px', frostBlur: '0px', tint: 'rgba(255,255,255,0.12)', innerBlur: '12px', innerSpread: '-3px' },
+          crystal: { radius: '28px', frostBlur: '0px', tint: 'rgba(255,255,255,0.2)', innerBlur: '24px', innerSpread: '-8px' },
           minimal: { radius: '12px', frostBlur: '0px', tint: 'rgba(255,255,255,0.08)', innerBlur: '8px', innerSpread: '-2px' },
           pill: { radius: '100px', frostBlur: '0px', tint: 'rgba(255,255,255,0.18)', innerBlur: '16px', innerSpread: '-4px' },
         };

@@ -1,4 +1,4 @@
-﻿---
+---
 const navLinks = [
   { href: '/', label: 'Home', icon: '🏠' },
   { href: '/blog', label: 'Blog', icon: '📝' },
@@ -20,11 +20,12 @@ const currentPath = Astro.url.pathname;
     {navLinks.map((link) => (
       <a
         href={link.href}
-        class={`lg-capsule ripple flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium transition-all ${
+        class:list={[
+          'lg-capsule ripple flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium transition-all',
           currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href))
-            ? 'text-white'
-            : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'
-        }`}
+            ? 'nav-active'
+            : 'nav-inactive'
+        ]}
       >
         <span class="text-xs">{link.icon}</span>
         <span class="hidden sm:inline">{link.label}</span>
@@ -33,10 +34,9 @@ const currentPath = Astro.url.pathname;
   </nav>
 
   <div class="flex items-center gap-1 relative" id="nav-right">
-    {/* Single consolidated settings button */}
     <button
       id="nav-settings-btn" type="button"
-      class="lg-capsule ripple flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]"
+      class="lg-capsule ripple flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium nav-inactive"
       aria-label="设置"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -62,6 +62,22 @@ const currentPath = Astro.url.pathname;
     </div>
   </div>
 </div>
+
+<style>
+  .nav-active {
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2)) !important;
+    color: white !important;
+  }
+  [data-theme="light"] .nav-active {
+    color: white !important;
+  }
+  .nav-inactive {
+    color: var(--text-secondary);
+  }
+  .nav-inactive:hover {
+    color: var(--text-primary);
+  }
+</style>
 
 <script>
   // Scroll shadow
@@ -106,8 +122,8 @@ const currentPath = Astro.url.pathname;
     const next = current === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
-    document.getElementById('theme-icon').textContent = next === 'dark' ? '🌙' : '☀️';
-    document.getElementById('theme-label').textContent = next === 'dark' ? '暗色模式' : '亮色模式';
+    document.getElementById('theme-icon')!.textContent = next === 'dark' ? '🌙' : '☀️';
+    document.getElementById('theme-label')!.textContent = next === 'dark' ? '暗色模式' : '亮色模式';
     dropdown?.classList.add('hidden');
   });
 </script>
