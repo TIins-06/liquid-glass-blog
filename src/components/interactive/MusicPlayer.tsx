@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 interface Track { title: string; artist: string; src: string; }
 
@@ -20,12 +20,24 @@ export default function MusicPlayer() {
   const [visible, setVisible] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Drag state
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragOffset = useRef({ x: 0, y: 0 });
+  const dragRef = useRef<HTMLDivElement>(null);
+  const hasDragged = useRef(false);
+
   useEffect(() => {
     fetch('/api/music').then(r => r.json()).then(data => {
       if (Array.isArray(data) && data.length > 0) setTracks(data);
     }).catch(() => {});
     const vol = parseFloat(localStorage.getItem('musicVolume') || '0.5');
     setVolume(vol);
+    // Restore position
+    const savedPos = localStorage.getItem('music-player-pos');
+    if (savedPos) {
+      try { setPosition(JSON.parse(savedPos)); } catch {}
+    }
   }, []);
 
   useEffect(() => {
@@ -58,6 +70,45 @@ export default function MusicPlayer() {
     }, 150);
     return () => clearInterval(interval);
   }, [isPlaying, currentTrack, tracks]);
+
+  // Listen for play events from sidebar
+  useEffect(() => {
+    const handler = (e: CustomEvent) => {
+      if (e.detail?.src) {
+        const idx = tracks.findIndex(t => t.src === e.detail.src);
+        if (idx >= 0) { setCurrentTrack(idx); setIsPlaying(true); }
+      }
+    };
+    window.addEventListener('play-music', handler as EventListener);
+    return () => window.removeEventListener('play-music', handler as EventListener);
+  }, [tracks]);
+
+  // Drag handlers
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).tagName === 'BUTTON' || (e.target as HTMLElement).tagName === 'INPUT') return;
+    const rect = dragRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    dragOffset.current = { x: e.clientX - position.x, y: e.clientY - position.y };
+    setIsDragging(true);
+    hasDragged.current = false;
+  }, [position]);
+
+  useEffect(() => {
+    if (!isDragging) return;
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = e.clientX - dragOffset.current.x;
+      const y = e.clientY - dragOffset.current.y;
+      if (Math.abs(x - position.x) > 3 || Math.abs(y - position.y) > 3) hasDragged.current = true;
+      setPosition({ x, y });
+    };
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      localStorage.setItem('music-player-pos', JSON.stringify({ x: dragRef.current?.getBoundingClientRect()?.left || 0, y: dragRef.current?.getBoundingClientRect()?.top || 0 }));
+    };
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => { document.removeEventListener('mousemove', handleMouseMove); document.removeEventListener('mouseup', handleMouseUp); };
+  }, [isDragging, position]);
 
   const togglePlay = () => setIsPlaying(!isPlaying);
   const nextTrack = () => { setCurrentTrack(p => (p + 1) % tracks.length); setProgress(0); };
@@ -109,8 +160,23 @@ export default function MusicPlayer() {
   }
 
   return (
-    <div className="music-expanded lg-capsule">
-      <div className="me-top">
+    <div
+      ref={dragRef}
+      className="music-expanded glass-card"
+      onMouseDown={handleMouseDown}
+      style={{
+        position: 'fixed',
+        left: position.x || '50%',
+        top: position.y || 'auto',
+        bottom: position.y ? 'auto' : '1rem',
+        transform: position.x ? 'none' : 'translateX(-50%)',
+        cursor: isDragging ? 'grabbing' : 'default',
+        userSelect: 'none',
+        borderRadius: 'var(--card-radius)',
+        zIndex: 50,
+      }}
+    >
+      <div className="me-top" style={{ cursor: 'grab' }}>
         <div className="me-art">🎵</div>
         <div className="me-info">
           <div className="me-title">{track?.title || '无曲目'}</div>
@@ -118,7 +184,7 @@ export default function MusicPlayer() {
         </div>
         <div className="flex items-center gap-1">
           <button onClick={() => setVisible(false)} className="me-minimize" title="关闭">✕</button>
-          <button onClick={() => setExpanded(false)} className="me-minimize" title="最小化">▼</button>
+          <button onClick={(e) => { e.stopPropagation(); setExpanded(false); setPosition({ x: 0, y: 0 }); }} className="me-minimize" title="最小化">▼</button>
         </div>
       </div>
       <div className="me-progress">
