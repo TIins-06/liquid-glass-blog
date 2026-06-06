@@ -94,8 +94,8 @@ body {
   content: '';
   position: absolute; inset: 0; z-index: -1;
   border-radius: inherit;
-  backdrop-filter: blur(var(--frost-blur));
-  -webkit-backdrop-filter: blur(var(--frost-blur));
+  backdrop-filter: blur(var(--card-blur)) saturate(150%);
+  -webkit-backdrop-filter: blur(var(--card-blur)) saturate(150%);
   pointer-events: none;
 }
 .lg > * { position: relative; z-index: 2; }
