@@ -156,4 +156,64 @@ const barColors = {
         </section>
       </div>
     </div>
+    {/* Right Sidebar */}
+    <aside class="home-right-sidebar" id="right-sidebar">
+      {/* Stats Card */}
+      <div class="sidebar-card animate-slide-up" style="animation-delay: 0.1s;">
+        <div class="flex items-center gap-2 mb-3">
+          <span style="font-size:0.875rem;">📊</span>
+          <span class="text-xs font-semibold" style="color: var(--text-primary);">站点统计</span>
+        </div>
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px]" style="color: var(--text-muted);">今日访问</span>
+            <span class="text-xs font-bold" id="stat-today" style="color: var(--accent-1-light);">--</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-[10px]" style="color: var(--text-muted);">总访问量</span>
+            <span class="text-xs font-bold" id="stat-total" style="color: var(--accent-2-light);">--</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-[10px]" style="color: var(--text-muted);">运行时间</span>
+            <span class="text-xs font-bold" id="stat-uptime" style="color: var(--accent-1-light);">--</span>
+          </div>
+        </div>
+      </div>
 
+      {/* Music Card */}
+      <div class="sidebar-card animate-slide-up" style="animation-delay: 0.2s;">
+        <div class="flex items-center gap-2 mb-3">
+          <span style="font-size:0.875rem;">🎵</span>
+          <span class="text-xs font-semibold" style="color: var(--text-primary);">音乐</span>
+        </div>
+        <div id="home-music-list" class="space-y-1.5">
+          <div class="text-[10px]" style="color: var(--text-muted);">加载中...</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script is:inline>
+    (function() {
+      var startDate = new Date('2026-06-01T00:00:00+08:00');
+      function updateUptime() {
+        var now = new Date();
+        var diff = now - startDate;
+        var days = Math.floor(diff / 86400000);
+        var hours = Math.floor((diff % 86400000) / 3600000);
+        var mins = Math.floor((diff % 3600000) / 60000);
+        var el = document.getElementById('stat-uptime');
+        if (el) el.textContent = days + '天 ' + hours + '时 ' + mins + '分';
+      }
+      updateUptime();
+      setInterval(updateUptime, 60000);
+      fetch('/api/visit').then(function(r) { return r.json(); }).then(function(d) {
+        var todayEl = document.getElementById('stat-today');
+        var totalEl = document.getElementById('stat-total');
+        if (todayEl) todayEl.textContent = d.today || '0';
+        if (totalEl) totalEl.textContent = d.total || '0';
+      }).catch(function() {});
+    })();
+  </script>
+
+</Base>
