@@ -31,6 +31,9 @@ const barColors = {
 <Base title={(settings.nickname || "TIins") + " - " + (settings.heroTitle || "液态玻璃") + " " + (settings.heroSubtitle || "Blog")}>
 
   <div class="home-layout">
+    {/* Sidebar overlay for mobile */}
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="document.getElementById('sidebar').classList.add('collapsed');this.classList.remove('active')"></div>
+
     <aside class="home-sidebar" id="sidebar">
       <div class="mb-5 text-center animate-slide-up">
         <div class="flex justify-center mb-3">
@@ -38,7 +41,7 @@ const barColors = {
             <img src={avatarUrl} alt={settings.nickname} class="w-20 h-20 rounded-full object-cover shadow-lg ring-4 transform hover:scale-110 hover:rotate-6 transition-all duration-300" style="ring-color: var(--glass-border); background: var(--bg-secondary);" />
           </a>
         </div>
-        <h2 class="text-lg font-bold mb-0.5">{settings.nickname || "TIins"}</h2>
+        <h2 class="text-lg font-bold mb-0.5" style="color: var(--text-primary);">{settings.nickname || "TIins"}</h2>
         <p class="text-xs mb-2" style="color: var(--text-muted);">{settings.signature || "保持热爱，奔赴山海 ✨"}</p>
         <div class="flex items-center justify-center gap-1.5 text-[10px]" style="color: var(--text-muted);">
           <span class="px-2 py-0.5 rounded-full" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">QQ {settings.qqNumber}</span>
@@ -89,28 +92,20 @@ const barColors = {
       </div>
     </aside>
 
-    <button id="sidebar-toggle" class="sidebar-toggle" title="切换侧边栏">
-      <svg id="sidebar-icon-hide" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <button id="sidebar-toggle" class="sidebar-toggle lg-capsule" title="切换侧边栏">
+      <svg id="sidebar-icon-hide" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/>
       </svg>
-      <svg id="sidebar-icon-show" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
-        <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><path d="M13 3l5 9-5 9"/>
+      <svg id="sidebar-icon-show" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+        <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/>
       </svg>
     </button>
 
     <div class="home-main">
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 py-6 mb-8 border-b" style="border-color: var(--glass-border);">
-        <header class="flex-1 text-center sm:text-left">
-          <h1 class="text-2xl sm:text-3xl font-bold">
-            <span class="text-4xl inline-block animate-wave">{settings.heroEmoji || "👋"}</span>{" "}
-            <span class="bg-gradient-to-r bg-clip-text text-transparent" style="background-image: linear-gradient(to right, var(--text-primary), var(--text-secondary));">
-              {heroTagline}
-            </span>
-          </h1>
-          <p class="mt-2 text-sm" style="color: var(--text-muted);">{settings.signature || "保持热爱，奔赴山海 ✨"}</p>
-        </header>
-        <div class="mt-4 sm:mt-0 flex-shrink-0">
-          <img src={avatarUrl} alt={settings.nickname} width="100" class="rounded-full shadow-lg ring-4 transform hover:scale-110 hover:rotate-6 transition-all duration-300 ease-out sm:w-[120px]" style="ring-color: var(--glass-border); background: var(--bg-secondary);" />
+      {/* Hero / Welcome Area */}
+      <div class="mb-10 text-center animate-slide-up">
+        <div class="inline-block mb-4">
+          <img src={avatarUrl} alt={settings.nickname} class="w-24 h-24 rounded-full mx-auto mb-4 ring-2 transform transition-all duration-300 ease-out sm:w-[120px]" style="ring-color: var(--glass-border); background: var(--bg-secondary);" />
         </div>
       </div>
 
@@ -160,7 +155,7 @@ const barColors = {
           </div>
           <div class="flex flex-wrap gap-2">
             {["Astro 6", "Tailwind v4", "React 19", "Cloudflare Workers", "KV Storage"].map((tech) => (
-              <span class="text-xs px-3 py-1.5 rounded-full glass font-mono" style="color: var(--text-secondary);">{tech}</span>
+              <span class="text-xs px-3 py-1.5 rounded-full lg font-mono" style="color: var(--text-secondary);">{tech}</span>
             ))}
           </div>
         </section>
@@ -187,6 +182,7 @@ const barColors = {
       var sidebar = document.getElementById("sidebar");
       var hideIcon = document.getElementById("sidebar-icon-hide");
       var showIcon = document.getElementById("sidebar-icon-show");
+      var overlay = document.getElementById("sidebar-overlay");
       if (!toggle || !sidebar) return;
       var collapsed = localStorage.getItem("sidebar-collapsed") === "true";
       if (collapsed) {
@@ -199,6 +195,10 @@ const barColors = {
         localStorage.setItem("sidebar-collapsed", String(isCollapsed));
         if (hideIcon) hideIcon.style.display = isCollapsed ? "none" : "block";
         if (showIcon) showIcon.style.display = isCollapsed ? "block" : "none";
+        if (overlay) {
+          if (isCollapsed || window.innerWidth > 768) overlay.classList.remove("active");
+          else overlay.classList.add("active");
+        }
       });
     })();
   </script>

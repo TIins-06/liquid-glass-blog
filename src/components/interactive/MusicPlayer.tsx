@@ -26,12 +26,6 @@ export default function MusicPlayer() {
     }).catch(() => {});
     const vol = parseFloat(localStorage.getItem('musicVolume') || '0.5');
     setVolume(vol);
-    const handler = (e: CustomEvent) => {
-      setVolume(e.detail.volume);
-      if (audioRef.current) audioRef.current.volume = e.detail.volume;
-    };
-    window.addEventListener('music-volume-change', handler as EventListener);
-    return () => window.removeEventListener('music-volume-change', handler as EventListener);
   }, []);
 
   useEffect(() => {
@@ -75,7 +69,20 @@ export default function MusicPlayer() {
     setProgress(pct);
   };
 
-  if (!visible) return null;
+  if (!visible) {
+    // Show a tiny pill to reopen
+    return (
+      <button
+        onClick={() => setVisible(true)}
+        className="fixed bottom-4 right-4 z-50 lg-capsule ripple flex items-center gap-1 px-2 py-1"
+        style={{ borderRadius: '100px' }}
+        title="显示音乐播放器"
+      >
+        <span className="text-xs">🎵</span>
+      </button>
+    );
+  }
+
   const track = tracks[currentTrack];
 
   if (!expanded) {
@@ -91,6 +98,14 @@ export default function MusicPlayer() {
           <div className="mc-title">{track?.title || '无曲目'}</div>
           <div className="mc-artist">{track?.artist || ''}</div>
         </div>
+        <button
+          onClick={(e) => { e.stopPropagation(); setVisible(false); }}
+          className="ml-1 w-4 h-4 rounded-full flex items-center justify-center text-[8px] opacity-50 hover:opacity-100 transition-opacity"
+          style={{ color: 'var(--text-muted)' }}
+          title="隐藏播放器"
+        >
+          ✕
+        </button>
         <div
           className="absolute bottom-0 left-0 h-[2px] rounded-full"
           style={{ width: progress + '%', background: 'linear-gradient(to right, var(--accent-1), var(--accent-2))' }}
@@ -108,7 +123,7 @@ export default function MusicPlayer() {
           <div className="me-artist">{track?.artist || ''}</div>
         </div>
         <div className="flex items-center gap-1">
-          <button onClick={() => { setVisible(false); setExpanded(false); }} className="me-minimize" title="关闭">✕</button>
+          <button onClick={() => setVisible(false)} className="me-minimize" title="关闭">✕</button>
           <button onClick={() => setExpanded(false)} className="me-minimize" title="最小化">▼</button>
         </div>
       </div>

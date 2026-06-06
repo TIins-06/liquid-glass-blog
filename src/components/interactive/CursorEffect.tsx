@@ -5,6 +5,9 @@ export default function CursorEffect() {
   const ringRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Don't show on touch devices
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    
     const dot = dotRef.current;
     const ring = ringRef.current;
     if (!dot || !ring) return;
@@ -30,7 +33,7 @@ export default function CursorEffect() {
         width: 20px;
         height: 20px;
         border-radius: 50%;
-        border: 2px solid rgba(124, 58, 237, 0.6);
+        border: 2px solid var(--accent-1, rgba(124, 58, 237, 0.6));
         transform: translate(-50%, -50%) scale(0);
         pointer-events: none;
         z-index: 9999;
@@ -71,11 +74,13 @@ export default function CursorEffect() {
       `}</style>
       <div
         ref={dotRef}
-        className="cursor-dot fixed w-2 h-2 rounded-full bg-purple-400 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 mix-blend-difference hidden md:block"
+        className="cursor-dot fixed w-1.5 h-1.5 rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 hidden md:block"
+        style={{ background: 'var(--accent-1, #7c3aed)', mixBlendMode: 'difference' }}
       />
       <div
         ref={ringRef}
-        className="cursor-ring fixed w-8 h-8 rounded-full border border-purple-400/40 pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 hidden md:block"
+        className="cursor-ring fixed w-7 h-7 rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 hidden md:block"
+        style={{ border: '1px solid var(--accent-1-light, rgba(167,139,250,0.4))' }}
       />
     </>
   );
