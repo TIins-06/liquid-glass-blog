@@ -216,14 +216,18 @@ export default function SettingsPanel() {
           border: 1px solid var(--glass-border);
           color: var(--text-primary);
           cursor: pointer;
+          border-radius: 10px;
+          transition: all 0.2s ease;
         }
         .settings-btn:hover {
           border-color: var(--accent-1);
+          transform: translateY(-1px);
         }
         .settings-btn-active {
           background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
           color: white;
           border-color: transparent;
+          border-radius: 10px;
         }
       `}</style>
     </div>
