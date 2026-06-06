@@ -199,6 +199,32 @@ body {
   border-radius: var(--lg-radius);
 }
 
+
+/* ===== Tag Badge (article cards) ===== */
+.tag-badge {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent-1) 20%, transparent), color-mix(in srgb, var(--accent-2) 20%, transparent));
+  color: var(--accent-1-light);
+}
+
+/* ===== Tag Filter Buttons ===== */
+.tag-filter {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-muted);
+  transition: all 0.25s ease;
+}
+.tag-filter:hover {
+  border-color: var(--accent-1);
+  color: var(--accent-1-light);
+}
+.tag-active {
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2)) !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+.tag-inactive {
+  color: var(--text-muted);
+}
 /* ===== Glass Utility ===== */
 .glass {
   background: var(--glass-bg);
@@ -582,5 +608,6 @@ body {
   background: linear-gradient(to right, var(--accent-1), var(--accent-2));
   transition: width 0.15s linear;
 }
+
 
 

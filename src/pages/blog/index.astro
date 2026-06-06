@@ -22,7 +22,7 @@ const allTags = [...new Set(posts.flatMap((p) => p.data.tags))];
     {/* Tag Filter */}
     <div class="flex flex-wrap gap-2 mb-10 animate-slide-up" style="animation-delay: 0.2s;">
       <button
-        class="tag-filter ripple glass px-3 py-1 rounded-full text-xs font-medium transition-all text-purple-300 border-purple-500/30"
+        class="tag-filter ripple px-3 py-1 rounded-full text-xs font-medium transition-all tag-active"
         data-tag="all"
       >
         全部
@@ -50,7 +50,7 @@ const allTags = [...new Set(posts.flatMap((p) => p.data.tags))];
           <GlassCard class="h-full">
             <div class="flex items-center gap-2 mb-3">
               {post.data.tags.slice(0, 2).map((tag) => (
-                <span class="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300">
+                <span class="text-xs px-2 py-0.5 rounded-full tag-badge">
                   {tag}
                 </span>
               ))}
@@ -82,11 +82,11 @@ const allTags = [...new Set(posts.flatMap((p) => p.data.tags))];
     btn.addEventListener('click', () => {
       const tag = btn.getAttribute('data-tag');
       document.querySelectorAll('.tag-filter').forEach((b) => {
-        b.classList.remove('text-purple-300', 'border-purple-500/30');
+        b.classList.remove('tag-active'); b.classList.add('tag-inactive');
         b.style.color = 'var(--text-muted)';
       });
-      btn.classList.add('text-purple-300');
-      btn.classList.remove('text-[color:var(--text-muted)]');
+      btn.classList.add('tag-active'); btn.classList.remove('tag-inactive');
+      
 
       document.querySelectorAll('.post-card').forEach((card) => {
         const cardTags = card.getAttribute('data-tags') || '';
@@ -99,4 +99,5 @@ const allTags = [...new Set(posts.flatMap((p) => p.data.tags))];
     });
   });
 </script>
+
 
