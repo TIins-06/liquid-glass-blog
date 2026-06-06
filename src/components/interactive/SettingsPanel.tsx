@@ -118,6 +118,16 @@ export default function SettingsPanel() {
           />
         </div>
 
+        {/* Admin Link */}
+        <a
+          href="/admin"
+          className="w-full py-2.5 rounded-xl text-sm font-medium text-center transition-all hover:bg-white/10 mb-3 block"
+          style={{ color: 'var(--text-secondary)', border: '1px solid var(--glass-border)' }}
+        >
+          ⚙️ 管理后台
+        </a>
+
+        {/* Close Button */}
         <button
           onClick={() => setIsOpen(false)}
           className="ripple w-full py-3 rounded-xl text-sm font-semibold transition-all hover:opacity-80"
@@ -132,3 +142,4 @@ export default function SettingsPanel() {
     </div>
   );
 }
+

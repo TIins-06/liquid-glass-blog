@@ -64,8 +64,9 @@ tags: ["标签1", "标签2"]
 
 <script is:inline>
   (function() {
-    if (!localStorage.getItem('admin-token')) {
+    if (!localStorage.getItem('admin_token')) {
       window.location.href = '/admin/login';
     }
   })();
 </script>
+

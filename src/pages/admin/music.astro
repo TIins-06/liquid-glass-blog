@@ -28,7 +28,7 @@ import Admin from '../../layouts/Admin.astro';
 
 <script is:inline>
   (function() {
-    if (!localStorage.getItem('admin-token')) {
+    if (!localStorage.getItem('admin_token')) {
       window.location.href = '/admin/login';
       return;
     }
@@ -113,3 +113,4 @@ import Admin from '../../layouts/Admin.astro';
     });
   }
 </script>
+
