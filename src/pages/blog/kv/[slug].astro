@@ -1,0 +1,63 @@
+﻿---
+export const prerender = false;
+import Base from '../../../layouts/Base.astro';
+import { getSettings } from '../../../lib/kv';
+
+const slug = Astro.params.slug;
+const settings = await getSettings();
+let articles: any[] = [];
+try { articles = JSON.parse(settings.articles || '[]'); } catch {}
+const article = articles.find((a: any) => a.slug === slug);
+
+if (!article) {
+  return Astro.redirect('/blog');
+}
+---
+
+<Base title={article.title + ' | 液态玻璃 Blog'} description={article.description}>
+  <article class="max-w-3xl mx-auto px-6 py-12">
+    <a href="/blog" class="text-sm mb-6 inline-block transition-colors hover:text-purple-400" style="color: var(--text-muted);">← 返回文章列表</a>
+
+    <div class="lg rounded-2xl p-8 mb-8">
+      <div class="flex flex-wrap gap-2 mb-4">
+        {(article.tags || []).map((tag: string) => (
+          <span class="text-xs px-2.5 py-1 rounded-full tag-badge">{tag}</span>
+        ))}
+      </div>
+      <h1 class="text-3xl font-extrabold mb-3" style="color: var(--text-primary);">{article.title}</h1>
+      <p class="text-sm" style="color: var(--text-secondary);">{article.description}</p>
+      <p class="text-xs mt-3" style="color: var(--text-muted);">📅 {new Date(article.date).toLocaleDateString('zh-CN')} · ✏️ 动态文章</p>
+    </div>
+
+    <div class="lg rounded-2xl p-8 prose" id="article-content">
+      <div id="md-content"></div>
+    </div>
+  </article>
+
+  <script is:inline define:vars={{ content: article.content }}>
+    (function() {
+      var container = document.getElementById('md-content');
+      if (!container) return;
+      function renderMd(md) {
+        var html = md
+          .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+          .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+          .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+          .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.+?)\*/g, '<em>$1</em>')
+          .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+          .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+          .replace(/^[\-\*] (.+)$/gm, '<li>$1</li>')
+          .replace(/^---$/gm, '<hr />')
+          .replace(/\n\n/g, '</p><p>')
+          .replace(/\n/g, '<br/>');
+        return '<p>' + html + '</p>';
+      }
+      container.innerHTML = renderMd(content);
+    })();
+  </script>
+</Base>

@@ -1,13 +1,35 @@
 ﻿---
+export const prerender = false;
 import Base from '../../layouts/Base.astro';
 import GlassCard from '../../components/glass/GlassCard.astro';
 import { getCollection } from 'astro:content';
+import { getSettings } from '../../lib/kv';
 
+const settings = await getSettings();
 const posts = (await getCollection('blog'))
   .filter((p) => !p.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-const allTags = [...new Set(posts.flatMap((p) => p.data.tags))];
+// Also load KV-stored articles
+let kvArticles: any[] = [];
+try { kvArticles = JSON.parse(settings.articles || '[]'); } catch {}
+const kvPosts = kvArticles.filter((a: any) => !a.draft).map((a: any) => ({
+  id: a.slug,
+  title: a.title,
+  description: a.description,
+  date: new Date(a.date),
+  tags: a.tags || [],
+  source: 'kv',
+}));
+
+// Merge and deduplicate (static takes priority)
+const allPosts = [...posts.map(p => ({
+  id: p.id, title: p.data.title, description: p.data.description,
+  date: p.data.date, tags: p.data.tags, source: 'static',
+})), ...kvPosts.filter((kp: any) => !posts.some(p => p.id === kp.id))]
+  .sort((a: any, b: any) => b.date.valueOf() - a.date.valueOf());
+
+const allTags = [...new Set(allPosts.flatMap((p: any) => p.tags))];
 ---
 
 <Base title="文章 | 液态玻璃 Blog" description="浏览所有博客文章">
@@ -16,60 +38,39 @@ const allTags = [...new Set(posts.flatMap((p) => p.data.tags))];
       <span class="text-gradient">全部文章</span>
     </h1>
     <p class="mb-8 animate-slide-up" style="color: var(--text-secondary); animation-delay: 0.1s;">
-      共 {posts.length} 篇文章
+      共 {allPosts.length} 篇文章
     </p>
 
-    {/* Tag Filter */}
     <div class="flex flex-wrap gap-2 mb-10 animate-slide-up" style="animation-delay: 0.2s;">
-      <button
-        class="tag-filter ripple px-3 py-1 rounded-full text-xs font-medium transition-all tag-active"
-        data-tag="all"
-      >
-        全部
-      </button>
+      <button class="tag-filter ripple px-3 py-1 rounded-full text-xs font-medium transition-all tag-active" data-tag="all">全部</button>
       {allTags.map((tag) => (
-        <button
-          class="tag-filter ripple glass px-3 py-1 rounded-full text-xs font-medium transition-all"
-          style="color: var(--text-muted)"
-          data-tag={tag}
-        >
-          {tag}
-        </button>
+        <button class="tag-filter ripple glass px-3 py-1 rounded-full text-xs font-medium transition-all" style="color: var(--text-muted)" data-tag={tag}>{tag}</button>
       ))}
     </div>
 
-    {/* Posts Grid */}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="posts-grid">
-      {posts.map((post, i) => (
+      {allPosts.map((post: any, i: number) => (
         <a
-          href={`/blog/${post.id}`}
+          href={post.source === 'kv' ? '/blog/kv/' + post.id : '/blog/' + post.id}
           class="post-card block group animate-slide-up"
-          data-tags={post.data.tags.join(',')}
+          data-tags={post.tags.join(',')}
           style={`animation-delay: ${0.1 * i}s`}
         >
           <GlassCard class="h-full">
             <div class="flex items-center gap-2 mb-3">
-              {post.data.tags.slice(0, 2).map((tag) => (
-                <span class="text-xs px-2 py-0.5 rounded-full tag-badge">
-                  {tag}
-                </span>
+              {post.tags.slice(0, 2).map((tag: string) => (
+                <span class="text-xs px-2 py-0.5 rounded-full tag-badge">{tag}</span>
               ))}
             </div>
-            <h2 class="text-lg font-bold mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">
-              {post.data.title}
-            </h2>
-            <p class="text-sm mb-4 line-clamp-2" style="color: var(--text-secondary);">
-              {post.data.description}
-            </p>
-            <div class="text-xs" style="color: var(--text-muted);">
-              {post.data.date.toLocaleDateString('zh-CN')}
-            </div>
+            <h2 class="text-lg font-bold mb-2 group-hover:text-purple-400 transition-colors" style="color: var(--text-primary);">{post.title}</h2>
+            <p class="text-sm mb-4 line-clamp-2" style="color: var(--text-secondary);">{post.description}</p>
+            <div class="text-xs" style="color: var(--text-muted);">{post.date.toLocaleDateString('zh-CN')}</div>
           </GlassCard>
         </a>
       ))}
     </div>
 
-    {posts.length === 0 && (
+    {allPosts.length === 0 && (
       <div class="text-center py-20">
         <p class="text-lg" style="color: var(--text-muted);">暂无文章</p>
       </div>
@@ -86,7 +87,6 @@ const allTags = [...new Set(posts.flatMap((p) => p.data.tags))];
         b.style.color = 'var(--text-muted)';
       });
       btn.classList.add('tag-active'); btn.classList.remove('tag-inactive');
-      
 
       document.querySelectorAll('.post-card').forEach((card) => {
         const cardTags = card.getAttribute('data-tags') || '';
@@ -99,5 +99,3 @@ const allTags = [...new Set(posts.flatMap((p) => p.data.tags))];
     });
   });
 </script>
-
-

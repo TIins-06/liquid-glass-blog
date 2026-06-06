@@ -32,6 +32,7 @@ export interface SiteSettings {
   // Misc
   adminPassword: string;
   musicSourceConfig: string;
+  articles: string;
   customCss: string;
 }
 
@@ -70,6 +71,7 @@ export async function getSettings(): Promise<SiteSettings> {
     sectionTechBarColor: 'accent-2',
     adminPassword: 'liquid2026',
     musicSourceConfig: '',
+    articles: '[]',
     customCss: '',
   };
 
@@ -106,5 +108,6 @@ export async function setSettings(settings: Record<string, string>): Promise<voi
     Object.entries(settings).map(([k, v]) => kv.put(`settings:${k}`, v))
   );
 }
+
 
 

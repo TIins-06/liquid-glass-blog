@@ -1,0 +1,11 @@
+﻿---
+export const prerender = false;
+import Admin from '../../layouts/Admin.astro';
+import ArticleEditor from '../../components/interactive/ArticleEditor.tsx';
+
+const slug = Astro.url.searchParams.get('slug') || '';
+---
+
+<Admin title={slug ? "编辑文章 | 管理后台" : "写文章 | 管理后台"}>
+  <ArticleEditor client:load initialSlug={slug} />
+</Admin>
