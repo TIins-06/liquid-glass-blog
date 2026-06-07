@@ -19,6 +19,11 @@ Thumbs.db
 # Astro
 .astro/
 
+# Wrangler
 .wrangler/
-screenshot-home.png
 
+# Debug/temp files
+auth-url.txt
+do-login.cjs
+editor-test.png
+screenshot-*.png
