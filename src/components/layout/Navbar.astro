@@ -36,7 +36,7 @@ const currentPath = Astro.url.pathname;
   <div class="flex items-center gap-1" id="nav-right">
     <div class="nav-search-box">
       <svg class="nav-search-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input id="nav-search-input" type="text" placeholder="搜索歌曲..." class="nav-search-input" onkeydown="if(event.key==='Enter')navDoSearch()" />
+      <input id="nav-search-input" type="text" placeholder="搜索文章/歌曲..." class="nav-search-input" onkeydown="if(event.key==='Enter')navDoSearch()" />
       <div id="nav-search-panel" class="nav-search-panel hidden"></div>
     </div>
 
@@ -153,7 +153,7 @@ const currentPath = Astro.url.pathname;
     cursor: pointer; flex-shrink: 0; opacity: 0; transition: opacity 0.15s;
   }
   .nsr-item:hover .nsr-play { opacity: 1; }
-  .nsr-loading { text-align: center; padding: 0.6rem; font-size: 0.6rem; color: var(--text-muted); }
+  .nsr-loading { text-align: center; padding: 0.6rem; font-size: 0.6rem; color: var(--text-muted); } .nsr-section { font-size: 0.55rem; font-weight: 600; color: var(--accent-1-light); padding: 0.3rem 0.5rem 0.15rem; text-transform: uppercase; letter-spacing: 0.05em; }
 </style>
 
 <script>
@@ -187,23 +187,26 @@ const currentPath = Astro.url.pathname;
     searchPanel.classList.remove('hidden');
     searchPanel.innerHTML = '<div class="nsr-loading">搜索中...</div>';
     try {
-      const resp = await fetch('/api/music/search?q=' + encodeURIComponent(q));
+      const resp = await fetch('/api/search?q=' + encodeURIComponent(q));
       const data = await resp.json();
-      const songs = data.songs || [];
-      if (songs.length === 0) {
-        searchPanel.innerHTML = '<div class="nsr-loading">未找到结果</div>';
-        return;
+      var songs = data.songs || [];
+      var posts = data.posts || [];
+      var html = '';
+      if (posts.length > 0) {
+        html += '<div class="nsr-section">📄 文章</div>';
+        html += posts.slice(0, 4).map(function(p) {
+          return '<a href="/blog/' + p.slug + '" class="nsr-item" style="text-decoration:none;"><div class="nsr-art">📝</div><div class="nsr-info"><div class="nsr-title">' + escH(p.title) + '</div><div class="nsr-artist">' + escH(p.description).substring(0, 30) + '...</div></div></a>';
+        }).join('');
       }
-      searchPanel.innerHTML = songs.slice(0, 8).map((s: any) => {
-        const art = s.cover
-          ? `<img src="${s.cover}" onerror="this.parentElement.textContent='🎵'" />`
-          : '🎵';
-        return `<div class="nsr-item" onclick="navPlaySong('${(s.src||'').replace(/'/g,"\\'")}')">
-          <div class="nsr-art">${art}</div>
-          <div class="nsr-info"><div class="nsr-title">${escH(s.title)}</div><div class="nsr-artist">${escH(s.artist)}</div></div>
-          <button class="nsr-play">▶</button>
-        </div>`;
-      }).join('');
+      if (songs.length > 0) {
+        html += '<div class="nsr-section">🎵 音乐</div>';
+        html += songs.slice(0, 4).map(function(s) {
+          var art = s.cover ? '<img src="' + s.cover + '" />' : '🎵';
+          return '<div class="nsr-item" onclick="navPlaySong(\'' + (s.src||'').replace(/'/g, "\\'") + '\')"><div class="nsr-art">' + art + '</div><div class="nsr-info"><div class="nsr-title">' + escH(s.title) + '</div><div class="nsr-artist">' + escH(s.artist) + '</div></div><button class="nsr-play">▶</button></div>';
+        }).join('');
+      }
+      if (!html) { searchPanel.innerHTML = '<div class="nsr-loading">未找到结果</div>'; return; }
+      searchPanel.innerHTML = html;
     } catch {
       searchPanel.innerHTML = '<div class="nsr-loading">搜索失败</div>';
     }

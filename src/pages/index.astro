@@ -1,4 +1,4 @@
-﻿---
+---
 export const prerender = false;
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
@@ -29,6 +29,29 @@ const barColors = {
 ---
 
 <Base title={(settings.nickname || "TIins") + " - " + (settings.heroTitle || "液态玻璃") + " " + (settings.heroSubtitle || "Blog")}>
+
+  <script is:inline>
+  (function() {
+    var isMobile = window.innerWidth < 768;
+    var htmlEl = document.documentElement;
+    if (isMobile) {
+      htmlEl.setAttribute("data-mobile", "true");
+      if (!htmlEl.getAttribute("data-theme")) {
+        htmlEl.setAttribute("data-theme", "light");
+      }
+    }
+  })();
+</script>
+
+<style>
+  @media (min-width: 768px) {
+    .mobile-sidebar-extras { display: none !important; }
+  }
+  @media (max-width: 767px) {
+    .mobile-sidebar-extras { display: block !important; }
+    .home-right-sidebar { display: none !important; }
+  }
+</style>
 
   <div class="home-layout">
     {/* Sidebar overlay for mobile */}
@@ -88,6 +111,27 @@ const barColors = {
               <div class="text-[10px]" style="color: var(--text-muted);">按主题浏览文章</div>
             </div>
           </a>
+        </div>
+      </div>
+      <div class="mobile-sidebar-extras" style="display:none;">
+        <div class="sidebar-section animate-slide-up" style="animation-delay: 0.2s;">
+          <div class="sidebar-title">🎵 音乐</div>
+          <div id="home-music-list-mobile" class="space-y-1.5">
+            <div class="text-[10px]" style="color:var(--text-muted);">加载中...</div>
+          </div>
+        </div>
+        <div class="sidebar-section animate-slide-up" style="animation-delay: 0.25s;">
+          <div class="sidebar-title">📊 站点统计</div>
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px]" style="color: var(--text-muted);">今日访问</span>
+              <span class="text-xs font-bold mobile-stat-today" style="color: var(--accent-1-light);">--</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-[10px]" style="color: var(--text-muted);">总访问量</span>
+              <span class="text-xs font-bold mobile-stat-total" style="color: var(--accent-2-light);">--</span>
+            </div>
+          </div>
         </div>
       </div>
     </aside>
@@ -182,11 +226,39 @@ const barColors = {
 
       {/* Music Card */}
       <div class="sidebar-card animate-slide-up" style="animation-delay: 0.2s;">
-        <div class="flex items-center gap-2 mb-3">
+        <div class="flex items-center gap-2 mb-2">
           <span style="font-size:0.875rem;">🎵</span>
           <span class="text-xs font-semibold" style="color: var(--text-primary);">音乐</span>
+          <span id="home-music-now" class="text-[9px] ml-auto truncate max-w-[100px]" style="color:var(--accent-1-light);"></span>
+        </div>
+        <div id="home-music-player" style="display:none;margin-bottom:0.5rem;padding:0.4rem;border-radius:0.5rem;background:var(--glass-bg);border:1px solid var(--glass-border);">
+          <div class="flex items-center gap-2">
+            <button id="hmp-prev" style="background:none;border:none;cursor:pointer;font-size:0.65rem;color:var(--text-secondary);padding:2px;">⏮</button>
+            <button id="hmp-toggle" style="background:linear-gradient(135deg,var(--accent-1),var(--accent-2));border:none;cursor:pointer;font-size:0.65rem;color:white;width:1.5rem;height:1.5rem;border-radius:50%;display:flex;align-items:center;justify-content:center;">▶</button>
+            <button id="hmp-next" style="background:none;border:none;cursor:pointer;font-size:0.65rem;color:var(--text-secondary);padding:2px;">⏭</button>
+            <div style="flex:1;min-width:0;">
+              <div class="text-[9px] font-medium truncate" id="hmp-title" style="color:var(--text-primary);">未播放</div>
+              <div style="position:relative;height:3px;border-radius:2px;background:rgba(128,128,128,0.2);margin-top:2px;">
+                <div id="hmp-progress" style="height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent-1),var(--accent-2));width:0%;transition:width 0.15s linear;"></div>
+              </div>
+              <div class="flex justify-between text-[8px] mt-0.5" style="color:var(--text-muted);font-family:'JetBrains Mono',monospace;">
+                <span id="hmp-current">0:00</span><span id="hmp-duration">0:00</span>
+              </div>
+            </div>
+          </div>
         </div>
         <div id="home-music-list" class="space-y-1.5">
+          <div class="text-[10px]" style="color: var(--text-muted);">加载中...</div>
+        </div>
+      </div>
+
+      {/* Article Preview Card */}
+      <div class="sidebar-card animate-slide-up" style="animation-delay: 0.3s;" id="article-preview">
+        <div class="flex items-center gap-2 mb-3">
+          <span style="font-size:0.875rem;">💡</span>
+          <span class="text-xs font-semibold" style="color: var(--text-primary);">推荐阅读</span>
+        </div>
+        <div id="article-preview-content" class="space-y-2">
           <div class="text-[10px]" style="color: var(--text-muted);">加载中...</div>
         </div>
       </div>
@@ -212,8 +284,10 @@ const barColors = {
       var showIcon = document.getElementById('sidebar-icon-show');
       var overlay = document.getElementById('sidebar-overlay');
       if (!toggle || !sidebar) return;
-      var collapsed = localStorage.getItem('sidebar-collapsed') === 'true';
-      if (collapsed) {
+      var isMobile = window.innerWidth < 768;
+      var saved = localStorage.getItem('sidebar-collapsed');
+      var shouldCollapse = isMobile ? true : (saved === 'true');
+      if (shouldCollapse) {
         sidebar.classList.add('collapsed');
         if (hideIcon) hideIcon.style.display = 'none';
         if (showIcon) showIcon.style.display = 'block';
@@ -243,12 +317,18 @@ const barColors = {
       }
       updateUptime();
       setInterval(updateUptime, 60000);
-      fetch('/api/visit').then(function(r) { return r.json(); }).then(function(d) {
-        var todayEl = document.getElementById('stat-today');
-        var totalEl = document.getElementById('stat-total');
-        if (todayEl) todayEl.textContent = d.today || '0';
-        if (totalEl) totalEl.textContent = d.total || '0';
-      }).catch(function() {});
+      // Always fetch stats - IP dedup handled server-side
+        fetch('/api/visit').then(function(r) { return r.json(); }).then(function(d) {
+          var todayEl = document.getElementById('stat-today');
+          var totalEl = document.getElementById('stat-total');
+          if (todayEl) todayEl.textContent = d.today || '0';
+          if (totalEl) totalEl.textContent = d.total || '0';
+          var mTodayEl = document.querySelector('.mobile-stat-today');
+          var mTotalEl = document.querySelector('.mobile-stat-total');
+          if (mTodayEl) mTodayEl.textContent = d.today || '0';
+          if (mTotalEl) mTotalEl.textContent = d.total || '0';
+        }).catch(function(e) { console.error('Visit API error:', e); });
+        // IP dedup handled server-side
     })();
 
   </script>
@@ -257,13 +337,83 @@ const barColors = {
     (function() {
       var musicList = document.getElementById('home-music-list');
       if (!musicList) return;
+      var playerEl = document.getElementById('home-music-player');
+      var nowPlayingEl = document.getElementById('home-music-now');
+      var tracks = [];
+      var currentTrack = null;
 
-      function playHomeTrack(src, title) {
+      function formatTime(s) {
+        if (!s || !isFinite(s)) return '0:00';
+        var m = Math.floor(s / 60);
+        var sec = Math.floor(s % 60);
+        return m + ':' + (sec < 10 ? '0' : '') + sec;
+      }
+
+      function getAudio() {
+        if (typeof window !== 'undefined' && window.__bgAudio) return window.__bgAudio;
+        return null;
+      }
+
+      function syncPlayerUI() {
+        var audio = getAudio();
+        if (!audio || !currentTrack) {
+          if (playerEl) playerEl.style.display = 'none';
+          return;
+        }
+        playerEl.style.display = 'block';
+        var titleEl = document.getElementById('hmp-title');
+        var progressEl = document.getElementById('hmp-progress');
+        var currentEl = document.getElementById('hmp-current');
+        var durEl = document.getElementById('hmp-duration');
+        var toggleEl = document.getElementById('hmp-toggle');
+        if (titleEl) titleEl.textContent = currentTrack.title || '未播放';
+        if (nowPlayingEl) nowPlayingEl.textContent = currentTrack.title || '';
+        if (toggleEl) toggleEl.textContent = audio.paused ? '▶' : '⏸';
+        if (progressEl) progressEl.style.width = (audio.duration ? (audio.currentTime / audio.duration * 100) : 0) + '%';
+        if (currentEl) currentEl.textContent = formatTime(audio.currentTime);
+        if (durEl) durEl.textContent = formatTime(audio.duration);
+        // Update active track highlight
+        var items = musicList.querySelectorAll('.home-music-item');
+        items.forEach(function(item, idx) {
+          if (tracks[idx] && currentTrack && tracks[idx].src === currentTrack.src) {
+            item.style.background = 'rgba(255,255,255,0.06)';
+            item.style.borderLeft = '2px solid var(--accent-1)';
+          } else {
+            item.style.background = '';
+            item.style.borderLeft = '2px solid transparent';
+          }
+        });
+      }
+
+      function playHomeTrack(src, title, artist) {
         if (!src) return;
+        var audio = getAudio();
+        if (!audio) {
+          audio = new Audio();
+          window.__bgAudio = audio;
+        }
+        currentTrack = { src: src, title: title, artist: artist || '' };
+        audio.src = src;
+        audio.play().then(function() {
+          syncPlayerUI();
+        }).catch(function() {});
+        // Store state for cross-page persistence
+        try {
+          sessionStorage.setItem('music-current-src', src);
+          sessionStorage.setItem('music-current-title', title);
+          sessionStorage.setItem('music-playing', 'true');
+        } catch(e) {}
         window.dispatchEvent(new CustomEvent('play-music', { detail: { src: src, title: title } }));
       }
 
-      function renderHomeMusic(tracks) {
+      function playHomeTrackByIdx(idx) {
+        if (idx >= 0 && idx < tracks.length && tracks[idx].src) {
+          playHomeTrack(tracks[idx].src, tracks[idx].title, tracks[idx].artist);
+        }
+      }
+
+      function renderHomeMusic(tracksData) {
+        tracks = tracksData;
         if (!tracks || tracks.length === 0) {
           musicList.innerHTML = '<div class="text-[10px]" style="color:var(--text-muted);">暂无曲目，去管理后台添加吧</div>';
           return;
@@ -273,37 +423,171 @@ const barColors = {
           musicList.innerHTML = '<div class="text-[10px]" style="color:var(--text-muted);">暂无可播放曲目</div>';
           return;
         }
-        musicList.innerHTML = playable.slice(0, 6).map(function(t, i) {
-          var art = t.cover ? '<img src="' + t.cover + '" style="width:100%;height:100%;object-fit:cover;border-radius:4px;" onerror="this.parentElement.textContent=&apos;🎵&apos;" />' : '🎵';
-          return '<div class="home-music-item" onclick="playHomeTrack(\'' + (t.src||'').replace(/'/g,"\\'") + '\', \'' + (t.title||'').replace(/'/g,"\\'") + '\')" style="display:flex;align-items:center;gap:0.4rem;padding:0.3rem;border-radius:0.5rem;cursor:pointer;transition:background 0.15s;">' +
-            '<div style="width:2rem;height:2rem;border-radius:0.375rem;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));display:flex;align-items:center;justify-content:center;font-size:0.5rem;flex-shrink:0;overflow:hidden;">' + art + '</div>' +
+        musicList.innerHTML = playable.slice(0, 8).map(function(t, i) {
+          var art = t.cover ? '<img src="' + t.cover + '" style="width:100%;height:100%;object-fit:cover;border-radius:4px;" onerror="this.parentElement.textContent=\'🎵\'" />' : '🎵';
+          return '<div class="home-music-item" data-idx="' + i + '" style="display:flex;align-items:center;gap:0.4rem;padding:0.3rem;border-radius:0.5rem;cursor:pointer;transition:all 0.15s;border-left:2px solid transparent;">' +
+            '<div style="width:1.8rem;height:1.8rem;border-radius:0.375rem;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));display:flex;align-items:center;justify-content:center;font-size:0.5rem;flex-shrink:0;overflow:hidden;">' + art + '</div>' +
             '<div style="flex:1;min-width:0;">' +
-              '<div style="font-size:0.65rem;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (t.title||'未知') + '</div>' +
-              '<div style="font-size:0.55rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (t.artist||'') + '</div>' +
+              '<div style="font-size:0.6rem;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (t.title||'未知') + '</div>' +
+              '<div style="font-size:0.5rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (t.artist||'') + '</div>' +
             '</div>' +
-            '<div style="font-size:0.5rem;color:var(--accent-1-light);">▶</div>' +
+            '<div style="font-size:0.45rem;color:var(--accent-1-light);">▶</div>' +
           '</div>';
         }).join('');
+        syncPlayerUI();
       }
 
-      // Load from API
-      fetch('/api/music').then(function(r) { return r.json(); }).then(function(data) {
-        var tracks = Array.isArray(data) ? data : [];
-        renderHomeMusic(tracks);
-      }).catch(function() {
-        musicList.innerHTML = '<div class="text-[10px]" style="color:var(--text-muted);">加载失败</div>';
+      // Click delegation for music items
+      musicList.addEventListener('click', function(e) {
+        var item = e.target.closest('.home-music-item');
+        if (!item) return;
+        var idx = parseInt(item.getAttribute('data-idx'));
+        if (!isNaN(idx)) playHomeTrackByIdx(idx);
       });
 
-      // Hover effects
       musicList.addEventListener('mouseover', function(e) {
         var item = e.target.closest('.home-music-item');
-        if (item) item.style.background = 'rgba(255,255,255,0.06)';
+        if (item && !item.style.borderLeft.includes('var(--accent-1)')) item.style.background = 'rgba(255,255,255,0.06)';
       });
       musicList.addEventListener('mouseout', function(e) {
         var item = e.target.closest('.home-music-item');
-        if (item) item.style.background = '';
+        if (item && !item.style.borderLeft.includes('var(--accent-1)')) item.style.background = '';
+      });
+
+      // Player controls
+      var prevBtn = document.getElementById('hmp-prev');
+      var toggleBtn = document.getElementById('hmp-toggle');
+      var nextBtn = document.getElementById('hmp-next');
+      if (prevBtn) prevBtn.addEventListener('click', function() {
+        var audio = getAudio();
+        if (!audio || tracks.length === 0) return;
+        var curIdx = tracks.findIndex(function(t) { return t.src === audio.src; });
+        var prevIdx = curIdx > 0 ? curIdx - 1 : tracks.length - 1;
+        playHomeTrackByIdx(prevIdx);
+      });
+      if (toggleBtn) toggleBtn.addEventListener('click', function() {
+        var audio = getAudio();
+        if (!audio) return;
+        if (audio.paused) {
+          audio.play().catch(function() {});
+          try { sessionStorage.setItem('music-playing', 'true'); } catch(e) {}
+        } else {
+          audio.pause();
+          try { sessionStorage.setItem('music-playing', 'false'); } catch(e) {}
+        }
+        syncPlayerUI();
+      });
+      if (nextBtn) nextBtn.addEventListener('click', function() {
+        var audio = getAudio();
+        if (!audio || tracks.length === 0) return;
+        var curIdx = tracks.findIndex(function(t) { return t.src === audio.src; });
+        var nextIdx = curIdx >= 0 ? (curIdx + 1) % tracks.length : 0;
+        playHomeTrackByIdx(nextIdx);
+      });
+
+      // Sync with global audio events
+      var audio = getAudio();
+      if (audio) {
+        audio.addEventListener('play', syncPlayerUI);
+        audio.addEventListener('pause', syncPlayerUI);
+        audio.addEventListener('ended', syncPlayerUI);
+        audio.addEventListener('timeupdate', syncPlayerUI);
+      }
+
+      // Also listen for play-music events from MusicPlayer capsule
+      window.addEventListener('play-music', function(e) {
+        if (e.detail && e.detail.src) {
+          currentTrack = { src: e.detail.src, title: e.detail.title || '', artist: e.detail.artist || '' };
+          syncPlayerUI();
+        }
+      });
+
+      // Load from API
+      fetch('/api/music').then(function(r) { return r.json(); }).then(function(data) {
+        var tracksData = Array.isArray(data) ? data : [];
+        renderHomeMusic(tracksData);
+        var mlm = document.getElementById('home-music-list-mobile');
+        if (mlm) mlm.innerHTML = musicList.innerHTML;
+        // Restore state
+        try {
+          var savedSrc = sessionStorage.getItem('music-current-src');
+          var savedTitle = sessionStorage.getItem('music-current-title');
+          if (savedSrc) {
+            currentTrack = { src: savedSrc, title: savedTitle || '', artist: '' };
+            playerEl.style.display = 'block';
+            syncPlayerUI();
+          }
+        } catch(e) {}
+      }).catch(function() {
+        musicList.innerHTML = '<div class="text-[10px]" style="color:var(--text-muted);">加载失败</div>';
       });
     })();
   </script>
+
+  <script is:inline>
+    (function() {
+      var previewEl = document.getElementById('article-preview-content');
+      if (!previewEl) return;
+      var allArticles = [];
+      var recommendedPosts = [];
+      var currentIdx = 0;
+
+      function renderPreview(post) {
+        if (!post) return;
+        previewEl.innerHTML =
+          '<div class="space-y-1.5">' +
+            '<div class="text-xs font-bold" style="color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="' + (post.title||'').replace(/"/g, '&quot;') + '">' + (post.title||'') + '</div>' +
+            '<div class="text-[10px] line-clamp-2" style="color:var(--text-muted);">' + (post.description || '') + '</div>' +
+            '<div class="flex items-center justify-between">' +
+              '<span class="text-[10px]" style="color:var(--text-muted);">' + (post.date || '') + '</span>' +
+              '<a href="/blog/' + (post.slug || post.id || '') + '" class="text-[10px] font-medium" style="color:var(--accent-1-light);">阅读完整 \u2192</a>' +
+            '</div>' +
+          '</div>';
+      }
+
+      function loadRecommended() {
+        Promise.all([
+          fetch('/api/articles').then(function(r) { return r.json(); }),
+          fetch('/api/articles/recommended').then(function(r) { return r.json(); })
+        ]).then(function(results) {
+          allArticles = Array.isArray(results[0]) ? results[0] : [];
+          var recData = results[1];
+          var recSlugs = Array.isArray(recData) ? recData : [];
+          
+          if (recSlugs.length > 0) {
+            recommendedPosts = recSlugs.map(function(s) {
+              return allArticles.find(function(a) { return a.slug === s || a.id === s; });
+            }).filter(Boolean);
+          }
+          
+          if (recommendedPosts.length === 0 && allArticles.length > 0) {
+            recommendedPosts = allArticles.slice(0, 5);
+          }
+          
+          if (recommendedPosts.length > 0) {
+            currentIdx = Math.floor(Math.random() * recommendedPosts.length);
+            renderPreview(recommendedPosts[currentIdx]);
+          } else {
+            previewEl.innerHTML = '<div class="text-[10px]" style="color:var(--text-muted);">暂无推荐文章</div>';
+          }
+        }).catch(function() {
+          previewEl.innerHTML = '<div class="text-[10px]" style="color:var(--text-muted);">加载失败</div>';
+        });
+      }
+
+      loadRecommended();
+      setInterval(function() {
+        if (recommendedPosts.length === 0) return;
+        currentIdx = (currentIdx + 1) % recommendedPosts.length;
+        previewEl.style.opacity = '0';
+        setTimeout(function() {
+          renderPreview(recommendedPosts[currentIdx]);
+          previewEl.style.opacity = '1';
+        }, 200);
+      }, 5000);
+      previewEl.style.transition = 'opacity 0.2s ease';
+    })();
+  </script>
+
 
 </Base>

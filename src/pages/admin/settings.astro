@@ -12,229 +12,264 @@ import Admin from '../../layouts/Admin.astro';
     </div>
 
     <div id="settings-form" class="space-y-6">
-      {/* ===== 个人信息 ===== */}
-      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.05s;">
-        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">👤 个人信息</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">昵称</label><input id="nickname" type="text" class="service-input" /></div>
-          <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">QQ号</label><input id="qqNumber" type="text" class="service-input" /></div>
-          <div class="md:col-span-2"><label class="block text-sm mb-1" style="color: var(--text-secondary);">个性签名</label><input id="signature" type="text" class="service-input" /></div>
-          <div class="md:col-span-2"><label class="block text-sm mb-1" style="color: var(--text-secondary);">头像URL（留空则使用QQ头像）</label><input id="avatarUrl" type="text" class="service-input" placeholder="https://..." /></div>
-        </div>
-        <div class="mt-4 flex items-center gap-4">
-          <div class="w-16 h-16 rounded-full p-0.5 bg-gradient-to-br from-purple-500 to-cyan-400"><img id="avatar-preview" src="" class="w-full h-full rounded-full object-cover" alt="avatar" /></div>
-          <span class="text-sm" style="color: var(--text-muted);">头像预览</span>
-        </div>
-      </div>
 
-      {/* ===== 首页 Hero 区域 ===== */}
-      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.1s;">
-        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🏠 首页 Hero 区域</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">欢迎 Emoji</label><input id="heroEmoji" type="text" class="service-input" placeholder="👋" /></div>
-          <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">欢迎标语（用 %s 代替昵称）</label><input id="heroTagline" type="text" class="service-input" placeholder="Hi, Welcome! I'm %s!" /></div>
-          <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">首页标题</label><input id="heroTitle" type="text" class="service-input" /></div>
-          <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">首页副标题</label><input id="heroSubtitle" type="text" class="service-input" /></div>
-          <div class="md:col-span-2"><label class="block text-sm mb-1" style="color: var(--text-secondary);">首页描述</label><input id="heroDescription" type="text" class="service-input" /></div>
+      <div class="glass-card rounded-2xl animate-slide-up settings-section-wrap" style="animation-delay: 0.05s;">
+        <div class="settings-section-toggle flex items-center justify-between p-6 cursor-pointer" onclick="toggleSettingsSection(this)">
+          <h2 class="text-lg font-bold" style="color: var(--text-primary);">👤 个人信息</h2>
+          <span class="settings-arrow text-sm" style="color: var(--text-muted);">▼</span>
         </div>
-      </div>
-
-      {/* ===== 外观设置 ===== */}
-      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.15s;">
-        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🎨 外观设置</h2>
-        <div class="space-y-4">
-          <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">背景图URL（留空使用默认渐变）</label><input id="backgroundUrl" type="text" class="service-input" placeholder="https://..." /></div>
-        </div>
-      </div>
-
-      {/* ===== 控件样式 ===== */}
-      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.16s;">
-        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🖌️ 控件样式</h2>
-        <p class="text-sm mb-4" style="color: var(--text-muted);">选择全局控件（导航栏、按钮、卡片等）的外观预设</p>
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-          <button onclick="setStylePreset('default')" id="style-default" class="style-preset-btn px-3 py-3 rounded-xl text-xs font-medium transition-all text-center">
-            <div class="mb-1">🔷</div><div>默认</div>
-          </button>
-          <button onclick="setStylePreset('frosted')" id="style-frosted" class="style-preset-btn px-3 py-3 rounded-xl text-xs font-medium transition-all text-center">
-            <div class="mb-1">🌫️</div><div>磨砂</div>
-          </button>
-          <button onclick="setStylePreset('crystal')" id="style-crystal" class="style-preset-btn px-3 py-3 rounded-xl text-xs font-medium transition-all text-center">
-            <div class="mb-1">💎</div><div>水晶</div>
-          </button>
-          <button onclick="setStylePreset('minimal')" id="style-minimal" class="style-preset-btn px-3 py-3 rounded-xl text-xs font-medium transition-all text-center">
-            <div class="mb-1">◻️</div><div>极简</div>
-          </button>
-          <button onclick="setStylePreset('pill')" id="style-pill" class="style-preset-btn px-3 py-3 rounded-xl text-xs font-medium transition-all text-center">
-            <div class="mb-1">💊</div><div>胶囊</div>
-          </button>
-        </div>
-        <style>
-          .style-preset-btn {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            color: var(--text-primary);
-            cursor: pointer;
-          }
-          .style-preset-btn:hover { border-color: var(--accent-1); }
-          .style-preset-btn.active {
-            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-            color: white;
-            border-color: transparent;
-          }
-        </style>
-      </div>
-
-      {/* ===== 外观配色 ===== */}
-      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.17s;">
-        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🎨 配色方案</h2>
-        <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
-          <button onclick="setColorPreset('purple')" data-color-btn="purple" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all">
-            <span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-cyan-400 mr-1 align-middle"></span>紫罗兰
-          </button>
-          <button onclick="setColorPreset('ocean')" data-color-btn="ocean" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all">
-            <span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 mr-1 align-middle"></span>海洋蓝
-          </button>
-          <button onclick="setColorPreset('sunset')" data-color-btn="sunset" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all">
-            <span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-rose-500 to-orange-400 mr-1 align-middle"></span>日落橙
-          </button>
-          <button onclick="setColorPreset('forest')" data-color-btn="forest" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all">
-            <span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-green-400 mr-1 align-middle"></span>森林绿
-          </button>
-          <button onclick="setColorPreset('lavender')" data-color-btn="lavender" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all">
-            <span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-400 mr-1 align-middle"></span>薰衣草
-          </button>
-          <button onclick="setColorPreset('sakura')" data-color-btn="sakura" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all">
-            <span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-pink-500 to-rose-400 mr-1 align-middle"></span>樱花粉
-          </button>
-        </div>
-        <style>
-          .color-preset-btn {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            color: var(--text-primary);
-            cursor: pointer;
-          }
-          .color-preset-btn:hover { border-color: var(--accent-1); }
-          .color-preset-btn.active {
-            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
-            color: white;
-            border-color: transparent;
-          }
-        </style>
-      </div>
-
-      {/* ===== 音乐管理 ===== */}
-      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.18s;">
-        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🎵 音乐管理</h2>
-        <p class="text-sm mb-4" style="color: var(--text-muted);">管理播放器曲目，支持在线音频链接</p>
-        <div id="admin-music-tracks" class="space-y-3"></div>
-        <div class="mt-3 flex gap-3">
-          <button onclick="addMusicTrack()" class="ripple px-4 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/10 glass" style="color: var(--text-primary); border: 1px solid var(--glass-border);">➕ 添加曲目</button>
-          <button onclick="saveMusicTracks()" class="ripple px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-500 to-cyan-400 hover:opacity-90 transition-opacity">💾 保存曲目</button>
-        </div>
-      </div>
-      {/* ===== 侧边栏设置 ===== */}
-      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.18s;">
-        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">📐 侧边栏设置</h2>
-        <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">服务区块标题</label><input id="sidebarTitle" type="text" class="service-input" placeholder="Services" /></div>
-      </div>
-
-      {/* ===== Section 标题设置 ===== */}
-      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.2s;">
-        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">📊 区块标题设置</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">文章区标题</label><input id="sectionBlogsTitle" type="text" class="service-input" placeholder="Latest Blogs" /></div>
-          <div>
-            <label class="block text-sm mb-1" style="color: var(--text-secondary);">文章区竖条颜色</label>
-            <select id="sectionBlogsBarColor" class="service-input">
-              <option value="accent-1">强调色 1 (accent-1)</option>
-              <option value="accent-2">强调色 2 (accent-2)</option>
-              <option value="accent-1-light">强调色 1 亮</option>
-              <option value="accent-2-light">强调色 2 亮</option>
-            </select>
+        <div class="settings-section-content px-6 pb-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">昵称</label><input id="nickname" type="text" class="service-input" /></div>
+            <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">QQ号</label><input id="qqNumber" type="text" class="service-input" /></div>
+            <div class="md:col-span-2"><label class="block text-sm mb-1" style="color: var(--text-secondary);">个性签名</label><input id="signature" type="text" class="service-input" /></div>
+            <div class="md:col-span-2"><label class="block text-sm mb-1" style="color: var(--text-secondary);">头像URL（留空则使用QQ头像）</label><input id="avatarUrl" type="text" class="service-input" placeholder="https://..." /></div>
           </div>
-          <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">技术栈区标题</label><input id="sectionTechTitle" type="text" class="service-input" placeholder="Tech Stack" /></div>
-          <div>
-            <label class="block text-sm mb-1" style="color: var(--text-secondary);">技术栈区竖条颜色</label>
-            <select id="sectionTechBarColor" class="service-input">
-              <option value="accent-2">强调色 2 (accent-2)</option>
-              <option value="accent-1">强调色 1 (accent-1)</option>
-              <option value="accent-1-light">强调色 1 亮</option>
-              <option value="accent-2-light">强调色 2 亮</option>
-            </select>
+          <div class="mt-4 flex items-center gap-4">
+            <div class="w-16 h-16 rounded-full p-0.5 bg-gradient-to-br from-purple-500 to-cyan-400"><img id="avatar-preview" src="" class="w-full h-full rounded-full object-cover" alt="avatar" /></div>
+            <span class="text-sm" style="color: var(--text-muted);">头像预览</span>
           </div>
         </div>
       </div>
 
-      {/* ===== 页脚设置 ===== */}
-      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.23s;">
-        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🦶 页脚设置</h2>
-        <div class="space-y-4">
-          <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">页脚渐变文字</label><input id="footerText" type="text" class="service-input" placeholder="Stay curious. Thanks for dropping by. 👋" /></div>
-          <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">技术徽章文字</label><input id="footerTechBadge" type="text" class="service-input" placeholder="Built with Astro 6" /></div>
+      <div class="glass-card rounded-2xl animate-slide-up settings-section-wrap" style="animation-delay: 0.1s;">
+        <div class="settings-section-toggle flex items-center justify-between p-6 cursor-pointer" onclick="toggleSettingsSection(this)">
+          <h2 class="text-lg font-bold" style="color: var(--text-primary);">🎨 外观设置</h2>
+          <span class="settings-arrow text-sm" style="color: var(--text-muted);">▼</span>
+        </div>
+        <div class="settings-section-content px-6 pb-6">
+          <div class="space-y-5">
+
+            <div>
+              <div class="text-sm mb-2 font-semibold" style="color: var(--text-primary);">背景</div>
+              <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">背景图URL（留空使用默认渐变）</label><input id="backgroundUrl" type="text" class="service-input" placeholder="https://..." /></div>
+            </div>
+
+            <div>
+              <div class="text-sm mb-2 font-semibold" style="color: var(--text-primary);">卡片圆角</div>
+              <div class="flex gap-1.5">
+                <button onclick="handleCardRadius('sharp')" id="card-radius-sharp" class="card-radius-btn ripple flex-1 py-1.5 text-[10px] font-medium transition-all">直角</button>
+                <button onclick="handleCardRadius('small')" id="card-radius-small" class="card-radius-btn ripple flex-1 py-1.5 text-[10px] font-medium transition-all">小圆角</button>
+                <button onclick="handleCardRadius('medium')" id="card-radius-medium" class="card-radius-btn ripple flex-1 py-1.5 text-[10px] font-medium transition-all">中圆角</button>
+                <button onclick="handleCardRadius('large')" id="card-radius-large" class="card-radius-btn ripple flex-1 py-1.5 text-[10px] font-medium transition-all">大圆角</button>
+                <button onclick="handleCardRadius('pill')" id="card-radius-pill" class="card-radius-btn ripple flex-1 py-1.5 text-[10px] font-medium transition-all">胶囊</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-sm mb-2 font-semibold" style="color: var(--text-primary);">卡片模糊</div>
+              <div class="flex gap-1.5">
+                <button onclick="handleCardBlur('none')" id="card-blur-none" class="card-blur-btn ripple flex-1 py-1.5 text-[10px] font-medium transition-all">无模糊</button>
+                <button onclick="handleCardBlur('light')" id="card-blur-light" class="card-blur-btn ripple flex-1 py-1.5 text-[10px] font-medium transition-all">轻度</button>
+                <button onclick="handleCardBlur('medium')" id="card-blur-medium" class="card-blur-btn ripple flex-1 py-1.5 text-[10px] font-medium transition-all">中度</button>
+                <button onclick="handleCardBlur('heavy')" id="card-blur-heavy" class="card-blur-btn ripple flex-1 py-1.5 text-[10px] font-medium transition-all">重度</button>
+                <button onclick="handleCardBlur('ultra')" id="card-blur-ultra" class="card-blur-btn ripple flex-1 py-1.5 text-[10px] font-medium transition-all">超强</button>
+              </div>
+            </div>
+            <div id="card-save-status" class="text-xs hidden" style="color: #22c55e;">✅ 卡片样式已同步到全局</div>
+
+            <div>
+              <div class="text-sm mb-2 font-semibold" style="color: var(--text-primary);">控件预设</div>
+              <p class="text-sm mb-3" style="color: var(--text-muted);">选择全局控件的外观预设</p>
+              <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                <button onclick="setStylePreset('default')" id="style-default" class="style-preset-btn px-3 py-3 rounded-xl text-xs font-medium transition-all text-center"><div class="mb-1">🔷</div><div>默认</div></button>
+                <button onclick="setStylePreset('frosted')" id="style-frosted" class="style-preset-btn px-3 py-3 rounded-xl text-xs font-medium transition-all text-center"><div class="mb-1">🌫️</div><div>磨砂</div></button>
+                <button onclick="setStylePreset('crystal')" id="style-crystal" class="style-preset-btn px-3 py-3 rounded-xl text-xs font-medium transition-all text-center"><div class="mb-1">💎</div><div>水晶</div></button>
+                <button onclick="setStylePreset('minimal')" id="style-minimal" class="style-preset-btn px-3 py-3 rounded-xl text-xs font-medium transition-all text-center"><div class="mb-1">◻️</div><div>极简</div></button>
+                <button onclick="setStylePreset('pill')" id="style-pill" class="style-preset-btn px-3 py-3 rounded-xl text-xs font-medium transition-all text-center"><div class="mb-1">💊</div><div>胶囊</div></button>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-sm mb-2 font-semibold" style="color: var(--text-primary);">配色方案</div>
+              <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                <button onclick="setColorPreset('purple')" data-color-btn="purple" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all"><span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-cyan-400 mr-1 align-middle"></span>紫罗兰</button>
+                <button onclick="setColorPreset('ocean')" data-color-btn="ocean" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all"><span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-sky-500 to-cyan-400 mr-1 align-middle"></span>海洋蓝</button>
+                <button onclick="setColorPreset('sunset')" data-color-btn="sunset" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all"><span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-rose-500 to-orange-400 mr-1 align-middle"></span>日落橙</button>
+                <button onclick="setColorPreset('forest')" data-color-btn="forest" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all"><span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-emerald-500 to-green-400 mr-1 align-middle"></span>森林绿</button>
+                <button onclick="setColorPreset('lavender')" data-color-btn="lavender" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all"><span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-400 mr-1 align-middle"></span>薰衣草</button>
+                <button onclick="setColorPreset('sakura')" data-color-btn="sakura" class="color-preset-btn px-3 py-2 rounded-full text-xs font-medium transition-all"><span class="inline-block w-3 h-3 rounded-full bg-gradient-to-r from-pink-500 to-rose-400 mr-1 align-middle"></span>樱花粉</button>
+              </div>
+            </div>
+
+          </div>
+          <style>
+            .card-radius-btn, .card-blur-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary); cursor: pointer; border-radius: 10px; }
+            .card-radius-btn:hover, .card-blur-btn:hover { border-color: var(--accent-1); transform: translateY(-1px); }
+            .card-radius-btn.active, .card-blur-btn.active { background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: white; border-color: transparent; }
+            .style-preset-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary); cursor: pointer; }
+            .style-preset-btn:hover { border-color: var(--accent-1); }
+            .style-preset-btn.active { background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: white; border-color: transparent; }
+            .color-preset-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary); cursor: pointer; }
+            .color-preset-btn:hover { border-color: var(--accent-1); }
+            .color-preset-btn.active { background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: white; border-color: transparent; }
+          </style>
         </div>
       </div>
 
-      {/* ===== 侧边栏服务管理 ===== */}
-      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.26s;">
-        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🔗 侧边栏服务管理</h2>
-        <p class="text-sm mb-4" style="color: var(--text-muted);">自定义管理首页侧边栏中的服务链接</p>
-        <div id="services-container" class="space-y-3"></div>
-        <div class="mt-4 flex gap-3">
-          <button onclick="addService()" class="ripple px-4 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/10 glass" style="color: var(--text-primary); border: 1px solid var(--glass-border);">➕ 添加服务</button>
+      <div class="glass-card rounded-2xl animate-slide-up settings-section-wrap" style="animation-delay: 0.17s;">
+        <div class="settings-section-toggle flex items-center justify-between p-6 cursor-pointer" onclick="toggleSettingsSection(this)">
+          <h2 class="text-lg font-bold" style="color: var(--text-primary);">📐 站点布局</h2>
+          <span class="settings-arrow text-sm" style="color: var(--text-muted);">▼</span>
+        </div>
+        <div class="settings-section-content px-6 pb-6">
+          <div class="space-y-5">
+
+            <div>
+              <div class="text-sm mb-2 font-semibold" style="color: var(--text-primary);">侧边栏</div>
+              <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">服务区块标题</label><input id="sidebarTitle" type="text" class="service-input" placeholder="Services" /></div>
+            </div>
+
+            <div>
+              <div class="text-sm mb-2 font-semibold" style="color: var(--text-primary);">文章区</div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">文章区标题</label><input id="sectionBlogsTitle" type="text" class="service-input" placeholder="Latest Blogs" /></div>
+                <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">文章区竖条颜色</label><select id="sectionBlogsBarColor" class="service-input"><option value="accent-1">强调色 1</option><option value="accent-2">强调色 2</option><option value="accent-1-light">强调色 1 亮</option><option value="accent-2-light">强调色 2 亮</option></select></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-sm mb-2 font-semibold" style="color: var(--text-primary);">技术栈区</div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">技术栈区标题</label><input id="sectionTechTitle" type="text" class="service-input" placeholder="Tech Stack" /></div>
+                <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">技术栈区竖条颜色</label><select id="sectionTechBarColor" class="service-input"><option value="accent-2">强调色 2</option><option value="accent-1">强调色 1</option><option value="accent-1-light">强调色 1 亮</option><option value="accent-2-light">强调色 2 亮</option></select></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="text-sm mb-2 font-semibold" style="color: var(--text-primary);">页脚</div>
+              <div class="space-y-4">
+                <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">页脚渐变文字</label><input id="footerText" type="text" class="service-input" placeholder="Stay curious. Thanks for dropping by. 👋" /></div>
+                <div><label class="block text-sm mb-1" style="color: var(--text-secondary);">技术徽章文字</label><input id="footerTechBadge" type="text" class="service-input" placeholder="Built with Astro 6" /></div>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
 
-      {/* ===== 自定义 CSS ===== */}
-      <div class="glass-card rounded-2xl p-6 animate-slide-up" style="animation-delay: 0.29s;">
-        <h2 class="text-lg font-bold mb-4" style="color: var(--text-primary);">🖌️ 自定义 CSS</h2>
-        <p class="text-sm mb-3" style="color: var(--text-muted);">输入自定义 CSS 样式，会注入到首页中</p>
-        <textarea id="customCss" class="service-input font-mono text-xs" rows="6" placeholder="/* 在这里输入自定义 CSS */"></textarea>
+      <div class="glass-card rounded-2xl animate-slide-up settings-section-wrap" style="animation-delay: 0.2s;">
+        <div class="settings-section-toggle flex items-center justify-between p-6 cursor-pointer" onclick="toggleSettingsSection(this)">
+          <h2 class="text-lg font-bold" style="color: var(--text-primary);">🔗 侧边栏服务管理</h2>
+          <span class="settings-arrow text-sm" style="color: var(--text-muted);">▼</span>
+        </div>
+        <div class="settings-section-content px-6 pb-6">
+          <p class="text-sm mb-4" style="color: var(--text-muted);">自定义管理首页侧边栏中的服务链接</p>
+          <div id="services-container" class="space-y-3"></div>
+          <div class="mt-4 flex gap-3">
+            <button onclick="addService()" class="ripple px-4 py-2 rounded-xl text-sm font-medium transition-all hover:bg-white/10 glass" style="color: var(--text-primary); border: 1px solid var(--glass-border);">➕ 添加服务</button>
+          </div>
+        </div>
       </div>
 
-      {/* ===== 保存按钮 ===== */}
-      <div class="flex gap-4 animate-slide-up" style="animation-delay: 0.32s;">
+      <div class="glass-card rounded-2xl animate-slide-up settings-section-wrap" style="animation-delay: 0.22s;">
+        <div class="settings-section-toggle flex items-center justify-between p-6 cursor-pointer" onclick="toggleSettingsSection(this)">
+          <h2 class="text-lg font-bold" style="color: var(--text-primary);">🖌️ 自定义 CSS</h2>
+          <span class="settings-arrow text-sm" style="color: var(--text-muted);">▼</span>
+        </div>
+        <div class="settings-section-content px-6 pb-6">
+          <p class="text-sm mb-3" style="color: var(--text-muted);">输入自定义 CSS 样式</p>
+          <textarea id="customCss" class="service-input font-mono text-xs" rows="6" placeholder="/* 在这里输入自定义 CSS */"></textarea>
+        </div>
+      </div>
+
+      <div class="flex gap-4 animate-slide-up" style="animation-delay: 0.25s;">
         <button onclick="saveAll()" class="ripple px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-purple-500 to-cyan-400 hover:opacity-90 transition-opacity">💾 保存所有设置</button>
         <button onclick="resetServices()" class="ripple px-4 py-2 rounded-xl text-sm font-medium transition-all glass" style="color: var(--text-muted); border: 1px solid var(--glass-border);">🔄 重置服务列表</button>
       </div>
-
       <div id="save-status" class="text-center text-sm py-2 hidden rounded-xl" style="color: var(--text-muted);"></div>
     </div>
   </div>
 </Admin>
-
 <script is:inline>
-  let services = [];
-  const defaultServices = [
+  function toggleSettingsSection(toggleEl) {
+    var wrap = toggleEl.closest('.settings-section-wrap');
+    var content = wrap.querySelector('.settings-section-content');
+    var arrow = wrap.querySelector('.settings-arrow');
+    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+      content.style.maxHeight = '0px';
+      content.style.opacity = '0';
+      content.style.overflow = 'hidden';
+      arrow.textContent = '▶';
+    } else {
+      content.style.maxHeight = content.scrollHeight + 'px';
+      content.style.opacity = '1';
+      content.style.overflow = 'visible';
+      arrow.textContent = '▼';
+    }
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.settings-section-content').forEach(function(el) {
+      el.style.maxHeight = 'none';
+      el.style.opacity = '1';
+    });
+  });
+
+  var RADIUS_MAP = { sharp: '4px', small: '12px', medium: '20px', large: '28px', pill: '100px' };
+  var BLUR_MAP = { none: '0px', light: '8px', medium: '20px', heavy: '32px', ultra: '48px' };
+  var currentCardRadius = localStorage.getItem('card-radius') || 'medium';
+  var currentCardBlur = localStorage.getItem('card-blur') || 'medium';
+
+  function updateCardButtons() {
+    document.querySelectorAll('.card-radius-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.card-blur-btn').forEach(function(b) { b.classList.remove('active'); });
+    var rb = document.getElementById('card-radius-' + currentCardRadius);
+    var bb = document.getElementById('card-blur-' + currentCardBlur);
+    if (rb) rb.classList.add('active');
+    if (bb) bb.classList.add('active');
+  }
+  function applyCardSettings() {
+    var root = document.documentElement;
+    root.style.setProperty('--card-radius', RADIUS_MAP[currentCardRadius] || '20px');
+    root.style.setProperty('--card-blur', BLUR_MAP[currentCardBlur] || '20px');
+  }
+  function handleCardRadius(id) {
+    currentCardRadius = id;
+    localStorage.setItem('card-radius', id);
+    applyCardSettings();
+    updateCardButtons();
+    saveCardSettingsToKV();
+  }
+  function handleCardBlur(id) {
+    currentCardBlur = id;
+    localStorage.setItem('card-blur', id);
+    applyCardSettings();
+    updateCardButtons();
+    saveCardSettingsToKV();
+  }
+  function saveCardSettingsToKV() {
+    var st = document.getElementById('card-save-status');
+    st.classList.remove('hidden');
+    st.textContent = '保存中...';
+    st.style.color = 'var(--text-muted)';
+    fetch('/api/settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cardRadius: currentCardRadius, cardBlur: currentCardBlur }) })
+    .then(function(r) { return r.json(); }).then(function(d) {
+      if (d.ok) { st.textContent = '✅ 已同步到云端'; st.style.color = '#22c55e'; }
+      else { st.textContent = '⚠️ 仅本地保存'; st.style.color = '#f59e0b'; }
+      setTimeout(function() { st.classList.add('hidden'); }, 2000);
+    }).catch(function() { st.textContent = '⚠️ 仅本地保存'; st.style.color = '#f59e0b'; setTimeout(function() { st.classList.add('hidden'); }, 2000); });
+  }
+
+  var services = [];
+  var defaultServices = [
     { icon: '🌐', title: 'Tunnel VPN', desc: '安全代理服务', url: 'https://cc.likegz.dpdns.org/admin', color: 'from-blue-500/20 to-cyan-500/20', copyable: true, copyUrl: '' },
     { icon: '🖼️', title: 'Telegraph 图床', desc: '高速图片托管', url: 'https://image.hiokt.dpdns.org', color: 'from-green-500/20 to-emerald-500/20' },
     { icon: '📺', title: 'MoonTV 影视', desc: '在线影视平台', url: 'https://moon.hiokt.dpdns.org', color: 'from-purple-500/20 to-pink-500/20' },
     { icon: '📋', title: 'SubTracker 订阅', desc: '订阅管理平台', url: 'https://sub.hiokt.dpdns.org', color: 'from-orange-500/20 to-yellow-500/20' },
   ];
-
-  const colorOptions = [
-    'from-blue-500/20 to-cyan-500/20','from-green-500/20 to-emerald-500/20',
-    'from-purple-500/20 to-pink-500/20','from-orange-500/20 to-yellow-500/20',
-    'from-red-500/20 to-rose-500/20','from-indigo-500/20 to-violet-500/20',
-    'from-teal-500/20 to-cyan-500/20','from-amber-500/20 to-yellow-500/20',
-  ];
-  const iconOptions = ['🌐','🖼️','📺','📋','🔧','🎮','📡','🛡️','🎵','📁','🚀','💡'];
+  var colorOptions = ['from-blue-500/20 to-cyan-500/20','from-green-500/20 to-emerald-500/20','from-purple-500/20 to-pink-500/20','from-orange-500/20 to-yellow-500/20','from-red-500/20 to-rose-500/20','from-indigo-500/20 to-violet-500/20','from-teal-500/20 to-cyan-500/20','from-amber-500/20 to-yellow-500/20'];
+  var iconOptions = ['🌐','🖼️','📺','📋','🔧','🎮','📡','🛡️','🎵','📁','🚀','💡'];
 
   async function loadSettings() {
     try {
-      const token = localStorage.getItem('admin_token');
-      const res = await fetch('/api/settings', { headers: { 'Authorization': 'Bearer ' + token } });
-      const d = await res.json();
+      var token = localStorage.getItem('admin_token');
+      var res = await fetch('/api/settings', { headers: { 'Authorization': 'Bearer ' + token } });
+      var d = await res.json();
       document.getElementById('nickname').value = d.nickname || '';
       document.getElementById('qqNumber').value = d.qqNumber || '';
       document.getElementById('signature').value = d.signature || '';
       document.getElementById('avatarUrl').value = d.avatarUrl || '';
       document.getElementById('backgroundUrl').value = d.backgroundUrl || '';
-      document.getElementById('heroTitle').value = d.heroTitle || '';
-      document.getElementById('heroSubtitle').value = d.heroSubtitle || '';
-      document.getElementById('heroDescription').value = d.heroDescription || '';
-      document.getElementById('heroEmoji').value = d.heroEmoji || '👋';
-      document.getElementById('heroTagline').value = d.heroTagline || '';
       document.getElementById('sidebarTitle').value = d.sidebarTitle || 'Services';
       document.getElementById('sectionBlogsTitle').value = d.sectionBlogsTitle || 'Latest Blogs';
       document.getElementById('sectionBlogsBarColor').value = d.sectionBlogsBarColor || 'accent-1';
@@ -243,96 +278,64 @@ import Admin from '../../layouts/Admin.astro';
       document.getElementById('footerText').value = d.footerText || '';
       document.getElementById('footerTechBadge').value = d.footerTechBadge || '';
       document.getElementById('customCss').value = d.customCss || '';
-      try { services = JSON.parse(d.services || '[]'); } catch { services = [...defaultServices]; }
-      if (services.length === 0) services = [...defaultServices];
+      if (d.cardRadius) { currentCardRadius = d.cardRadius; localStorage.setItem('card-radius', d.cardRadius); }
+      if (d.cardBlur) { currentCardBlur = d.cardBlur; localStorage.setItem('card-blur', d.cardBlur); }
+      applyCardSettings();
+      updateCardButtons();
+      try { services = JSON.parse(d.services || '[]'); } catch(e) { services = services.length ? services : defaultServices.slice(); }
+      if (services.length === 0) services = defaultServices.slice();
       renderServices();
       updateAvatarPreview();
       updateStyleButtons();
       updateColorButtons();
-      loadAdminTracks();
-    } catch (e) { services = [...defaultServices]; renderServices(); }
+    } catch(e) { services = defaultServices.slice(); renderServices(); }
   }
 
   function updateAvatarPreview() {
-    const qq = document.getElementById('qqNumber').value;
-    const url = document.getElementById('avatarUrl').value;
+    var qq = document.getElementById('qqNumber').value;
+    var url = document.getElementById('avatarUrl').value;
     document.getElementById('avatar-preview').src = url || 'https://q.qlogo.cn/g?b=qq&nk=' + qq + '&s=100';
   }
 
   function renderServices() {
-    document.getElementById('services-container').innerHTML = services.map((s, i) => `
-      <div class="rounded-xl p-4" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-medium" style="color: var(--text-primary);">${s.icon} ${s.title}</span>
-          <button onclick="removeService(${i})" class="text-xs px-2 py-0.5 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors">🗑️ 删除</button>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label class="text-[10px] block mb-1" style="color: var(--text-muted);">图标</label>
-            <select onchange="updateService(${i},'icon',this.value)" class="service-input" style="padding:0.375rem 0.5rem;">
-              ${iconOptions.map(icon => `<option value="${icon}" ${s.icon===icon?'selected':''}>${icon}</option>`).join('')}
-            </select>
-          </div>
-          <div>
-            <label class="text-[10px] block mb-1" style="color: var(--text-muted);">标题</label>
-            <input value="${s.title||''}" onchange="updateService(${i},'title',this.value)" class="service-input" />
-          </div>
-          <div>
-            <label class="text-[10px] block mb-1" style="color: var(--text-muted);">描述</label>
-            <input value="${s.desc||''}" onchange="updateService(${i},'desc',this.value)" class="service-input" />
-          </div>
-          <div>
-            <label class="text-[10px] block mb-1" style="color: var(--text-muted);">链接 URL</label>
-            <input value="${s.url||''}" onchange="updateService(${i},'url',this.value)" class="service-input" placeholder="https://..." />
-          </div>
-          <div>
-            <label class="text-[10px] block mb-1" style="color: var(--text-muted);">复制按钮链接（留空则复制主链接）</label>
-            <input value="${s.copyUrl||''}" onchange="updateService(${i},'copyUrl',this.value)" class="service-input" placeholder="留空则复制主链接" />
-          </div>
-          <div class="flex items-end gap-3">
-            <div>
-              <label class="text-[10px] block mb-1" style="color: var(--text-muted);">配色</label>
-              <select onchange="updateService(${i},'color',this.value)" class="service-input w-12" style="padding:0.375rem;">
-                ${colorOptions.map(c => `<option value="${c}" ${s.color===c?'selected':''}>●</option>`).join('')}
-              </select>
-            </div>
-            <div>
-              <label class="text-[10px] block mb-1" style="color: var(--text-muted);">复制按钮</label>
-              <button onclick="toggleCopyable(${i})" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${s.copyable?'bg-green-500/20 text-green-400 border border-green-500/30':'glass'}" style="border:1px solid var(--glass-border);">${s.copyable?'✅ 开启':'❌ 关闭'}</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `).join('');
+    var c = document.getElementById('services-container');
+    c.innerHTML = services.map(function(s, i) {
+      return '<div class="rounded-xl" style="background:var(--glass-bg);border:1px solid var(--glass-border);overflow:hidden;"><div class="flex items-center justify-between px-4 py-3 cursor-pointer" onclick="toggleServiceDetail(' + i + ')" style="user-select:none;"><span class="text-sm font-medium" style="color:var(--text-primary);">' + s.icon + ' ' + s.title + '</span><div class="flex items-center gap-2"><button onclick="event.stopPropagation();removeService(' + i + ')" class="text-xs px-2 py-0.5 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20">🗑️ 删除</button><span class="service-toggle-icon text-xs" style="color:var(--text-muted);" id="service-toggle-' + i + '">▼</span></div></div><div class="service-detail px-4 pb-4" id="service-detail-' + i + '"><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="text-[10px] block mb-1" style="color:var(--text-muted);">图标</label><select onchange="updateService(' + i + ',\'icon\',this.value)" class="service-input">' + iconOptions.map(function(icon){return '<option value="'+icon+'"'+(s.icon===icon?' selected':'')+'>'+icon+'</option>';}).join('') + '</select></div><div><label class="text-[10px] block mb-1" style="color:var(--text-muted);">标题</label><input value="' + (s.title||'').replace(/"/g,'&quot;') + '" onchange="updateService(' + i + ',\'title\',this.value)" class="service-input" /></div><div><label class="text-[10px] block mb-1" style="color:var(--text-muted);">描述</label><input value="' + (s.desc||'').replace(/"/g,'&quot;') + '" onchange="updateService(' + i + ',\'desc\',this.value)" class="service-input" /></div><div><label class="text-[10px] block mb-1" style="color:var(--text-muted);">链接</label><input value="' + (s.url||'').replace(/"/g,'&quot;') + '" onchange="updateService(' + i + ',\'url\',this.value)" class="service-input" /></div><div><label class="text-[10px] block mb-1" style="color:var(--text-muted);">复制链接</label><input value="' + (s.copyUrl||'').replace(/"/g,'&quot;') + '" onchange="updateService(' + i + ',\'copyUrl\',this.value)" class="service-input" placeholder="留空则复制主链接" /></div><div class="flex items-end gap-3"><div><label class="text-[10px] block mb-1" style="color:var(--text-muted);">配色</label><select onchange="updateService(' + i + ',\'color\',this.value)" class="service-input w-12">' + colorOptions.map(function(c2){return '<option value="'+c2+'"'+(s.color===c2?' selected':'')+'>●</option>';}).join('') + '</select></div><div><label class="text-[10px] block mb-1" style="color:var(--text-muted);">复制按钮</label><button onclick="toggleCopyable(' + i + ')" class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all ' + (s.copyable?'bg-green-500/20 text-green-400':'') + '" style="border:1px solid var(--glass-border);">' + (s.copyable?'✅ 开启':'❌ 关闭') + '</button></div></div></div></div></div>';
+    }).join('');
   }
-
+  function toggleServiceDetail(i) {
+    var detail = document.getElementById('service-detail-' + i);
+    var icon = document.getElementById('service-toggle-' + i);
+    if (!detail) return;
+    if (detail.style.display === 'none') {
+      detail.style.display = 'block';
+      icon.textContent = '▼';
+    } else {
+      detail.style.display = 'none';
+      icon.textContent = '▶';
+    }
+  }
   function updateService(i, field, val) { services[i][field] = val; }
   function toggleCopyable(i) { services[i].copyable = !services[i].copyable; renderServices(); }
-  function addService() {
-    services.push({ icon:'🌐', title:'新服务', desc:'描述', url:'https://', color: colorOptions[Math.floor(Math.random()*colorOptions.length)], copyable:false, copyUrl:'' });
-    renderServices();
-  }
-  function removeService(i) { services.splice(i, 1); renderServices(); }
-  function resetServices() { if (confirm('确定要重置服务列表为默认值吗？')) { services = [...defaultServices]; renderServices(); } }
+  function addService() { services.push({icon:'🌐',title:'新服务',desc:'描述',url:'https://',color:colorOptions[Math.floor(Math.random()*colorOptions.length)],copyable:false,copyUrl:''}); renderServices(); }
+  function removeService(i) { services.splice(i,1); renderServices(); }
+  function resetServices() { if(confirm('确定要重置服务列表为默认值吗？')){services=defaultServices.slice();renderServices();} }
 
-
-  // Style presets
   var currentStyle = localStorage.getItem('style-preset') || 'default';
   var stylePresets = {
-    default: { radius: '20px', frostBlur: '0px', tint: 'rgba(255,255,255,0.16)', innerBlur: '20px', innerSpread: '-5px' },
-    frosted: { radius: '20px', frostBlur: '8px', tint: 'rgba(255,255,255,0.12)', innerBlur: '12px', innerSpread: '-3px' },
-    crystal: { radius: '28px', frostBlur: '2px', tint: 'rgba(255,255,255,0.2)', innerBlur: '24px', innerSpread: '-8px' },
-    minimal: { radius: '12px', frostBlur: '0px', tint: 'rgba(255,255,255,0.08)', innerBlur: '8px', innerSpread: '-2px' },
-    pill: { radius: '100px', frostBlur: '0px', tint: 'rgba(255,255,255,0.18)', innerBlur: '16px', innerSpread: '-4px' },
+    default: { radius:'20px', frostBlur:'0px', tint:'rgba(255,255,255,0.16)', innerBlur:'20px', innerSpread:'-5px' },
+    frosted: { radius:'20px', frostBlur:'8px', tint:'rgba(255,255,255,0.12)', innerBlur:'12px', innerSpread:'-3px' },
+    crystal: { radius:'28px', frostBlur:'2px', tint:'rgba(255,255,255,0.2)', innerBlur:'24px', innerSpread:'-8px' },
+    minimal: { radius:'12px', frostBlur:'0px', tint:'rgba(255,255,255,0.08)', innerBlur:'8px', innerSpread:'-2px' },
+    pill: { radius:'100px', frostBlur:'0px', tint:'rgba(255,255,255,0.18)', innerBlur:'16px', innerSpread:'-4px' },
   };
   function updateStyleButtons() {
-    document.querySelectorAll('.style-preset-btn').forEach(function(btn) { btn.classList.remove('active'); });
-    var active = document.getElementById('style-' + currentStyle);
-    if (active) active.classList.add('active');
+    document.querySelectorAll('.style-preset-btn').forEach(function(btn){btn.classList.remove('active');});
+    var a = document.getElementById('style-' + currentStyle);
+    if(a) a.classList.add('active');
   }
   function setStylePreset(id) {
-    currentStyle = id;
-    localStorage.setItem('style-preset', id);
+    currentStyle = id; localStorage.setItem('style-preset', id);
     var sv = stylePresets[id] || stylePresets.default;
     var root = document.documentElement;
     root.style.setProperty('--lg-radius', sv.radius);
@@ -343,85 +346,30 @@ import Admin from '../../layouts/Admin.astro';
     updateStyleButtons();
   }
 
-  // Color presets
   var currentColor = localStorage.getItem('color-preset') || 'purple';
   function updateColorButtons() {
-    document.querySelectorAll('[data-color-btn]').forEach(function(btn) {
-      btn.classList.toggle('active', btn.getAttribute('data-color-btn') === currentColor);
-    });
+    document.querySelectorAll('[data-color-btn]').forEach(function(btn){btn.classList.toggle('active',btn.getAttribute('data-color-btn')===currentColor);});
   }
   function setColorPreset(id) {
-    currentColor = id;
-    localStorage.setItem('color-preset', id);
+    currentColor = id; localStorage.setItem('color-preset', id);
     document.documentElement.setAttribute('data-color', id);
     updateColorButtons();
   }
 
-  // Music tracks (loaded from API)
-  var adminTracks = [];
-  function loadAdminTracks() {
-    fetch('/api/music').then(function(r) { return r.json(); }).then(function(data) {
-      adminTracks = Array.isArray(data) ? data : [];
-      renderAdminTracks();
-    }).catch(function() { adminTracks = []; renderAdminTracks(); });
-  }
-  function renderAdminTracks() {
-    var c = document.getElementById('admin-music-tracks');
-    if (!c) return;
-    c.innerHTML = adminTracks.map(function(t, i) {
-      return '<div class="rounded-xl p-4" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">' +
-        '<div class="flex items-center justify-between mb-3">' +
-          '<span class="text-xs font-medium" style="color: var(--text-primary);">🎵 曲目 ' + (i + 1) + '</span>' +
-          '<button onclick="removeMusicTrack(' + i + ')" class="text-xs px-2 py-0.5 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors">🗑️ 删除</button>' +
-        '</div>' +
-        '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">' +
-          '<div><label class="text-[10px] block mb-1" style="color: var(--text-muted);">标题</label>' +
-            '<input value="' + (t.title||'').replace(/"/g, '&quot;') + '" onchange="adminTracks[' + i + '].title=this.value" class="service-input" /></div>' +
-          '<div><label class="text-[10px] block mb-1" style="color: var(--text-muted);">艺术家</label>' +
-            '<input value="' + (t.artist||'').replace(/"/g, '&quot;') + '" onchange="adminTracks[' + i + '].artist=this.value" class="service-input" /></div>' +
-          '<div><label class="text-[10px] block mb-1" style="color: var(--text-muted);">音频 URL</label>' +
-            '<input value="' + (t.src||'').replace(/"/g, '&quot;') + '" onchange="adminTracks[' + i + '].src=this.value" class="service-input" placeholder="https://...mp3" /></div>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-  }
-  function addMusicTrack() { adminTracks.push({ title: '', artist: '', src: '' }); renderAdminTracks(); }
-  function removeMusicTrack(i) { adminTracks.splice(i, 1); renderAdminTracks(); }
-  function saveMusicTracks() {
-    fetch('/api/music', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tracks: adminTracks }) })
-    .then(function(r) { return r.json(); })
-    .then(function(result) {
-      var st = document.getElementById('save-status');
-      if (result.ok) { st.textContent = '✅ 音乐曲目已保存！'; st.style.color = '#22c55e'; }
-      else { st.textContent = '❌ 保存失败'; st.style.color = '#ef4444'; }
-      st.classList.remove('hidden');
-      setTimeout(function() { st.classList.add('hidden'); }, 3000);
-    }).catch(function() {
-      var st = document.getElementById('save-status');
-      st.textContent = '❌ 网络错误'; st.style.color = '#ef4444';
-      st.classList.remove('hidden');
-    });
-  }
-
   async function saveAll() {
-    const st = document.getElementById('save-status');
+    var st = document.getElementById('save-status');
     st.className = 'text-center text-sm py-2 rounded-xl';
     st.style.color = 'var(--text-muted)';
     st.textContent = '保存中...';
     st.classList.remove('hidden');
     try {
-      const token = localStorage.getItem('admin_token');
-      const body = {
+      var token = localStorage.getItem('admin_token');
+      var body = {
         nickname: document.getElementById('nickname').value,
         qqNumber: document.getElementById('qqNumber').value,
         signature: document.getElementById('signature').value,
         avatarUrl: document.getElementById('avatarUrl').value,
         backgroundUrl: document.getElementById('backgroundUrl').value,
-        heroTitle: document.getElementById('heroTitle').value,
-        heroSubtitle: document.getElementById('heroSubtitle').value,
-        heroDescription: document.getElementById('heroDescription').value,
-        heroEmoji: document.getElementById('heroEmoji').value,
-        heroTagline: document.getElementById('heroTagline').value,
         sidebarTitle: document.getElementById('sidebarTitle').value,
         sectionBlogsTitle: document.getElementById('sectionBlogsTitle').value,
         sectionBlogsBarColor: document.getElementById('sectionBlogsBarColor').value,
@@ -432,17 +380,13 @@ import Admin from '../../layouts/Admin.astro';
         customCss: document.getElementById('customCss').value,
         services: JSON.stringify(services),
       };
-      const res = await fetch('/api/settings', { method:'PUT', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify(body) });
-      if (res.ok) { st.textContent = '✅ 所有设置已保存！页面将在2秒后刷新...'; st.style.color = '#22c55e'; setTimeout(() => window.location.reload(), 2000); }
+      var res = await fetch('/api/settings', { method:'PUT', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify(body) });
+      if (res.ok) { st.textContent = '✅ 已保存！2秒后刷新...'; st.style.color = '#22c55e'; setTimeout(function(){window.location.reload();}, 2000); }
       else { st.textContent = '❌ 保存失败'; st.style.color = '#ef4444'; }
-    } catch { st.textContent = '❌ 网络错误'; st.style.color = '#ef4444'; }
+    } catch(e) { st.textContent = '❌ 网络错误'; st.style.color = '#ef4444'; }
   }
 
   document.getElementById('qqNumber')?.addEventListener('input', updateAvatarPreview);
   document.getElementById('avatarUrl')?.addEventListener('input', updateAvatarPreview);
   loadSettings();
 </script>
-
-
-
-

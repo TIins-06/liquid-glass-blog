@@ -1,14 +1,14 @@
-﻿import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 interface Track { title: string; artist: string; src: string; cover?: string; }
 
-let globalAudio: HTMLAudioElement | null = null;
+declare global { interface Window { __bgAudio?: HTMLAudioElement } }
 
 function getAudio(): HTMLAudioElement {
-  if (!globalAudio) {
-    globalAudio = new Audio();
+  if (typeof window !== 'undefined' && !window.__bgAudio) {
+    window.__bgAudio = new Audio();
   }
-  return globalAudio;
+  return (typeof window !== 'undefined' ? window.__bgAudio : null) || new Audio();
 }
 
 function isBrowser() {
@@ -35,14 +35,56 @@ export default function MusicPlayer() {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [volume, setVolume] = useState(0.5);
+  const [playlist, setPlaylist] = useState<Track[]>([]);
+  const [showPlaylist, setShowPlaylist] = useState(false);
   const progressRef = useRef<HTMLDivElement>(null);
   const inited = useRef(false);
+  const playlistRef = useRef<HTMLDivElement>(null);
+
+  const loadPlaylist = useCallback(async () => {
+    try {
+      const res = await fetch('/api/music');
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setPlaylist(data.filter((t: Track) => t.src));
+      }
+    } catch { /* ignore */ }
+  }, []);
+
+  const playTrack = useCallback((t: Track) => {
+    const audio = getAudio();
+    audio.src = t.src;
+    audio.volume = volume;
+    audio.load();
+    audio.play().catch(() => {});
+    setPlaying(true);
+    setVisible(true);
+    setTrack(t);
+    savePlayState(true);
+    saveMusicState(t.src, t.title, t.artist);
+  }, [volume]);
+
+  const next = useCallback(() => {
+    if (playlist.length === 0) return;
+    const audio = getAudio();
+    const curIdx = playlist.findIndex((t) => t.src === audio.src);
+    const nextIdx = curIdx >= 0 ? (curIdx + 1) % playlist.length : 0;
+    playTrack(playlist[nextIdx]);
+  }, [playlist, playTrack]);
+
+  const prev = useCallback(() => {
+    if (playlist.length === 0) return;
+    const audio = getAudio();
+    const curIdx = playlist.findIndex((t) => t.src === audio.src);
+    const prevIdx = curIdx > 0 ? curIdx - 1 : playlist.length - 1;
+    playTrack(playlist[prevIdx]);
+  }, [playlist, playTrack]);
 
   // Initialize from sessionStorage on client mount
   useEffect(() => {
     if (inited.current) return;
     inited.current = true;
-
+    loadPlaylist();
     if (isBrowser()) {
       const savedSrc = sessionStorage.getItem('music-current-src');
       const wasPlaying = sessionStorage.getItem('music-playing') === 'true';
@@ -64,111 +106,81 @@ export default function MusicPlayer() {
         }
       }
     }
+  }, [loadPlaylist]);
+
+  // Sync play/pause state from global audio events
+  useEffect(() => {
+    const audio = getAudio();
+    const syncState = () => setPlaying(!audio.paused);
+    audio.addEventListener('play', syncState);
+    audio.addEventListener('pause', syncState);
+    audio.addEventListener('ended', syncState);
+    return () => {
+      audio.removeEventListener('play', syncState);
+      audio.removeEventListener('pause', syncState);
+      audio.removeEventListener('ended', syncState);
+    };
   }, []);
 
+  // Audio time tracking
   useEffect(() => {
     const audio = getAudio();
     audio.volume = volume;
-
     const onTimeUpdate = () => {
       setProgress(audio.duration ? (audio.currentTime / audio.duration) * 100 : 0);
       setDuration(audio.duration || 0);
       setCurrentTime(audio.currentTime || 0);
     };
-    const onEnded = () => {
-      window.dispatchEvent(new CustomEvent('music-next'));
-    };
-    const onLoadedMetadata = () => {
-      setDuration(audio.duration || 0);
-    };
-
+    const onEnded = () => next();
+    const onLoadedMetadata = () => setDuration(audio.duration || 0);
     audio.addEventListener('timeupdate', onTimeUpdate);
     audio.addEventListener('ended', onEnded);
     audio.addEventListener('loadedmetadata', onLoadedMetadata);
-
     return () => {
       audio.removeEventListener('timeupdate', onTimeUpdate);
       audio.removeEventListener('ended', onEnded);
       audio.removeEventListener('loadedmetadata', onLoadedMetadata);
     };
-  }, []);
+  }, [volume, next]);
 
+  // External play-music event (e.g., clicking a play button elsewhere)
   useEffect(() => {
     const handler = (e: CustomEvent) => {
       if (e.detail?.src) {
-        const audio = getAudio();
-        audio.src = e.detail.src;
-        audio.volume = volume;
-        audio.load();
-        audio.play().catch(() => {});
-        setPlaying(true);
-        setVisible(true);
-        savePlayState(true);
-        const title = e.detail.title || '';
-        const artist = e.detail.artist || '';
-        saveMusicState(e.detail.src, title, artist);
-        setTrack({ title: title || '播放中', artist, src: e.detail.src });
+        playTrack({
+          title: e.detail.title || '播放中',
+          artist: e.detail.artist || '',
+          src: e.detail.src,
+        });
       }
     };
-    const nextHandler = () => {
-      fetch('/api/music').then(r => r.json()).then(data => {
-        if (!Array.isArray(data) || data.length === 0) return;
-        const playable = data.filter((t: Track) => t.src);
-        if (playable.length === 0) return;
-        const audio = getAudio();
-        const curIdx = playable.findIndex((t: Track) => t.src === audio.src);
-        const nextIdx = curIdx >= 0 ? (curIdx + 1) % playable.length : 0;
-        const next = playable[nextIdx];
-        audio.src = next.src;
-        audio.load();
-        audio.play().catch(() => {});
-        setTrack(next);
-        setPlaying(true);
-        setVisible(true);
-        savePlayState(true);
-        saveMusicState(next.src, next.title, next.artist);
-      }).catch(() => {});
-    };
     window.addEventListener('play-music', handler as EventListener);
-    window.addEventListener('music-next', nextHandler);
-    return () => {
-      window.removeEventListener('play-music', handler as EventListener);
-      window.removeEventListener('music-next', nextHandler);
+    return () => window.removeEventListener('play-music', handler as EventListener);
+  }, [playTrack]);
+
+  // Close playlist on outside click
+  useEffect(() => {
+    if (!showPlaylist) return;
+    const handleClick = (e: MouseEvent) => {
+      if (playlistRef.current && !playlistRef.current.contains(e.target as Node)) {
+        setShowPlaylist(false);
+      }
     };
-  }, [volume]);
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showPlaylist]);
 
   const togglePlay = () => {
     const audio = getAudio();
-    if (playing) { audio.pause(); } else { audio.play().catch(() => {}); }
-    setPlaying(!playing);
+    if (playing) {
+      audio.pause();
+    } else {
+      audio.play().catch(() => {});
+    }
     savePlayState(!playing);
   };
 
-  const next = () => {
-    window.dispatchEvent(new CustomEvent('music-next'));
-  };
-
-  const prev = () => {
-    fetch('/api/music').then(r => r.json()).then(data => {
-      if (!Array.isArray(data) || data.length === 0) return;
-      const playable = data.filter((t: Track) => t.src);
-      if (playable.length === 0) return;
-      const audio = getAudio();
-      const curIdx = playable.findIndex((t: Track) => t.src === audio.src);
-      const prevIdx = curIdx > 0 ? curIdx - 1 : playable.length - 1;
-      const prev = playable[prevIdx];
-      audio.src = prev.src;
-      audio.load();
-      audio.play().catch(() => {});
-      setTrack(prev);
-      setPlaying(true);
-      setVisible(true);
-      savePlayState(true);
-      saveMusicState(prev.src, prev.title, prev.artist);
-    }).catch(() => {});
-  };
-
-  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleProgressClick = (e: React.MouseEvent) => {
     const audio = getAudio();
     if (!audio.duration || !progressRef.current) return;
     const rect = progressRef.current.getBoundingClientRect();
@@ -196,9 +208,44 @@ export default function MusicPlayer() {
   return (
     <div className="music-capsule-fixed">
       <div className="music-capsule-inner">
-        <div className="mc-track-info" style={{ minWidth: 0, flex: 1 }}>
+        <div className="mc-track-info" style={{ minWidth: 0, flex: 1, position: 'relative' }} ref={playlistRef}>
           <span className="mc-track-title">{track?.title || '播放中'}</span>
           <span className="mc-track-artist">{track?.artist || ''}</span>
+          <button
+            onClick={() => { setShowPlaylist(!showPlaylist); if (!showPlaylist) loadPlaylist(); }}
+            className="mc-ctrl"
+            style={{ fontSize: '0.5rem', padding: '2px 4px', marginLeft: '4px' }}
+            title="播放列表"
+          >☰</button>
+          {showPlaylist && playlist.length > 0 && (
+            <div style={{
+              position: 'absolute', bottom: '100%', left: 0, marginBottom: 8,
+              width: 260, maxHeight: 240, overflowY: 'auto',
+              background: 'rgba(20,20,30,0.92)', backdropFilter: 'blur(12px)',
+              borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+              padding: '6px 0', zIndex: 10001,
+            }}>
+              {playlist.map((t, i) => (
+                <button
+                  key={t.src + i}
+                  onClick={() => { playTrack(t); setShowPlaylist(false); }}
+                  style={{
+                    display: 'block', width: '100%', textAlign: 'left',
+                    background: track?.src === t.src ? 'rgba(255,255,255,0.1)' : 'transparent',
+                    color: 'var(--text-primary, #e0e0e0)',
+                    border: 'none', padding: '8px 14px', cursor: 'pointer',
+                    fontSize: '0.65rem', lineHeight: 1.4, fontFamily: 'inherit',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = track?.src === t.src ? 'rgba(255,255,255,0.1)' : 'transparent')}
+                >
+                  <span style={{ fontWeight: track?.src === t.src ? 600 : 400 }}>{t.title}</span>
+                  {t.artist && <span style={{ opacity: 0.5, marginLeft: 6 }}>{t.artist}</span>}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
           <button onClick={prev} className="mc-ctrl" title="上一曲">⏮</button>
@@ -219,12 +266,26 @@ export default function MusicPlayer() {
         />
         <button onClick={() => { setVisible(false); savePlayState(false); }} className="mc-close" title="关闭">✕</button>
       </div>
-      <div
-        ref={progressRef}
-        onClick={handleProgressClick}
-        className="mc-progress"
-        style={{ width: progress + '%', cursor: 'pointer' }}
-      />
+      <div style={{ position: 'relative', width: '100%', height: 6, cursor: 'pointer' }} ref={progressRef}>
+        <div style={{
+          position: 'absolute', inset: 0, borderRadius: 3,
+          background: 'rgba(255,255,255,0.06)',
+        }} />
+        <div style={{
+          position: 'absolute', top: 0, left: 0, bottom: 0, width: progress + '%',
+          borderRadius: 3, background: 'var(--accent-1, #7b68ee)',
+          transition: 'width 0.1s linear',
+        }} />
+        <div
+          onClick={handleProgressClick}
+          style={{
+            position: 'absolute', left: 0, right: 0, top: -10, bottom: -10,
+            cursor: 'pointer', zIndex: 2,
+          }}
+          onMouseEnter={e => { e.currentTarget.parentElement!.style.height = '12px'; }}
+          onMouseLeave={e => { e.currentTarget.parentElement!.style.height = '6px'; }}
+        />
+      </div>
     </div>
   );
 }

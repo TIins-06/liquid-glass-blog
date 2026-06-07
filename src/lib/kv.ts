@@ -1,4 +1,4 @@
-﻿import type { AstroGlobal } from 'astro';
+import type { AstroGlobal } from 'astro';
 
 export interface SiteSettings {
   // Profile
@@ -34,6 +34,9 @@ export interface SiteSettings {
   musicSourceConfig: string;
   articles: string;
   customCss: string;
+  cardRadius: string;
+  cardBlur: string;
+  recommendedArticles: string;
 }
 
 export async function getSettings(): Promise<SiteSettings> {
@@ -73,6 +76,9 @@ export async function getSettings(): Promise<SiteSettings> {
     musicSourceConfig: '',
     articles: '[]',
     customCss: '',
+    cardRadius: 'medium',
+    cardBlur: 'medium',
+    recommendedArticles: '[]',
   };
 
   try {

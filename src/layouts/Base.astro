@@ -3,7 +3,6 @@ import Navbar from '../components/layout/Navbar.astro';
 import Footer from '../components/layout/Footer.astro';
 import SettingsPanel from '../components/interactive/SettingsPanel.tsx';
 import CursorEffect from '../components/interactive/CursorEffect.tsx';
-import MusicPlayer from '../components/interactive/MusicPlayer.tsx';
 import '../styles/global.css';
 
 interface Props {
@@ -42,7 +41,6 @@ const {
     </main>
     <Footer />
     <SettingsPanel client:load />
-    <MusicPlayer client:load />
     <script is:inline>
       (function () {
         const theme = localStorage.getItem('theme') || 'dark';
@@ -56,7 +54,7 @@ const {
 
         // Fetch background from API (cross-device setting)
         fetch('/api/settings').then(function(r) { return r.json(); }).then(function(data) {
-          if (data && data.backgroundUrl) {
+          if (data.cardRadius) { var crm = {sharp:'4px',small:'12px',medium:'20px',large:'28px',pill:'100px'}; root.style.setProperty('--card-radius', crm[data.cardRadius]||'20px'); } if (data.cardBlur) { var cbm = {none:'0px',light:'8px',medium:'20px',heavy:'32px',ultra:'48px'}; root.style.setProperty('--card-blur', cbm[data.cardBlur]||'20px'); } if (data && data.backgroundUrl) {
             document.body.style.backgroundImage = 'url(' + data.backgroundUrl + ')';
             document.body.style.backgroundSize = 'cover';
             document.body.style.backgroundPosition = 'center';

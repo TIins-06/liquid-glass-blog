@@ -1,4 +1,4 @@
-﻿---
+---
 export const prerender = false;
 import Admin from '../../layouts/Admin.astro';
 ---
@@ -18,13 +18,50 @@ import Admin from '../../layouts/Admin.astro';
       </div>
     </div>
 
-    <div id="articles-list" class="space-y-3"></div>
-    <div id="articles-loading" class="text-center py-20">
-      <p style="color: var(--text-muted);">加载中...</p>
+    {/* Tabs */}
+    <div class="flex gap-2 mb-6">
+      <button onclick="switchTab('list')" id="tab-list" class="px-4 py-2 rounded-xl text-sm font-medium transition-all" style="background:linear-gradient(135deg,var(--accent-1),var(--accent-2));color:white;">📝 全部文章</button>
+      <button onclick="switchTab('recommend')" id="tab-recommend" class="px-4 py-2 rounded-xl text-sm font-medium transition-all" style="background:var(--glass-bg);border:1px solid var(--glass-border);color:var(--text-secondary);">⭐ 推荐阅读</button>
     </div>
-    <div id="articles-empty" class="text-center py-20 hidden">
-      <p class="text-lg" style="color: var(--text-muted);">暂无文章</p>
-      <p class="text-sm mt-2" style="color: var(--text-muted);">点击上方「写文章」按钮发布新文章</p>
+
+    {/* Article List Tab */}
+    <div id="panel-list">
+      <div id="articles-list" class="space-y-3"></div>
+      <div id="articles-loading" class="text-center py-20">
+        <p style="color: var(--text-muted);">加载中...</p>
+      </div>
+      <div id="articles-empty" class="text-center py-20 hidden">
+        <p class="text-lg" style="color: var(--text-muted);">暂无文章</p>
+        <p class="text-sm mt-2" style="color: var(--text-muted);">点击上方「写文章」按钮发布新文章</p>
+      </div>
+    </div>
+
+    {/* Recommended Tab */}
+    <div id="panel-recommend" class="hidden">
+      <div class="rounded-2xl p-5 mb-4" style="background:var(--glass-bg);border:1px solid var(--glass-border);backdrop-filter:blur(var(--card-blur)) saturate(150%);-webkit-backdrop-filter:blur(var(--card-blur)) saturate(150%);">
+        <h2 class="text-lg font-bold mb-2" style="color:var(--text-primary);">⭐ 推荐文章管理</h2>
+        <p class="text-xs mb-4" style="color:var(--text-muted);">选择文章展示在首页右侧「推荐阅读」卡片中，可拖拽排序</p>
+
+        {/* All articles with toggle */}
+        <div id="recommend-articles" class="space-y-2 mb-4"></div>
+
+        <div class="flex items-center justify-between mt-4 pt-4" style="border-top:1px solid var(--glass-border);">
+          <span class="text-xs" style="color:var(--text-muted);">已选 <strong id="recommend-count" style="color:var(--accent-1-light);">0</strong> 篇文章</span>
+          <button onclick="saveRecommended()" class="px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:scale-105" style="background:linear-gradient(135deg,var(--accent-1),var(--accent-2));">
+            💾 保存推荐设置
+          </button>
+        </div>
+        <div id="recommend-status" class="text-xs mt-2 hidden" style="color:#22c55e;"></div>
+      </div>
+
+      {/* Preview */}
+      <div class="rounded-2xl p-5" style="background:var(--glass-bg);border:1px solid var(--glass-border);backdrop-filter:blur(var(--card-blur)) saturate(150%);-webkit-backdrop-filter:blur(var(--card-blur)) saturate(150%);">
+        <h3 class="text-sm font-bold mb-3" style="color:var(--text-primary);">👁️ 预览效果</h3>
+        <div id="recommend-preview" class="rounded-xl p-4" style="background:var(--glass-bg);border:1px solid var(--glass-border);">
+          <div class="text-[10px] font-semibold mb-2" style="color:var(--accent-1-light);">💡 推荐阅读</div>
+          <div id="recommend-preview-content" class="space-y-2"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -35,37 +72,53 @@ import Admin from '../../layouts/Admin.astro';
         return;
       }
 
+      var allArticles = [];
+      var recommendedSlugs = [];
+
       function escH(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+      // Tab switching
+      window.switchTab = function(tab) {
+        document.getElementById('panel-list').classList.toggle('hidden', tab !== 'list');
+        document.getElementById('panel-recommend').classList.toggle('hidden', tab !== 'recommend');
+        var tabList = document.getElementById('tab-list');
+        var tabRec = document.getElementById('tab-recommend');
+        if (tab === 'list') {
+          tabList.style.background = 'linear-gradient(135deg,var(--accent-1),var(--accent-2))';
+          tabList.style.color = 'white';
+          tabList.style.border = 'none';
+          tabRec.style.background = 'var(--glass-bg)';
+          tabRec.style.color = 'var(--text-secondary)';
+          tabRec.style.border = '1px solid var(--glass-border)';
+        } else {
+          tabRec.style.background = 'linear-gradient(135deg,var(--accent-1),var(--accent-2))';
+          tabRec.style.color = 'white';
+          tabRec.style.border = 'none';
+          tabList.style.background = 'var(--glass-bg)';
+          tabList.style.color = 'var(--text-secondary)';
+          tabList.style.border = '1px solid var(--glass-border)';
+        }
+      };
+
+      // Render article list
       function renderArticles(articles) {
         var list = document.getElementById('articles-list');
         var loading = document.getElementById('articles-loading');
         var empty = document.getElementById('articles-empty');
         loading.classList.add('hidden');
-
-        if (!articles || articles.length === 0) {
-          empty.classList.remove('hidden');
-          return;
-        }
-
+        if (!articles || articles.length === 0) { empty.classList.remove('hidden'); return; }
         document.getElementById('article-count').textContent = articles.length;
-
         list.innerHTML = articles.map(function(a, i) {
           var tags = (a.tags || []).slice(0, 3).map(function(t) {
             return '<span class="text-[10px] px-2 py-0.5 rounded-full" style="background:rgba(124,58,237,0.15);color:var(--accent-1-light);">' + escH(t) + '</span>';
           }).join('');
-          var dateStr = a.date || '';
-          var source = a.source === 'static' ? ' · <span style="color:var(--accent-2-light);">静态</span>' : ' · <span style="color:var(--accent-1-light);">动态</span>';
           var draftBadge = a.draft ? '<span class="text-[10px] px-2 py-0.5 rounded-full" style="background:rgba(245,158,11,0.15);color:#fbbf24;">草稿</span>' : '';
-
-          return '<div class="rounded-xl p-5 flex items-center justify-between animate-slide-up" style="animation-delay:' + (i * 0.03) + 's;background:var(--glass-bg);border:1px solid var(--glass-border);backdrop-filter:blur(var(--card-blur)) saturate(150%);-webkit-backdrop-filter:blur(var(--card-blur)) saturate(150%);">' +
+          var source = a.source === 'static' ? ' · <span style="color:var(--accent-2-light);">静态</span>' : ' · <span style="color:var(--accent-1-light);">动态</span>';
+          return '<div class="rounded-xl p-5 flex items-center justify-between" style="background:var(--glass-bg);border:1px solid var(--glass-border);">' +
             '<div class="flex-1 min-w-0 mr-4">' +
-              '<div class="flex items-center gap-2 mb-1 flex-wrap">' +
-                '<h3 class="text-sm font-bold truncate" style="color:var(--text-primary);">' + escH(a.title) + '</h3>' +
-                draftBadge + tags +
-              '</div>' +
+              '<div class="flex items-center gap-2 mb-1 flex-wrap"><h3 class="text-sm font-bold truncate" style="color:var(--text-primary);">' + escH(a.title) + '</h3>' + draftBadge + tags + '</div>' +
               '<p class="text-xs truncate" style="color:var(--text-muted);">' + escH(a.description || '') + '</p>' +
-              '<p class="text-[10px] mt-1" style="color:var(--text-muted);">' + dateStr + source + '</p>' +
+              '<p class="text-[10px] mt-1" style="color:var(--text-muted);">' + (a.date || '') + source + '</p>' +
             '</div>' +
             '<div class="flex items-center gap-2 shrink-0">' +
               '<a href="/blog/' + (a.source === 'static' ? '' : 'kv/') + escH(a.slug) + '" target="_blank" class="text-xs px-3 py-1.5 rounded-lg transition-all hover:bg-white/10" style="color:var(--text-secondary);border:1px solid var(--glass-border);">查看</a>' +
@@ -76,12 +129,82 @@ import Admin from '../../layouts/Admin.astro';
         }).join('');
       }
 
-      // Load articles
-      fetch('/api/articles').then(function(r) { return r.json(); }).then(function(data) {
-        renderArticles(data);
-      }).catch(function() {
-        document.getElementById('articles-loading').innerHTML = '<p style="color:#f87171;">加载失败</p>';
-      });
+      // Render recommend panel
+      function renderRecommendPanel() {
+        var container = document.getElementById('recommend-articles');
+        if (!container) return;
+        container.innerHTML = allArticles.map(function(a) {
+          var isRec = recommendedSlugs.includes(a.slug);
+          return '<div class="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all" style="background:' + (isRec ? 'rgba(124,58,237,0.1)' : 'transparent') + ';border:1px solid ' + (isRec ? 'rgba(124,58,237,0.3)' : 'var(--glass-border)') + ';" onclick="toggleRecommend(\'' + escH(a.slug) + '\')">' +
+            '<div class="w-5 h-5 rounded-md flex items-center justify-center text-xs shrink-0" style="background:' + (isRec ? 'linear-gradient(135deg,var(--accent-1),var(--accent-2))' : 'var(--glass-bg)') + ';border:1px solid ' + (isRec ? 'transparent' : 'var(--glass-border)') + ';color:' + (isRec ? 'white' : 'var(--text-muted)') + ';">' + (isRec ? '✓' : '') + '</div>' +
+            '<div class="flex-1 min-w-0">' +
+              '<div class="text-xs font-medium truncate" style="color:var(--text-primary);">' + escH(a.title) + '</div>' +
+              '<div class="text-[10px] truncate" style="color:var(--text-muted);">' + escH(a.description || '').substring(0, 40) + '...</div>' +
+            '</div>' +
+            '<span class="text-[10px] shrink-0" style="color:var(--text-muted);">' + (a.date || '') + '</span>' +
+            (isRec ? '<button onclick="event.stopPropagation();moveRecommend(\'' + escH(a.slug) + '\',-1)" class="text-[10px] px-1" title="上移">↑</button><button onclick="event.stopPropagation();moveRecommend(\'' + escH(a.slug) + '\',1)" class="text-[10px] px-1" title="下移">↓</button>' : '') +
+          '</div>';
+        }).join('');
+        document.getElementById('recommend-count').textContent = recommendedSlugs.length;
+        updatePreview();
+      }
+
+      window.toggleRecommend = function(slug) {
+        var idx = recommendedSlugs.indexOf(slug);
+        if (idx >= 0) { recommendedSlugs.splice(idx, 1); }
+        else { recommendedSlugs.push(slug); }
+        renderRecommendPanel();
+      };
+
+      window.moveRecommend = function(slug, dir) {
+        var idx = recommendedSlugs.indexOf(slug);
+        if (idx < 0) return;
+        var newIdx = idx + dir;
+        if (newIdx < 0 || newIdx >= recommendedSlugs.length) return;
+        var temp = recommendedSlugs[idx];
+        recommendedSlugs[idx] = recommendedSlugs[newIdx];
+        recommendedSlugs[newIdx] = temp;
+        renderRecommendPanel();
+      };
+
+      function updatePreview() {
+        var el = document.getElementById('recommend-preview-content');
+        if (!el) return;
+        var recArticles = recommendedSlugs.map(function(s) { return allArticles.find(function(a) { return a.slug === s; }); }).filter(Boolean).slice(0, 3);
+        if (recArticles.length === 0) {
+          el.innerHTML = '<div class="text-[10px]" style="color:var(--text-muted);">暂无推荐文章，请先选择</div>';
+          return;
+        }
+        el.innerHTML = recArticles.map(function(a) {
+          return '<div class="space-y-1">' +
+            '<div class="text-xs font-bold" style="color:var(--text-primary);">' + escH(a.title) + '</div>' +
+            '<div class="text-[10px]" style="color:var(--text-muted);">' + escH((a.description || '').substring(0, 50)) + '...</div>' +
+            '<div class="flex items-center justify-between">' +
+              '<span class="text-[10px]" style="color:var(--text-muted);">' + (a.date || '') + '</span>' +
+              '<span class="text-[10px]" style="color:var(--accent-1-light);">阅读完整 →</span>' +
+            '</div>' +
+          '</div>';
+        }).join('<div class="my-2" style="border-top:1px dashed var(--glass-border);"></div>');
+      }
+
+      window.saveRecommended = function() {
+        var st = document.getElementById('recommend-status');
+        st.classList.remove('hidden');
+        st.textContent = '保存中...';
+        st.style.color = 'var(--text-muted)';
+        fetch('/api/articles/recommended', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ articles: recommendedSlugs })
+        }).then(function(r) { return r.json(); }).then(function(d) {
+          if (d.ok) { st.textContent = '✅ 推荐设置已保存！'; st.style.color = '#22c55e'; }
+          else { st.textContent = '❌ 保存失败'; st.style.color = '#ef4444'; }
+          setTimeout(function() { st.classList.add('hidden'); }, 3000);
+        }).catch(function() {
+          st.textContent = '❌ 网络错误'; st.style.color = '#ef4444';
+          setTimeout(function() { st.classList.add('hidden'); }, 3000);
+        });
+      };
 
       window.deleteArticle = function(slug) {
         if (!confirm('确定删除文章「' + slug + '」？此操作不可撤销。')) return;
@@ -89,26 +212,27 @@ import Admin from '../../layouts/Admin.astro';
           .then(function(r) { return r.json(); })
           .then(function(d) {
             if (d.ok) {
-              // Remove from DOM
-              var list = document.getElementById('articles-list');
-              var items = list.children;
-              for (var i = items.length - 1; i >= 0; i--) {
-                if (items[i].innerHTML.includes('slug=' + encodeURIComponent(slug))) {
-                  items[i].remove();
-                }
-              }
-              var count = document.getElementById('article-count');
-              count.textContent = parseInt(count.textContent) - 1;
-              if (list.children.length === 0) {
-                document.getElementById('articles-empty').classList.remove('hidden');
-              }
-            } else {
-              alert('删除失败: ' + (d.error || '未知错误'));
-            }
-          })
-          .catch(function() { alert('网络错误'); });
+              allArticles = allArticles.filter(function(a) { return a.slug !== slug; });
+              recommendedSlugs = recommendedSlugs.filter(function(s) { return s !== slug; });
+              renderArticles(allArticles);
+              renderRecommendPanel();
+            } else { alert('删除失败: ' + (d.error || '未知错误')); }
+          }).catch(function() { alert('网络错误'); });
       };
+
+      // Load data
+      Promise.all([
+        fetch('/api/articles').then(function(r) { return r.json(); }),
+        fetch('/api/articles/recommended').then(function(r) { return r.json(); })
+      ]).then(function(results) {
+        allArticles = results[0] || [];
+        var recData = results[1];
+        recommendedSlugs = Array.isArray(recData) ? recData : [];
+        renderArticles(allArticles);
+        renderRecommendPanel();
+      }).catch(function() {
+        document.getElementById('articles-loading').innerHTML = '<p style="color:#f87171;">加载失败</p>';
+      });
     })();
   </script>
 </Admin>
-

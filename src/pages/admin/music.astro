@@ -1,4 +1,4 @@
-﻿---
+---
 export const prerender = false;
 import Admin from '../../layouts/Admin.astro';
 ---
@@ -223,6 +223,35 @@ function addToPlaylist(i) {
 }
 function removeFromPlaylist(i) { playlist.splice(i, 1); renderPlaylist(); }
 function movePlaylistItem(i, d) { var j = i + d; if (j < 0 || j >= playlist.length) return; var t = playlist[i]; playlist[i] = playlist[j]; playlist[j] = t; renderPlaylist(); }
+var SINPUT = 'width:100%;padding:0.25rem 0.375rem;border-radius:0.375rem;border:1px solid var(--glass-border);background:var(--glass-bg);color:var(--text-primary);font-size:0.7rem;box-sizing:border-box;';
+function editPlaylistTrack(i) {
+  var item = document.getElementById('playlist-item-' + i);
+  if (!item) return;
+  var t = playlist[i];
+  var titleEl = item.querySelector('.pl-title');
+  var artistEl = item.querySelector('.pl-artist');
+  var srcEl = item.querySelector('.pl-src');
+  if (!titleEl || !artistEl) return;
+  titleEl.outerHTML = '<input class="pl-title" style="' + SINPUT + '" value="' + escH(t.title) + '" id="pl-edit-title-' + i + '" />';
+  artistEl.outerHTML = '<input class="pl-artist" style="' + SINPUT + '" value="' + escH(t.artist) + '" id="pl-edit-artist-' + i + '" />';
+  if (srcEl) { srcEl.outerHTML = '<input class="pl-src" style="' + SINPUT + '" value="' + escH(t.src) + '" id="pl-edit-src-' + i + '" placeholder="音频URL" />'; }
+  var btns = item.querySelector('div[style*="display:flex;gap:0.25rem"]');
+  if (btns) {
+    var editBtn = btns.querySelector('button[title="编辑"]');
+    if (editBtn) { editBtn.outerHTML = '<button style="' + SBTN + 'color:#22c55e;background:rgba(34,197,94,0.12);border-color:#22c55e;" onclick="savePlaylistEdit(' + i + ')" title="保存">✓ 保存</button>'; }
+  }
+}
+function savePlaylistEdit(i) {
+  var item = document.getElementById('playlist-item-' + i);
+  if (!item) return;
+  var titleInput = document.getElementById('pl-edit-title-' + i);
+  var artistInput = document.getElementById('pl-edit-artist-' + i);
+  var srcInput = document.getElementById('pl-edit-src-' + i);
+  if (titleInput) { playlist[i].title = titleInput.value.trim() || playlist[i].title; }
+  if (artistInput) { playlist[i].artist = artistInput.value.trim(); }
+  if (srcInput) { playlist[i].src = srcInput.value.trim() || playlist[i].src; }
+  renderPlaylist();
+}
 
 var S = 'display:flex;align-items:center;gap:0.75rem;padding:0.625rem 0.875rem;border-radius:0.75rem;background:var(--glass-bg);border:1px solid var(--glass-border);transition:all 0.2s;';
 var SA = 'width:2.75rem;height:2.75rem;border-radius:0.5rem;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem;overflow:hidden;';
@@ -241,11 +270,12 @@ function renderPlaylist() {
   c.innerHTML = playlist.map(function(t, i) {
     var dur = t.duration ? Math.floor(t.duration / 60) + ':' + String(Math.floor(t.duration % 60)).padStart(2, '0') : '--:--';
     var art = t.cover ? '<img src="' + t.cover + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.textContent=\'🎵\'" />' : '🎵';
-    return '<div style="' + S + '" onmouseover="this.style.borderColor=\'var(--accent-1)\'" onmouseout="this.style.borderColor=\'var(--glass-border)\'">' +
+    return '<div id="playlist-item-' + i + '" style="' + S + '" onmouseover="this.style.borderColor=\'var(--accent-1)\'" onmouseout="this.style.borderColor=\'var(--glass-border)\'">' +
       '<div style="' + SA + '">' + art + '</div>' +
-      '<div style="' + SI + '"><div style="' + ST + '">' + escH(t.title) + '</div><div style="' + SR + '">' + escH(t.artist) + '</div></div>' +
+      '<div style="' + SI + '"><div class="pl-title" style="' + ST + '">' + escH(t.title) + '</div><div class="pl-artist" style="' + SR + '">' + escH(t.artist) + '</div><div class="pl-src" style="font-size:0.55rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:0.125rem;" title="' + escH(t.src) + '">' + escH(t.src) + '</div></div>' +
       '<span style="' + SD + '">' + dur + '</span>' +
       '<div style="' + SB + '">' +
+        '<button style="' + SBTN + '" onclick="editPlaylistTrack(' + i + ')" title="编辑">✏️</button>' +
         '<button style="' + SBTN + '" onclick="movePlaylistItem(' + i + ',-1)" title="上移">⬆</button>' +
         '<button style="' + SBTN + '" onclick="movePlaylistItem(' + i + ',1)" title="下移">⬇</button>' +
         '<button style="' + SBTN + SPLAY + '" onclick="playPlaylist(' + i + ')" title="播放">▶</button>' +
@@ -272,6 +302,7 @@ function savePlaylist() {
   setTimeout(function() { st.classList.add('hidden'); }, 3000);
 }
 
+function addEmptyTrack() { playlist.push({title:'新歌曲',artist:'未知',src:''}); renderPlaylist(); }
 function clearPlaylist() { if (confirm('确定清空播放列表？')) { playlist = []; renderPlaylist(); } }
 
 function loadPlaylist() {
